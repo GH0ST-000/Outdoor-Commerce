@@ -1,31 +1,21 @@
-# Identity module
+# Identity
 
-## Responsibility
+Owns customer accounts, credentials, sessions, email verification, password reset, roles, and permissions.
 
-Authentication, accounts, credentials, sessions, and authorization identities.
+## Public surface (other modules)
 
-## Data owned
+- `App\Domains\Identity\Models\User`
+- `App\Domains\Identity\Enums\UserStatus`
+- `App\Domains\Identity\Enums\Role`
+- `App\Domains\Identity\Enums\Permission`
+- Actions such as `CreateAdministratorAction`, `ChangeUserStatusAction`, `AssignUserRolesAction`
+- Domain events: `CustomerRegistered`, `CustomerLoggedIn`, `CustomerEmailVerified`
 
-Users, credentials, roles/permissions assignments.
+## Depends on
 
-## Public contracts
+- `Shared`
+- `Operations` public Actions/DTOs/Enums for audit recording (`RecordAuditEventAction`)
 
-Contracts for resolving the current user / permission checks used by other modules.
+## Does not own
 
-Classes under `Contracts/`, and any Action/Query/DTO explicitly listed here as public, are the only approved entry points for other modules.
-
-## Events this module may publish
-
-UserRegistered, UserDeactivated (examples for later).
-
-## May depend on
-
-Shared.
-
-## Explicitly outside this module
-
-Catalog content, inventory, payments, hunting legality.
-
-## Structure
-
-Follow the standard module layout documented in `docs/architecture.md` when implementing features. Day 2 ships boundaries only—no business behavior yet.
+Catalog, payments, multi-factor auth (future), storefront UX.

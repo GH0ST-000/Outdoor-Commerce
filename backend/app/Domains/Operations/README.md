@@ -2,30 +2,31 @@
 
 ## Responsibility
 
-Admin and operational tooling, audits, and support workflows.
+Admin operational tooling and privileged-action audit trails.
 
 ## Data owned
 
-Ops audit trails and support case metadata.
+- `audit_logs` (append-only)
 
 ## Public contracts
 
-Internal ops actions; not a public storefront API.
+Other modules may call:
 
-Classes under `Contracts/`, and any Action/Query/DTO explicitly listed here as public, are the only approved entry points for other modules.
+- `App\Domains\Operations\Actions\RecordAuditEventAction`
+- `App\Domains\Operations\DTOs\AuditEventData`
+- `App\Domains\Operations\Enums\AuditEvent`
+- `App\Domains\Operations\Queries\AuditLogListQuery` (HTTP/admin use)
 
-## Events this module may publish
-
-AuditRecorded (example for later).
+Do not import `Models\AuditLog` from other domains — use Actions/Queries.
 
 ## May depend on
 
-Shared; may call other modules only through public contracts.
+Shared only (audit rows store actor ids, not Identity models).
 
 ## Explicitly outside this module
 
-Customer cart/checkout UX.
+Customer cart/checkout UX; catalog/order business rules.
 
-## Structure
+## Day 5
 
-Follow the standard module layout documented in `docs/architecture.md` when implementing features. Day 2 ships boundaries only—no business behavior yet.
+Implements immutable audit logging for administrator provisioning, role/status changes, access denials, and permission synchronization.
