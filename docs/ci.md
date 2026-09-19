@@ -107,7 +107,7 @@ Docker image builds use BuildKit on the runner. GitHub Actions layer cache (`typ
 
 ## Security audits
 
-- Backend: `composer audit` fails on known advisories reported by Composer.
+- Backend: `composer audit` fails on known advisories reported by Composer. A Packagist download failure (for example HTTP 502, Composer exit 100) is retried up to 4 times. Advisory findings (exit 1) are not retried.
 - Frontend: `npm audit --audit-level=high` fails on high/critical issues.
 - Secrets: Gitleaks (`gitleaks/gitleaks-action`, pinned commit SHA).
 

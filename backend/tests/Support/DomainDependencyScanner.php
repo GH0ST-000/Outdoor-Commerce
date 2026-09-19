@@ -142,6 +142,11 @@ final class DomainDependencyScanner
                     continue;
                 }
 
+                // Shared is an approved dependency for every business module.
+                if ($toModule === 'Shared') {
+                    continue;
+                }
+
                 if (in_array($segment, $publicSegments, true)) {
                     continue;
                 }

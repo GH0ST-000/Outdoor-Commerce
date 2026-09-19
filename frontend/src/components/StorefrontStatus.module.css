@@ -1,7 +1,12 @@
 .status {
-  margin: 0.5rem 0 0;
-  font-family: var(--font-sans), system-ui, sans-serif;
-  font-size: 0.95rem;
-  font-weight: 600;
-  color: #2e5a3a;
+  margin: 0;
+  font-size: 0.82rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: rgba(158, 181, 173, 0.9);
+}
+
+:global(.dark) .status {
+  color: rgba(212, 161, 92, 0.85);
 }

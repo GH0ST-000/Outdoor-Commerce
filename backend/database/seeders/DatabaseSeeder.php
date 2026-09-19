@@ -2,24 +2,22 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
 {
-    use WithoutModelEvents;
-
     /**
      * Seed the application's database.
+     *
+     * Administrators are never seeded for production. Use:
+     * `php artisan access-control:sync` then `php artisan admin:create`.
+     *
+     * Local catalog demo data: `php artisan db:seed --class=CatalogDemoSeeder`
      */
     public function run(): void
     {
-        // User::factory(10)->create();
-
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-        ]);
+        if ($this->command?->option('class') === null && app()->environment('local')) {
+            // Optional local demo — not run automatically to keep migrate:fresh clean.
+        }
     }
 }

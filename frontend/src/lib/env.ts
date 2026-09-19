@@ -10,6 +10,7 @@ const serverSchema = z.object({
 const publicSchema = z.object({
   NEXT_PUBLIC_APP_URL: z.string().url().optional(),
   NEXT_PUBLIC_API_URL: z.string().url().optional(),
+  NEXT_PUBLIC_BACKEND_URL: z.string().url().optional(),
 });
 
 export type ServerEnv = z.infer<typeof serverSchema>;
@@ -26,5 +27,26 @@ export function getPublicEnv(): PublicEnv {
   return publicSchema.parse({
     NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
     NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
+    NEXT_PUBLIC_BACKEND_URL: process.env.NEXT_PUBLIC_BACKEND_URL,
   });
+}
+
+/** Public API base including `/api` suffix, e.g. http://localhost:8000/api */
+export function getApiBaseUrl(): string {
+  const configured = getPublicEnv().NEXT_PUBLIC_API_URL;
+  if (configured) {
+    return configured.replace(/\/$/, "");
+  }
+  return "http://localhost:8000/api";
+}
+
+/** Backend origin for Sanctum CSRF cookie (no `/api` suffix). */
+export function getBackendOrigin(): string {
+  const configured = getPublicEnv().NEXT_PUBLIC_BACKEND_URL;
+  if (configured) {
+    return configured.replace(/\/$/, "");
+  }
+
+  const api = getApiBaseUrl();
+  return api.replace(/\/api$/, "");
 }
