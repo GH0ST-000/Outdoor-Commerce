@@ -25,7 +25,10 @@ export function ProductCard({
         className,
       )}
     >
-      <Link href={product.href} className="relative block aspect-[4/5] overflow-hidden no-underline">
+      <Link
+        href={product.href}
+        className="relative block aspect-[4/5] overflow-hidden no-underline"
+      >
         <Image
           src={product.imageSrc}
           alt={alt}
@@ -48,7 +51,10 @@ export function ProductCard({
           {product.brand}
         </p>
         <h3 className="text-base font-semibold leading-snug">
-          <Link href={product.href} className="text-foreground no-underline hover:underline">
+          <Link
+            href={product.href}
+            className="text-foreground no-underline hover:underline"
+          >
             {name}
           </Link>
         </h3>
@@ -70,11 +76,7 @@ export function ProductCard({
   );
 }
 
-export function ProductGrid({
-  products,
-}: {
-  products: ProductCardData[];
-}) {
+export function ProductGrid({ products }: { products: ProductCardData[] }) {
   return (
     <div className="grid grid-cols-2 gap-3 md:grid-cols-3 md:gap-5 xl:grid-cols-4">
       {products.map((product) => (

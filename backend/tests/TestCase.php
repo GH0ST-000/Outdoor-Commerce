@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace Tests;
 
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
+use Illuminate\Support\Facades\RateLimiter;
 use RuntimeException;
+use Spatie\Permission\PermissionRegistrar;
 
 abstract class TestCase extends BaseTestCase
 {
@@ -14,6 +16,24 @@ abstract class TestCase extends BaseTestCase
         parent::setUp();
 
         $this->assertSafeTestingDatabase();
+        $this->isolateSharedTestState();
+    }
+
+    /**
+     * CI keeps Redis across tests while RefreshDatabase rolls MySQL back.
+     * Permission lookups and IP rate limits must not see the previous test.
+     */
+    protected function isolateSharedTestState(): void
+    {
+        config(['permission.cache.store' => 'array']);
+
+        $registrar = $this->app->make(PermissionRegistrar::class);
+        $registrar->initializeCache();
+        $registrar->forgetCachedPermissions();
+
+        foreach (['127.0.0.1', '::1'] as $ip) {
+            RateLimiter::clear(md5('auth.register'.$ip));
+        }
     }
 
     /**

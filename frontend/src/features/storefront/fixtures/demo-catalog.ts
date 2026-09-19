@@ -36,19 +36,23 @@ export const storefrontCopy = {
       categoriesTitle: "Choose your field",
       categoriesLead: "Enter by pursuit — then refine by terrain and season.",
       featuredTitle: "Field-selected gear",
-      featuredLead: "A short list of equipment we would pack for Georgian terrain.",
+      featuredLead:
+        "A short list of equipment we would pack for Georgian terrain.",
       seasonTitle: "Season intelligence",
-      seasonLead: "A preview of how legal windows will surface beside equipment.",
+      seasonLead:
+        "A preview of how legal windows will surface beside equipment.",
       mapTitle: "Terrain preview",
       mapLead: "Zones, access, and context — geospatial depth arrives later.",
       mapCta: "Open map shell",
       brandsTitle: "Trusted makers",
-      brandsLead: "Names we stock for durability in wet forests and high ridges.",
+      brandsLead:
+        "Names we stock for durability in wet forests and high ridges.",
       journalTitle: "Field journal",
       journalLead: "Guides for preparation, safety, and equipment care.",
       trustTitle: "Built for trust",
       newsletterTitle: "Stay ahead of the season",
-      newsletterLead: "Season notes, gear drops, and field guides — when the list goes live.",
+      newsletterLead:
+        "Season notes, gear drops, and field guides — when the list goes live.",
       newsletterCta: "Notify me",
       newsletterHint: "Email capture is not connected yet.",
     },
@@ -131,21 +135,26 @@ export const storefrontCopy = {
       shopCta: "აღჭურვილობის ნახვა",
       guideCta: "გზამკვლევის გახსნა",
       categoriesTitle: "აირჩიე მიმართულება",
-      categoriesLead: "შედი დანიშნულებით — შემდეგ დააზუსტე რელიეფით და სეზონით.",
+      categoriesLead:
+        "შედი დანიშნულებით — შემდეგ დააზუსტე რელიეფით და სეზონით.",
       featuredTitle: "შერჩეული აღჭურვილობა",
-      featuredLead: "მოკლე სია იმისა, რასაც საქართველოს რელიეფისთვის შევაფუთავდით.",
+      featuredLead:
+        "მოკლე სია იმისა, რასაც საქართველოს რელიეფისთვის შევაფუთავდით.",
       seasonTitle: "სეზონის ინტელექტი",
-      seasonLead: "როგორ გამოჩნდება სამართლებრივი ფანჯრები აღჭურვილობასთან ერთად.",
+      seasonLead:
+        "როგორ გამოჩნდება სამართლებრივი ფანჯრები აღჭურვილობასთან ერთად.",
       mapTitle: "რელიეფის გადახედვა",
       mapLead: "ზონები და კონტექსტი — გეოსივრცითი სიღრმე მოგვიანებით.",
       mapCta: "რუკის გახსნა",
       brandsTitle: "სანდო მწარმოებლები",
-      brandsLead: "სახელები, რომლებსაც ვარჩევთ სველი ტყისა და მაღალი ქედებისთვის.",
+      brandsLead:
+        "სახელები, რომლებსაც ვარჩევთ სველი ტყისა და მაღალი ქედებისთვის.",
       journalTitle: "საველე ჟურნალი",
       journalLead: "მზადება, უსაფრთხოება და აღჭურვილობის მოვლა.",
       trustTitle: "ნდობისთვის შექმნილი",
       newsletterTitle: "იყავი სეზონზე წინ",
-      newsletterLead: "სეზონის შენიშვნები და გზამკვლევები — როცა სია ამუშავდება.",
+      newsletterLead:
+        "სეზონის შენიშვნები და გზამკვლევები — როცა სია ამუშავდება.",
       newsletterCta: "შემატყობინე",
       newsletterHint: "ელფოსტის შეგროვება ჯერ არ არის დაკავშირებული.",
     },
@@ -200,7 +209,8 @@ export const storefrontCopy = {
       back: "უკან",
       priceOnRequest: "ფასი მოთხოვნით",
       comingSoon: "ხელმისაწვდომობა მალე",
-      demoLegal: "სადემონსტრაციო მონაცემები — არ არის ოფიციალური სანადირო კანონი.",
+      demoLegal:
+        "სადემონსტრაციო მონაცემები — არ არის ოფიციალური სანადირო კანონი.",
     },
   } satisfies StorefrontCopy,
 } as const;
@@ -324,7 +334,10 @@ export const featuredProducts: ProductCardData[] = [
     href: "/products/river-braided-line",
     imageSrc: "/storefront/product-line.svg",
     imageAlt: { en: "Fishing line spool", ka: "სათევზაო ძაფის კოჭა" },
-    attributePreview: { en: "100–300 m · 10–20 lb", ka: "100–300 მ · 10–20 lb" },
+    attributePreview: {
+      en: "100–300 m · 10–20 lb",
+      ka: "100–300 მ · 10–20 lb",
+    },
     priceLabel: { en: "Price on request", ka: "ფასი მოთხოვნით" },
   },
   {
@@ -355,7 +368,10 @@ export const seasonDemo: SeasonDemoRow[] = [
     region: { en: "Samegrelo forests", ka: "სამეგრელოს ტყეები" },
     month: { en: "October", ka: "ოქტომბერი" },
     status: "open",
-    limit: { en: "Sample limit — verify officially", ka: "სანიმუშო ლიმიტი — გადაამოწმეთ" },
+    limit: {
+      en: "Sample limit — verify officially",
+      ka: "სანიმუშო ლიმიტი — გადაამოწმეთ",
+    },
   },
   {
     id: "s3",
@@ -388,7 +404,10 @@ export const fieldGuides: FieldGuideCardData[] = [
     slug: "optic-care-in-dust",
     href: "/field-guide/optic-care-in-dust",
     category: { en: "Optics", ka: "ოპტიკა" },
-    title: { en: "Optic care in dry dust and fog", ka: "ოპტიკის მოვლა მტვერსა და ნისლში" },
+    title: {
+      en: "Optic care in dry dust and fog",
+      ka: "ოპტიკის მოვლა მტვერსა და ნისლში",
+    },
     excerpt: {
       en: "Lens discipline that keeps glass usable after ridge winds.",
       ka: "ლინზების დისციპლინა ქედის ქარის შემდეგ.",
@@ -400,7 +419,10 @@ export const fieldGuides: FieldGuideCardData[] = [
     slug: "river-access-ethics",
     href: "/field-guide/river-access-ethics",
     category: { en: "Fishing", ka: "თევზაობა" },
-    title: { en: "River access and bank ethics", ka: "მდინარეზე წვდომა და ეთიკა" },
+    title: {
+      en: "River access and bank ethics",
+      ka: "მდინარეზე წვდომა და ეთიკა",
+    },
     excerpt: {
       en: "Leave banks intact, read flow, and pack out every filament.",
       ka: "ნაპირი უვნებელი დატოვე და ყველა ძაფი წაიღე.",
@@ -478,7 +500,12 @@ export const productDetails: Record<string, ProductDetailFixture> = {
           values: [
             { id: "m", code: "m", name: { en: "M", ka: "M" } },
             { id: "l", code: "l", name: { en: "L", ka: "L" } },
-            { id: "xl", code: "xl", name: { en: "XL", ka: "XL" }, disabled: true },
+            {
+              id: "xl",
+              code: "xl",
+              name: { en: "XL", ka: "XL" },
+              disabled: true,
+            },
           ],
         },
       ],
@@ -490,7 +517,10 @@ export const productDetails: Record<string, ProductDetailFixture> = {
       },
       {
         label: { en: "Primary use", ka: "ძირითადი გამოყენება" },
-        value: { en: "Still hunting / glassing", ka: "ნელა ნადირობა / დაკვირვება" },
+        value: {
+          en: "Still hunting / glassing",
+          ka: "ნელა ნადირობა / დაკვირვება",
+        },
       },
     ],
     contexts: [

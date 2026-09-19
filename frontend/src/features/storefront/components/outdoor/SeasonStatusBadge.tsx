@@ -34,8 +34,7 @@ export function SeasonStatusBadge({ status }: { status: SeasonStatus }) {
           "border-[color-mix(in_oklab,var(--destructive)_35%,transparent)] bg-[color-mix(in_oklab,var(--destructive)_12%,transparent)] text-destructive",
         status === "conditional" &&
           "border-[color-mix(in_oklab,var(--warning)_35%,transparent)] bg-[color-mix(in_oklab,var(--warning)_12%,transparent)] text-[var(--warning)]",
-        status === "unknown" &&
-          "border-border bg-muted text-muted-foreground",
+        status === "unknown" && "border-border bg-muted text-muted-foreground",
       )}
     >
       <Icon className="size-3.5" aria-hidden />

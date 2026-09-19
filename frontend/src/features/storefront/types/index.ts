@@ -4,12 +4,7 @@ import type { Locale } from "@/i18n/dictionaries";
 export type Localized = Record<Locale, string>;
 
 export type CategorySlug =
-  | "hunting"
-  | "fishing"
-  | "camping"
-  | "clothing"
-  | "optics"
-  | "knives-tools";
+  "hunting" | "fishing" | "camping" | "clothing" | "optics" | "knives-tools";
 
 /**
  * Commercial state of a catalogue entry. There is no `in-stock` member on

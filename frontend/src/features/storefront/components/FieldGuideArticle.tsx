@@ -29,8 +29,12 @@ export function FieldGuideArticle({ slug }: { slug: string }) {
         >
           ← {t.nav.fieldGuide}
         </Link>
-        <p className="sf-label text-muted-foreground">{guide.category[locale]}</p>
-        <h1 className="sf-display text-4xl sm:text-5xl">{guide.title[locale]}</h1>
+        <p className="sf-label text-muted-foreground">
+          {guide.category[locale]}
+        </p>
+        <h1 className="sf-display text-4xl sm:text-5xl">
+          {guide.title[locale]}
+        </h1>
         <p className="text-lg leading-relaxed text-muted-foreground">
           {guide.excerpt[locale]}
         </p>
@@ -40,9 +44,7 @@ export function FieldGuideArticle({ slug }: { slug: string }) {
             : "This is an editorial template. Full articles and sourced content will arrive later."}
         </p>
         <footer className="border-t border-border/60 pt-4 text-sm text-muted-foreground">
-          <p>
-            {t.fieldGuide.updated}: 2026-09-20
-          </p>
+          <p>{t.fieldGuide.updated}: 2026-09-20</p>
           <p className="mt-1">
             {t.fieldGuide.sources}: demo fixture — not authoritative.
           </p>

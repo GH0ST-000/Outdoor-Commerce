@@ -30,10 +30,18 @@ describe("storefront chrome", () => {
       </TestProviders>,
     );
 
-    await user.click(screen.getByRole("button", { name: /open menu|მენიუს გახსნა/i }));
-    expect(screen.getByRole("navigation", { name: /mobile/i })).toBeInTheDocument();
-    await user.click(screen.getByRole("button", { name: /close menu|მენიუს დახურვა/i }));
-    expect(screen.queryByRole("navigation", { name: /mobile/i })).not.toBeInTheDocument();
+    await user.click(
+      screen.getByRole("button", { name: /open menu|მენიუს გახსნა/i }),
+    );
+    expect(
+      screen.getByRole("navigation", { name: /mobile/i }),
+    ).toBeInTheDocument();
+    await user.click(
+      screen.getByRole("button", { name: /close menu|მენიუს დახურვა/i }),
+    );
+    expect(
+      screen.queryByRole("navigation", { name: /mobile/i }),
+    ).not.toBeInTheDocument();
   });
 
   it("opens search and closes with Escape", async () => {
@@ -59,7 +67,9 @@ describe("product presentation", () => {
       </TestProviders>,
     );
     expect(screen.getByText(product.name.en)).toBeInTheDocument();
-    expect(screen.getByText(/price on request|ფასი მოთხოვნით/i)).toBeInTheDocument();
+    expect(
+      screen.getByText(/price on request|ფასი მოთხოვნით/i),
+    ).toBeInTheDocument();
   });
 
   it("exposes color value names to assistive tech", () => {
@@ -82,8 +92,8 @@ describe("legal demo", () => {
         <LegalDemoBanner />
       </TestProviders>,
     );
-    expect(
-      screen.getByRole("note"),
-    ).toHaveTextContent(/demonstration|სადემონსტრაციო/i);
+    expect(screen.getByRole("note")).toHaveTextContent(
+      /demonstration|სადემონსტრაციო/i,
+    );
   });
 });

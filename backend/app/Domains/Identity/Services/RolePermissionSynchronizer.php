@@ -33,6 +33,8 @@ final class RolePermissionSynchronizer
         $rolesCreated = [];
         $rolePermissionsSynced = [];
         $unknownRolesPreserved = [];
+        /** @var array<string, SpatiePermission> $resolvedPermissions */
+        $resolvedPermissions = [];
 
         $desiredPermissionNames = array_map(
             static fn (Permission $permission): string => $permission->value,
@@ -46,7 +48,13 @@ final class RolePermissionSynchronizer
             &$rolesCreated,
             &$rolePermissionsSynced,
             &$unknownRolesPreserved,
+            &$resolvedPermissions,
         ): void {
+            // findOrCreate/syncPermissions read the registrar cache. A stale Redis
+            // entry (left behind after a rolled-back test transaction) reports
+            // admin.access as present and then forgets the cache before the row exists.
+            $this->registrar->forgetCachedPermissions();
+
             foreach ($desiredPermissionNames as $name) {
                 $exists = SpatiePermission::query()
                     ->where('name', $name)
@@ -55,11 +63,18 @@ final class RolePermissionSynchronizer
 
                 if (! $exists) {
                     $permissionsCreated[] = $name;
-
-                    if (! $dryRun) {
-                        SpatiePermission::findOrCreate($name, 'web');
-                    }
                 }
+
+                if (! $dryRun) {
+                    $resolvedPermissions[$name] = SpatiePermission::query()->firstOrCreate([
+                        'name' => $name,
+                        'guard_name' => 'web',
+                    ]);
+                }
+            }
+
+            if (! $dryRun) {
+                $this->registrar->forgetCachedPermissions();
             }
 
             $knownRoleNames = array_map(
@@ -86,10 +101,6 @@ final class RolePermissionSynchronizer
 
                 if (! $roleExists) {
                     $rolesCreated[] = $role->value;
-
-                    if (! $dryRun) {
-                        SpatieRole::findOrCreate($role->value, 'web');
-                    }
                 }
 
                 $permissionNames = array_map(
@@ -100,9 +111,14 @@ final class RolePermissionSynchronizer
                 $rolePermissionsSynced[$role->value] = $permissionNames;
 
                 if (! $dryRun) {
-                    /** @var SpatieRole $spatieRole */
-                    $spatieRole = SpatieRole::findByName($role->value, 'web');
-                    $spatieRole->syncPermissions($permissionNames);
+                    $spatieRole = SpatieRole::query()->firstOrCreate([
+                        'name' => $role->value,
+                        'guard_name' => 'web',
+                    ]);
+                    $spatieRole->syncPermissions(array_map(
+                        static fn (string $permissionName): SpatiePermission => $resolvedPermissions[$permissionName],
+                        $permissionNames,
+                    ));
                 }
             }
 

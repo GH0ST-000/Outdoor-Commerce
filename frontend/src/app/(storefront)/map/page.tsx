@@ -32,7 +32,8 @@ export default function MapPage() {
         <aside className="space-y-4 bg-card p-5" aria-label={t.map.panel}>
           <h2 className="text-lg font-semibold">{t.map.panel}</h2>
           <p className="text-sm text-muted-foreground">
-            Select a zone when geospatial layers connect. This shell is presentation-only.
+            Select a zone when geospatial layers connect. This shell is
+            presentation-only.
           </p>
           <div>
             <p className="sf-label text-muted-foreground">{t.map.legend}</p>

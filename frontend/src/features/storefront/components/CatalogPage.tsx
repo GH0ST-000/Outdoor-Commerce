@@ -72,7 +72,9 @@ export function CatalogPage({ categorySlug }: { categorySlug?: string }) {
             {t.catalog.filters}
           </Button>
           <div className="ml-auto flex items-center gap-2">
-            <span className="text-sm text-muted-foreground">{t.catalog.sort}</span>
+            <span className="text-sm text-muted-foreground">
+              {t.catalog.sort}
+            </span>
             <Select value={sort} onValueChange={setSort}>
               <SelectTrigger className="w-40" aria-label={t.catalog.sort}>
                 <SelectValue />
@@ -86,7 +88,10 @@ export function CatalogPage({ categorySlug }: { categorySlug?: string }) {
         </div>
 
         <div className="grid gap-8 lg:grid-cols-[240px_1fr]">
-          <aside className="hidden space-y-4 lg:block" aria-label={t.catalog.filters}>
+          <aside
+            className="hidden space-y-4 lg:block"
+            aria-label={t.catalog.filters}
+          >
             <p className="text-sm font-semibold">{t.catalog.filters}</p>
             <p className="text-sm text-muted-foreground">
               Prototype filters — not connected to the catalog API yet.

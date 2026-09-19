@@ -69,7 +69,9 @@ export function SiteFooter({ locale = "en" }: { locale?: "en" | "ka" }) {
       </div>
       <div className="border-t border-white/10 py-4">
         <div className="sf-container-wide flex flex-wrap items-center justify-between gap-2 text-xs text-[#eee9de]/45">
-          <p>© {new Date().getFullYear()} {brand}</p>
+          <p>
+            © {new Date().getFullYear()} {brand}
+          </p>
           <p>Design sprint storefront · fixture data</p>
         </div>
       </div>

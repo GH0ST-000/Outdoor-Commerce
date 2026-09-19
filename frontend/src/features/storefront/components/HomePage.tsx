@@ -45,7 +45,11 @@ export function HomePage() {
             {support}
           </p>
           <div className="sf-reveal sf-reveal-delay-3 mt-8 flex flex-wrap gap-3">
-            <Button asChild size="lg" className="bg-[#eee9de] text-[var(--night-forest)] hover:bg-white">
+            <Button
+              asChild
+              size="lg"
+              className="bg-[#eee9de] text-[var(--night-forest)] hover:bg-white"
+            >
               <Link href="/catalog">{t.home.shopCta}</Link>
             </Button>
             <Button
@@ -66,7 +70,9 @@ export function HomePage() {
             <h2 className="sf-display text-3xl sm:text-4xl">
               {t.home.categoriesTitle}
             </h2>
-            <p className="mt-3 text-muted-foreground">{t.home.categoriesLead}</p>
+            <p className="mt-3 text-muted-foreground">
+              {t.home.categoriesLead}
+            </p>
           </header>
           <div className="grid auto-rows-[180px] grid-cols-2 gap-3 md:auto-rows-[220px] md:grid-cols-4 md:gap-4">
             {categoryGateway.map((category) => (
@@ -110,7 +116,9 @@ export function HomePage() {
               <h2 className="sf-display text-3xl sm:text-4xl">
                 {t.home.featuredTitle}
               </h2>
-              <p className="mt-3 text-muted-foreground">{t.home.featuredLead}</p>
+              <p className="mt-3 text-muted-foreground">
+                {t.home.featuredLead}
+              </p>
             </div>
             <Button asChild variant="outline">
               <Link href="/catalog">{t.nav.catalog}</Link>
@@ -137,18 +145,26 @@ export function HomePage() {
               >
                 <div className="flex items-start justify-between gap-3">
                   <div>
-                    <p className="text-lg font-semibold">{row.species[locale]}</p>
+                    <p className="text-lg font-semibold">
+                      {row.species[locale]}
+                    </p>
                     <p className="mt-1 text-sm text-[#eee9de]/65">
                       {row.region[locale]} · {row.month[locale]}
                     </p>
                   </div>
                   <SeasonStatusBadge status={row.status} />
                 </div>
-                <p className="mt-4 text-sm text-[#eee9de]/7">{row.limit[locale]}</p>
+                <p className="mt-4 text-sm text-[#eee9de]/7">
+                  {row.limit[locale]}
+                </p>
               </article>
             ))}
           </div>
-          <Button asChild variant="outline" className="border-white/25 text-[#eee9de]">
+          <Button
+            asChild
+            variant="outline"
+            className="border-white/25 text-[#eee9de]"
+          >
             <Link href="/hunting-calendar">{t.nav.calendar}</Link>
           </Button>
         </div>
@@ -157,8 +173,12 @@ export function HomePage() {
       <section className="sf-section sf-topo">
         <div className="sf-container grid items-center gap-8 lg:grid-cols-2">
           <div>
-            <h2 className="sf-display text-3xl sm:text-4xl">{t.home.mapTitle}</h2>
-            <p className="mt-3 max-w-md text-muted-foreground">{t.home.mapLead}</p>
+            <h2 className="sf-display text-3xl sm:text-4xl">
+              {t.home.mapTitle}
+            </h2>
+            <p className="mt-3 max-w-md text-muted-foreground">
+              {t.home.mapLead}
+            </p>
             <Button asChild className="mt-6">
               <Link href="/map">{t.home.mapCta}</Link>
             </Button>
@@ -295,7 +315,9 @@ export function HomePage() {
           >
             {t.home.newsletterCta}
           </Button>
-          <p className="mt-3 text-xs text-[#eee9de]/5">{t.home.newsletterHint}</p>
+          <p className="mt-3 text-xs text-[#eee9de]/5">
+            {t.home.newsletterHint}
+          </p>
         </div>
       </section>
     </>

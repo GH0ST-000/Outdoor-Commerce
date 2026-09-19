@@ -57,10 +57,7 @@ export function ProductDetailPage({ slug }: { slug: string }) {
               />
             </div>
             {product.gallery.length > 1 ? (
-              <ul
-                className="mt-3 flex gap-2"
-                aria-label={t.product.gallery}
-              >
+              <ul className="mt-3 flex gap-2" aria-label={t.product.gallery}>
                 {product.gallery.map((src, index) => (
                   <li key={src}>
                     <button
@@ -74,7 +71,13 @@ export function ProductDetailPage({ slug }: { slug: string }) {
                           : "relative size-16 overflow-hidden rounded-lg border border-border"
                       }
                     >
-                      <Image src={src} alt="" fill className="object-cover" sizes="64px" />
+                      <Image
+                        src={src}
+                        alt=""
+                        fill
+                        className="object-cover"
+                        sizes="64px"
+                      />
                     </button>
                   </li>
                 ))}
@@ -120,10 +123,17 @@ export function ProductDetailPage({ slug }: { slug: string }) {
             <VariantSelector axes={product.variants.axes} />
 
             <div className="space-y-2">
-              <Button type="button" size="lg" disabled className="w-full sm:w-auto">
+              <Button
+                type="button"
+                size="lg"
+                disabled
+                className="w-full sm:w-auto"
+              >
                 {t.product.notify}
               </Button>
-              <p className="text-xs text-muted-foreground">{t.product.notifyHint}</p>
+              <p className="text-xs text-muted-foreground">
+                {t.product.notifyHint}
+              </p>
             </div>
 
             <div>
@@ -134,7 +144,9 @@ export function ProductDetailPage({ slug }: { slug: string }) {
                     key={spec.label.en}
                     className="flex justify-between gap-4 border-b border-border/50 py-2"
                   >
-                    <dt className="text-muted-foreground">{spec.label[locale]}</dt>
+                    <dt className="text-muted-foreground">
+                      {spec.label[locale]}
+                    </dt>
                     <dd className="font-medium">{spec.value[locale]}</dd>
                   </div>
                 ))}
@@ -171,7 +183,9 @@ export function ProductDetailPage({ slug }: { slug: string }) {
             <p className="text-sm font-semibold">
               {product.priceLabel?.[locale] ?? t.common.priceOnRequest}
             </p>
-            <p className="text-xs text-muted-foreground">{t.product.notifyHint}</p>
+            <p className="text-xs text-muted-foreground">
+              {t.product.notifyHint}
+            </p>
           </div>
           <Button type="button" disabled>
             {t.product.notify}

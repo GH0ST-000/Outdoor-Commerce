@@ -1,12 +1,7 @@
 import { Badge } from "@/components/ui/badge";
 
 type BadgeVariant =
-  | "default"
-  | "secondary"
-  | "success"
-  | "warning"
-  | "danger"
-  | "outline";
+  "default" | "secondary" | "success" | "warning" | "danger" | "outline";
 
 const STATUS_VARIANT: Record<string, BadgeVariant> = {
   active: "success",

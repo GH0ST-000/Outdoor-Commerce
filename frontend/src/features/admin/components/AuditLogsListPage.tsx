@@ -186,7 +186,11 @@ export function AuditLogsListPage() {
               </SelectContent>
             </Select>
           </Field>
-          <Field label="Actor user ID" htmlFor="audit-actor" className="lg:col-span-2">
+          <Field
+            label="Actor user ID"
+            htmlFor="audit-actor"
+            className="lg:col-span-2"
+          >
             <Input
               id="audit-actor"
               value={draft.actor_user_id ?? ""}

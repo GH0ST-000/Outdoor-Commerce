@@ -22,7 +22,9 @@ export default function HuntingCalendarPage() {
     <div className="sf-section">
       <div className="sf-container space-y-6">
         <header className="max-w-2xl">
-          <h1 className="sf-display text-4xl sm:text-5xl">{t.calendar.title}</h1>
+          <h1 className="sf-display text-4xl sm:text-5xl">
+            {t.calendar.title}
+          </h1>
           <p className="mt-3 text-muted-foreground">{t.calendar.lead}</p>
         </header>
         <LegalDemoBanner />
@@ -47,7 +49,9 @@ export default function HuntingCalendarPage() {
             <tbody>
               {rows.map((row) => (
                 <tr key={row.id} className="border-t border-border/50">
-                  <td className="px-4 py-3 font-medium">{row.species[locale]}</td>
+                  <td className="px-4 py-3 font-medium">
+                    {row.species[locale]}
+                  </td>
                   <td className="px-4 py-3">{row.region[locale]}</td>
                   <td className="px-4 py-3">{row.month[locale]}</td>
                   <td className="px-4 py-3">

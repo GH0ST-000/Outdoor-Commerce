@@ -30,7 +30,8 @@
   --color-success: var(--success);
   --color-warning: var(--warning);
   --color-info: var(--info);
-  --font-sans: var(--font-manrope), var(--font-noto-georgian), "Noto Sans Georgian",
+  --font-sans:
+    var(--font-manrope), var(--font-noto-georgian), "Noto Sans Georgian",
     sans-serif;
   --font-display: var(--font-fraunces), "Noto Serif Georgian", serif;
   --font-geo: var(--font-noto-georgian), "Noto Sans Georgian", sans-serif;

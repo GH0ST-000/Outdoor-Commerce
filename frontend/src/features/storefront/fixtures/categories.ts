@@ -8,7 +8,10 @@ export const categoryFixtures: StorefrontCategory[] = [
   {
     slug: "hunting",
     name: { en: "Hunting", ka: "ნადირობა" },
-    kicker: { en: "Stands, calls, packs", ka: "ბუდეები, მოსახმობები, ზურგჩანთები" },
+    kicker: {
+      en: "Stands, calls, packs",
+      ka: "ბუდეები, მოსახმობები, ზურგჩანთები",
+    },
     lede: {
       en: "Equipment for long approaches and patient mornings — load-bearing packs, calls, and seat systems for cold hours above the treeline.",
       ka: "აღჭურვილობა გრძელი მიდგომებისა და მოთმინებიანი დილებისთვის — დატვირთვის ზურგჩანთები, მოსახმობები და დასაჯდომი სისტემები ტყის ზოლს ზემოთ ცივი საათებისთვის.",
@@ -24,9 +27,18 @@ export const categoryFixtures: StorefrontCategory[] = [
     },
     emphasis: "primary",
     highlights: [
-      { en: "Load-bearing packs and meat hauling frames", ka: "დატვირთვის ზურგჩანთები და ტვირთის ჩარჩოები" },
-      { en: "Calls, decoys, and scent management", ka: "მოსახმობები, საცოცხლები და სუნის კონტროლი" },
-      { en: "Insulated seats and glassing rests", ka: "იზოლირებული დასაჯდომები და ოპტიკის საყრდენები" },
+      {
+        en: "Load-bearing packs and meat hauling frames",
+        ka: "დატვირთვის ზურგჩანთები და ტვირთის ჩარჩოები",
+      },
+      {
+        en: "Calls, decoys, and scent management",
+        ka: "მოსახმობები, საცოცხლები და სუნის კონტროლი",
+      },
+      {
+        en: "Insulated seats and glassing rests",
+        ka: "იზოლირებული დასაჯდომები და ოპტიკის საყრდენები",
+      },
     ],
   },
   {
@@ -48,9 +60,18 @@ export const categoryFixtures: StorefrontCategory[] = [
     },
     emphasis: "secondary",
     highlights: [
-      { en: "Travel rods and reels for headwater access", ka: "სამოგზაურო ჯოხები და რგოლები სათავეებისთვის" },
-      { en: "Wading boots with cold-water traction", ka: "წყალში სვლის ფეხსაცმელი ცივი წყლის ჩაჭიდებით" },
-      { en: "Line, leader, and terminal tackle", ka: "ბადე, ლიდერი და ბოლო აღკაზმულობა" },
+      {
+        en: "Travel rods and reels for headwater access",
+        ka: "სამოგზაურო ჯოხები და რგოლები სათავეებისთვის",
+      },
+      {
+        en: "Wading boots with cold-water traction",
+        ka: "წყალში სვლის ფეხსაცმელი ცივი წყლის ჩაჭიდებით",
+      },
+      {
+        en: "Line, leader, and terminal tackle",
+        ka: "ბადე, ლიდერი და ბოლო აღკაზმულობა",
+      },
     ],
   },
   {
@@ -72,15 +93,27 @@ export const categoryFixtures: StorefrontCategory[] = [
     },
     emphasis: "secondary",
     highlights: [
-      { en: "Four-season shelters and guy-line kits", ka: "ოთხსეზონიანი თავშესაფრები და ბაგირების ნაკრებები" },
-      { en: "Sleep systems for freezing nights", ka: "ძილის სისტემები ყინვიანი ღამეებისთვის" },
-      { en: "Stoves, fuel, and water treatment", ka: "ღუმელები, საწვავი და წყლის დამუშავება" },
+      {
+        en: "Four-season shelters and guy-line kits",
+        ka: "ოთხსეზონიანი თავშესაფრები და ბაგირების ნაკრებები",
+      },
+      {
+        en: "Sleep systems for freezing nights",
+        ka: "ძილის სისტემები ყინვიანი ღამეებისთვის",
+      },
+      {
+        en: "Stoves, fuel, and water treatment",
+        ka: "ღუმელები, საწვავი და წყლის დამუშავება",
+      },
     ],
   },
   {
     slug: "clothing",
     name: { en: "Clothing", ka: "ტანსაცმელი" },
-    kicker: { en: "Layers, shells, boots", ka: "შრეები, გარეთა ფენები, ფეხსაცმელი" },
+    kicker: {
+      en: "Layers, shells, boots",
+      ka: "შრეები, გარეთა ფენები, ფეხსაცმელი",
+    },
     lede: {
       en: "A layering system that works wet — merino next to skin, wind protection that packs small, and shells that stay quiet in cover.",
       ka: "შრეების სისტემა, რომელიც სველშიც მუშაობს — მერინო კანთან, ქარისგან დაცვა, რომელიც პატარად იკეცება, და გარეთა ფენები, რომლებიც საფარში ხმას არ იღებს.",
@@ -96,15 +129,27 @@ export const categoryFixtures: StorefrontCategory[] = [
     },
     emphasis: "tertiary",
     highlights: [
-      { en: "Merino base layers and mid-weight fleece", ka: "მერინოს ქვედა შრეები და საშუალო სიმძიმის ფლისი" },
-      { en: "Quiet softshells for still hunting", ka: "მშვიდი სოფტშელები უძრავი ნადირობისთვის" },
-      { en: "Mountain boots and gaiter systems", ka: "მთის ფეხსაცმელი და გეტრების სისტემები" },
+      {
+        en: "Merino base layers and mid-weight fleece",
+        ka: "მერინოს ქვედა შრეები და საშუალო სიმძიმის ფლისი",
+      },
+      {
+        en: "Quiet softshells for still hunting",
+        ka: "მშვიდი სოფტშელები უძრავი ნადირობისთვის",
+      },
+      {
+        en: "Mountain boots and gaiter systems",
+        ka: "მთის ფეხსაცმელი და გეტრების სისტემები",
+      },
     ],
   },
   {
     slug: "optics",
     name: { en: "Optics", ka: "ოპტიკა" },
-    kicker: { en: "Binoculars, spotting, rangefinders", ka: "ბინოკლები, სადამკვირვებლო, მანძილმზომები" },
+    kicker: {
+      en: "Binoculars, spotting, rangefinders",
+      ka: "ბინოკლები, სადამკვირვებლო, მანძილმზომები",
+    },
     lede: {
       en: "Glass is where patience pays. Wide fields for scanning ridges, and low-light performance for the twenty minutes that matter.",
       ka: "ოპტიკა არის იქ, სადაც მოთმინება ანაზღაურდება. ფართო ხედვის არეები ქედების დათვალიერებისთვის და დაბალი განათების მაჩვენებლები იმ ოცი წუთისთვის, რომელსაც მნიშვნელობა აქვს.",
@@ -120,15 +165,27 @@ export const categoryFixtures: StorefrontCategory[] = [
     },
     emphasis: "tertiary",
     highlights: [
-      { en: "Full-size and compact binoculars", ka: "სრული და კომპაქტური ბინოკლები" },
-      { en: "Spotting scopes and tripod heads", ka: "სადამკვირვებლო ოპტიკა და სამფეხის თავები" },
-      { en: "Rangefinders and harness systems", ka: "მანძილმზომები და სამაგრი სისტემები" },
+      {
+        en: "Full-size and compact binoculars",
+        ka: "სრული და კომპაქტური ბინოკლები",
+      },
+      {
+        en: "Spotting scopes and tripod heads",
+        ka: "სადამკვირვებლო ოპტიკა და სამფეხის თავები",
+      },
+      {
+        en: "Rangefinders and harness systems",
+        ka: "მანძილმზომები და სამაგრი სისტემები",
+      },
     ],
   },
   {
     slug: "knives-tools",
     name: { en: "Knives & Tools", ka: "დანები და ხელსაწყოები" },
-    kicker: { en: "Blades, sharpening, repair", ka: "დანები, გალესვა, შეკეთება" },
+    kicker: {
+      en: "Blades, sharpening, repair",
+      ka: "დანები, გალესვა, შეკეთება",
+    },
     lede: {
       en: "Edges that hold through a full day of work, plus the sharpening and repair kit that keeps a trip going after something breaks.",
       ka: "პირები, რომლებიც სრული სამუშაო დღეს უძლებენ, და გალესვისა და შეკეთების ნაკრები, რომელიც მოგზაურობას აგრძელებს რაღაცის გატეხვის შემდეგ.",
@@ -144,9 +201,18 @@ export const categoryFixtures: StorefrontCategory[] = [
     },
     emphasis: "tertiary",
     highlights: [
-      { en: "Fixed blades and folding work knives", ka: "ფიქსირებული პირები და დასაკეცი სამუშაო დანები" },
-      { en: "Field sharpening and honing kits", ka: "საველე გალესვისა და დახვეწის ნაკრებები" },
-      { en: "Repair tape, cord, and spares", ka: "შესაკეთებელი ლენტი, ბაგირი და სათადარიგო ნაწილები" },
+      {
+        en: "Fixed blades and folding work knives",
+        ka: "ფიქსირებული პირები და დასაკეცი სამუშაო დანები",
+      },
+      {
+        en: "Field sharpening and honing kits",
+        ka: "საველე გალესვისა და დახვეწის ნაკრებები",
+      },
+      {
+        en: "Repair tape, cord, and spares",
+        ka: "შესაკეთებელი ლენტი, ბაგირი და სათადარიგო ნაწილები",
+      },
     ],
   },
 ];

@@ -102,9 +102,7 @@ export function AuditLogDetailPage({ logId }: { logId: string }) {
               Created
             </dt>
             <dd className="mt-1.5">
-              {log.created_at
-                ? new Date(log.created_at).toLocaleString()
-                : "—"}
+              {log.created_at ? new Date(log.created_at).toLocaleString() : "—"}
             </dd>
           </div>
           <div>

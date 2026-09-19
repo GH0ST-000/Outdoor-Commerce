@@ -3,14 +3,7 @@
 import { useEffect, useId, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import {
-  Menu,
-  Search,
-  ShoppingBag,
-  Heart,
-  User,
-  X,
-} from "lucide-react";
+import { Menu, Search, ShoppingBag, Heart, User, X } from "lucide-react";
 import { SiteControls } from "@/components/site-controls";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -94,7 +87,9 @@ export function SiteHeader() {
               size="icon"
               className={cn(
                 "lg:hidden",
-                !solid && isHome && "text-warm-bone text-[#eee9de] hover:bg-white/10",
+                !solid &&
+                  isHome &&
+                  "text-warm-bone text-[#eee9de] hover:bg-white/10",
               )}
               aria-expanded={mobileOpen}
               aria-controls="storefront-mobile-nav"
@@ -158,9 +153,7 @@ export function SiteHeader() {
               disabled
               aria-disabled="true"
               title={t.nav.wishlistSoon}
-              className={cn(
-                !solid && isHome && "text-[#eee9de]/50",
-              )}
+              className={cn(!solid && isHome && "text-[#eee9de]/50")}
             >
               <Heart />
               <span className="sr-only">{t.nav.wishlistSoon}</span>
@@ -172,9 +165,7 @@ export function SiteHeader() {
               disabled
               aria-disabled="true"
               title={t.nav.cartSoon}
-              className={cn(
-                !solid && isHome && "text-[#eee9de]/50",
-              )}
+              className={cn(!solid && isHome && "text-[#eee9de]/50")}
             >
               <ShoppingBag />
               <span className="sr-only">{t.nav.cartSoon}</span>
@@ -191,7 +182,9 @@ export function SiteHeader() {
                 <User />
               </Link>
             </Button>
-            <div className={cn(!solid && isHome && "[&_button]:text-[#eee9de]")}>
+            <div
+              className={cn(!solid && isHome && "[&_button]:text-[#eee9de]")}
+            >
               <SiteControls tone={solid || !isHome ? "light" : "dark"} />
             </div>
           </div>
