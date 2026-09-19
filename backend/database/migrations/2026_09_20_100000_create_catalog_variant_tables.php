@@ -111,7 +111,7 @@ return new class extends Migration
 
             $table->unique(['product_variant_id', 'attribute_id'], 'pvav_variant_attribute_unique');
             $table->unique(['product_variant_id', 'attribute_value_id'], 'pvav_variant_value_unique');
-            $table->index(['attribute_id', 'attribute_value_id']);
+            $table->index(['attribute_id', 'attribute_value_id'], 'pvav_attribute_value_index');
         });
     }
 
