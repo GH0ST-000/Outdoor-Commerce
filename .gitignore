@@ -1,0 +1,58 @@
+# Environment and secrets
+.env
+.env.*
+!.env.example
+!**/.env.example
+docker-compose.override.yml
+auth.json
+
+# Dependencies
+**/node_modules/
+**/vendor/
+
+# Build / runtime output
+**/.next/
+**/out/
+**/build/
+**/dist/
+**/coverage/
+**/.phpunit.result.cache
+**/.phpunit.cache/
+**/storage/pail/
+backend/storage/logs/*
+backend/storage/framework/cache/*
+backend/storage/framework/sessions/*
+backend/storage/framework/views/*
+backend/storage/app/public/*
+backend/bootstrap/cache/*.php
+!backend/storage/logs/.gitignore
+!backend/storage/framework/cache/.gitignore
+!backend/storage/framework/sessions/.gitignore
+!backend/storage/framework/views/.gitignore
+!backend/bootstrap/cache/.gitignore
+
+# Local databases / uploads
+*.sqlite
+*.sqlite-journal
+backend/database/*.sqlite
+uploads/
+.minio.sys/
+
+# IDE / OS
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+yarn-error.log*
+
+# TypeScript
+*.tsbuildinfo
+
+# Composer / npm artifacts
+backend/composer.phar

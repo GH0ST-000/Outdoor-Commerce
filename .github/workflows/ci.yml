@@ -1,0 +1,406 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - develop
+      - master
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  PHP_VERSION: "8.4"
+  NODE_VERSION: "22"
+  COMPOSER_FLAGS: "--no-interaction --prefer-dist --no-progress"
+
+jobs:
+  repository-validation:
+    name: repository-validation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # 2.37.2
+        with:
+          php-version: ${{ env.PHP_VERSION }}
+          tools: composer:v2
+          coverage: none
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version-file: .node-version
+
+      - name: Validate repository structure and manifests
+        run: |
+          chmod +x scripts/ci/validate-repository.sh
+          ./scripts/ci/validate-repository.sh
+
+  backend-quality:
+    name: backend-quality
+    needs: repository-validation
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # 2.37.2
+        with:
+          php-version-file: backend/.php-version
+          extensions: mbstring, xml, ctype, iconv, intl, pdo_mysql, redis, zip, bcmath, pcntl
+          tools: composer:v2
+          coverage: none
+
+      - name: Cache Composer dependencies
+        uses: actions/cache@v4
+        with:
+          path: backend/vendor
+          key: composer-${{ runner.os }}-php${{ env.PHP_VERSION }}-${{ hashFiles('backend/composer.lock') }}
+          restore-keys: |
+            composer-${{ runner.os }}-php${{ env.PHP_VERSION }}-
+
+      - name: Install Composer dependencies
+        run: composer install ${{ env.COMPOSER_FLAGS }} --optimize-autoloader
+
+      - name: Validate Composer configuration
+        run: composer validate --strict --no-check-publish --no-interaction
+
+      - name: Run Laravel Pint
+        run: composer format:check
+
+      - name: Run PHPStan / Larastan
+        run: composer analyse
+
+      - name: Run architecture tests
+        run: composer test:architecture
+
+  backend-tests:
+    name: backend-tests
+    needs: backend-quality
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    services:
+      mysql:
+        image: mysql:8.4
+        env:
+          MYSQL_DATABASE: outdoor_test
+          MYSQL_USER: outdoor_test
+          MYSQL_PASSWORD: outdoor_test_ci
+          MYSQL_ROOT_PASSWORD: root_test_ci
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -uroot -proot_test_ci"
+          --health-interval=5s
+          --health-timeout=5s
+          --health-retries=20
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd="redis-cli ping"
+          --health-interval=5s
+          --health-timeout=3s
+          --health-retries=20
+    env:
+      APP_ENV: testing
+      APP_DEBUG: "false"
+      APP_KEY: base64:YWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWE=
+      DB_CONNECTION: mysql
+      DB_HOST: 127.0.0.1
+      DB_PORT: 3306
+      DB_DATABASE: outdoor_test
+      DB_USERNAME: outdoor_test
+      DB_PASSWORD: outdoor_test_ci
+      CACHE_STORE: redis
+      SESSION_DRIVER: array
+      QUEUE_CONNECTION: sync
+      REDIS_CLIENT: phpredis
+      REDIS_HOST: 127.0.0.1
+      REDIS_PORT: 6379
+      MAIL_MAILER: array
+      FILESYSTEM_DISK: local
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # 2.37.2
+        with:
+          php-version-file: backend/.php-version
+          extensions: mbstring, xml, ctype, iconv, intl, pdo_mysql, redis, zip, bcmath, pcntl
+          tools: composer:v2
+          coverage: none
+
+      - name: Cache Composer dependencies
+        uses: actions/cache@v4
+        with:
+          path: backend/vendor
+          key: composer-${{ runner.os }}-php${{ env.PHP_VERSION }}-${{ hashFiles('backend/composer.lock') }}
+          restore-keys: |
+            composer-${{ runner.os }}-php${{ env.PHP_VERSION }}-
+
+      - name: Install Composer dependencies
+        run: composer install ${{ env.COMPOSER_FLAGS }} --optimize-autoloader
+
+      - name: Wait for MySQL
+        run: |
+          php -r '
+            for ($i = 0; $i < 30; $i++) {
+              try {
+                new PDO(
+                  "mysql:host=127.0.0.1;port=3306;dbname=outdoor_test",
+                  "outdoor_test",
+                  "outdoor_test_ci",
+                  [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]
+                );
+                echo "MySQL is ready\n";
+                exit(0);
+              } catch (Throwable $e) {
+                sleep(2);
+              }
+            }
+            fwrite(STDERR, "MySQL did not become ready\n");
+            exit(1);
+          '
+
+      - name: Prepare Laravel
+        run: |
+          php artisan config:clear
+          php artisan migrate --force
+
+      - name: Run Pest tests
+        run: composer test
+
+      - name: Upload JUnit report on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-junit
+          path: backend/storage/logs/junit.xml
+          retention-days: 7
+          if-no-files-found: ignore
+
+  frontend-quality:
+    name: frontend-quality
+    needs: repository-validation
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version-file: .node-version
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install npm dependencies
+        run: npm ci
+
+      - name: Prettier check
+        run: npm run format:check
+
+      - name: ESLint
+        run: npm run lint -- --max-warnings=0
+
+      - name: TypeScript check
+        run: npm run typecheck
+
+  frontend-tests:
+    name: frontend-tests
+    needs: frontend-quality
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    env:
+      NEXT_PUBLIC_APP_URL: http://localhost:3000
+      NEXT_PUBLIC_API_URL: http://localhost:8000/api
+      BACKEND_INTERNAL_URL: http://backend:8000
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version-file: .node-version
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install npm dependencies
+        run: npm ci
+
+      - name: Run Vitest
+        run: npm run test:run
+
+  frontend-build:
+    name: frontend-build
+    needs: frontend-quality
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    env:
+      NEXT_PUBLIC_APP_URL: http://localhost:3000
+      NEXT_PUBLIC_API_URL: http://localhost:8000/api
+      BACKEND_INTERNAL_URL: http://backend:8000
+      NEXT_TELEMETRY_DISABLED: "1"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version-file: .node-version
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install npm dependencies
+        run: npm ci
+
+      - name: Production build
+        run: npm run build
+
+  docker-validation:
+    name: docker-validation
+    needs: repository-validation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Validate Compose file
+        run: docker compose config -q
+
+      - name: Verify Dockerignore exclusions
+        run: |
+          grep -q 'vendor' backend/.dockerignore
+          grep -q '.env' backend/.dockerignore
+          grep -q 'node_modules' frontend/.dockerignore
+          grep -q '.env' frontend/.dockerignore
+          grep -q '.next' frontend/.dockerignore
+
+      # Build without push. GHA layer cache (type=gha) is omitted so this job
+      # can keep contents:read-only permissions; runner BuildKit still helps.
+      - name: Build backend image
+        run: docker build -f docker/backend/Dockerfile -t outdoor-commerce-backend:ci .
+
+      - name: Build frontend image
+        run: docker build -f docker/frontend/Dockerfile -t outdoor-commerce-frontend:ci .
+
+  security-audit:
+    name: security-audit
+    needs: repository-validation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # 2.37.2
+        with:
+          php-version-file: backend/.php-version
+          tools: composer:v2
+          coverage: none
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version-file: .node-version
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Cache Composer dependencies
+        uses: actions/cache@v4
+        with:
+          path: backend/vendor
+          key: composer-${{ runner.os }}-php${{ env.PHP_VERSION }}-${{ hashFiles('backend/composer.lock') }}
+          restore-keys: |
+            composer-${{ runner.os }}-php${{ env.PHP_VERSION }}-
+
+      - name: Install Composer dependencies
+        working-directory: backend
+        run: composer install ${{ env.COMPOSER_FLAGS }} --optimize-autoloader
+
+      - name: Composer audit
+        working-directory: backend
+        run: composer audit --no-interaction
+
+      - name: Install npm dependencies
+        working-directory: frontend
+        run: npm ci
+
+      - name: npm audit (high+)
+        working-directory: frontend
+        run: npm audit --audit-level=high
+
+      - name: Secret scan (Gitleaks)
+        uses: gitleaks/gitleaks-action@e0c47f4f8be36e29cdc102c57e68cb5cbf0e8d1e # v3.0.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  ci-success:
+    name: ci-success
+    if: ${{ always() }}
+    needs:
+      - repository-validation
+      - backend-quality
+      - backend-tests
+      - frontend-quality
+      - frontend-tests
+      - frontend-build
+      - docker-validation
+      - security-audit
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verify required jobs succeeded
+        run: |
+          results=(
+            "${{ needs.repository-validation.result }}"
+            "${{ needs.backend-quality.result }}"
+            "${{ needs.backend-tests.result }}"
+            "${{ needs.frontend-quality.result }}"
+            "${{ needs.frontend-tests.result }}"
+            "${{ needs.frontend-build.result }}"
+            "${{ needs.docker-validation.result }}"
+            "${{ needs.security-audit.result }}"
+          )
+          for result in "${results[@]}"; do
+            echo "Job result: ${result}"
+            if [[ "${result}" != "success" ]]; then
+              echo "One or more required CI jobs did not succeed." >&2
+              exit 1
+            fi
+          done
+          echo "All required CI jobs succeeded."

@@ -1,0 +1,7 @@
+.status {
+  margin: 0.5rem 0 0;
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #2e5a3a;
+}
