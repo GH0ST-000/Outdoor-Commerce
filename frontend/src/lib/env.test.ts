@@ -15,4 +15,8 @@ describe("environment separation", () => {
       expect(key.startsWith("NEXT_PUBLIC_")).toBe(true);
     }
   });
+
+  it("does not expose BACKEND_INTERNAL_URL through public env", () => {
+    expect(Object.keys(getPublicEnv())).not.toContain("BACKEND_INTERNAL_URL");
+  });
 });

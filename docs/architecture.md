@@ -75,7 +75,9 @@ Not every directory is required on Day 2. Create folders when they have an immed
 | Contracts | Explicit public boundaries and replaceable infrastructure |
 | Models | Persistence owned by the module; no unrelated workflows |
 | Events | Past-tense facts; identifiers preferred over full models |
-| Policies | Authorization; deny by default |
+| Policies | Authorization; deny by default; prefer permission checks over role-name comparisons |
+
+See [authorization.md](authorization.md) for Day 5 RBAC, admin APIs, and audit logging.
 
 **DTO naming convention:** suffix `Data` (for example `CreateProductData`). Do not mix `DTO` and `Data` suffixes.
 

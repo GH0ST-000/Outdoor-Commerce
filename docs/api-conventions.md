@@ -65,7 +65,52 @@ Day 2 does not replace Laravel’s full exception renderer. Controllers and futu
 - Policies and Gates own authorization for protected resources.
 - Deny by default.
 - Frontend visibility is never a substitute for server authorization.
+- Day 5 RBAC details: [authorization.md](authorization.md).
 
 ## Controllers
 
 Controllers must stay thin: validate, authorize, map to a `*Data` DTO when needed, call one Action or Query, return a Resource or small stable JSON payload.
+
+## Authentication endpoints (Day 4)
+
+Base path: `/api/v1/auth`
+
+| Method | Path | Auth |
+| --- | --- | --- |
+| POST | `/register` | Guest |
+| POST | `/login` | Guest |
+| POST | `/logout` | Sanctum + active |
+| GET | `/me` | Sanctum + active |
+| POST | `/forgot-password` | Guest |
+| POST | `/reset-password` | Guest |
+| GET | `/email/verify/{id}/{hash}` | Signed |
+| POST | `/email/verification-notification` | Sanctum + active |
+
+See [authentication.md](authentication.md) for flows, CSRF, rate limits, and cookie configuration.
+
+## Admin endpoints (Day 5)
+
+Base path: `/api/v1/admin` — requires Sanctum, active user, and `admin.access`. See [authorization.md](authorization.md).
+
+| Method | Path | Permission |
+| --- | --- | --- |
+| GET | `/context` | `admin.access` |
+| GET | `/users` | `users.view` |
+| GET | `/users/{user}` | `users.view` |
+| PATCH | `/users/{user}/status` | `users.status.manage` |
+| PUT | `/users/{user}/roles` | `users.roles.manage` |
+| GET | `/roles` | `roles.view` |
+| GET | `/audit-logs` | `audit-logs.view` |
+| GET | `/audit-logs/{auditLog}` | `audit-logs.view` |
+| GET | `/catalog/options/categories` | `catalog.view` |
+| GET | `/catalog/options/brands` | `catalog.view` |
+| GET | `/products` | `catalog.view` |
+| POST | `/products` | `catalog.manage` |
+| GET | `/products/{product}` | `catalog.view` |
+| PATCH | `/products/{product}` | `catalog.manage` |
+| PATCH | `/products/{product}/status` | `catalog.manage` (+ `catalog.publish` to activate) |
+| GET | `/products/{product}/readiness` | `catalog.view` |
+| DELETE | `/products/{product}` | `catalog.manage` (archive) |
+| POST | `/products/{product}/restore` | `catalog.manage` |
+
+Product Core details: [catalog-product-core.md](catalog-product-core.md).

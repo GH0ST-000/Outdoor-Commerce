@@ -2,7 +2,7 @@
 
 Local development foundation for an outdoor commerce platform covering hunting, fishing, and outdoor equipment.
 
-Day 1 provides reproducible project structure, API and storefront skeletons, Docker Compose services, quality tooling, and documentation. Day 2 adds modular monolith boundaries, architecture tests, and API correlation IDs. Day 3 adds GitHub Actions CI as the required quality gate. Business features (catalog, orders, payments, seasons, maps, recommendations) are intentionally not implemented yet.
+Day 1 provides reproducible project structure, API and storefront skeletons, Docker Compose services, quality tooling, and documentation. Day 2 adds modular monolith boundaries, architecture tests, and API correlation IDs. Day 3 adds GitHub Actions CI as the required quality gate. Day 4 adds Laravel Sanctum cookie authentication for customers. Day 5 adds RBAC, admin APIs, a protected Next.js admin shell, and audit logging. Catalog, orders, payments, seasons, maps, and recommendations remain later phases.
 
 **This Day 1 configuration is for local development only. It is not production-ready.** Replace every local credential before any shared or production deployment. Never commit real secrets.
 
@@ -40,7 +40,14 @@ Architecture docs:
 
 - [docs/architecture.md](docs/architecture.md)
 - [docs/adr/0001-modular-monolith.md](docs/adr/0001-modular-monolith.md)
+- [docs/adr/0002-product-core-boundaries.md](docs/adr/0002-product-core-boundaries.md)
+- [docs/adr/0003-variant-combination-identity-and-sku.md](docs/adr/0003-variant-combination-identity-and-sku.md)
 - [docs/api-conventions.md](docs/api-conventions.md)
+- [docs/authentication.md](docs/authentication.md)
+- [docs/authorization.md](docs/authorization.md)
+- [docs/catalog-product-core.md](docs/catalog-product-core.md)
+- [docs/catalog-variants.md](docs/catalog-variants.md)
+- [docs/ci.md](docs/ci.md)
 
 Backend and frontend dependencies stay isolated (`backend/vendor`, `frontend/node_modules`).
 
@@ -99,6 +106,35 @@ make ps        # container status
 | --- | --- |
 | Frontend | http://localhost:3000 |
 | Backend API | http://localhost:8000 |
+| Mailpit UI | http://localhost:8025 |
+| Meilisearch | http://localhost:7700 |
+
+## Customer authentication (Day 4)
+
+Storefront routes:
+
+- http://localhost:3000/login
+- http://localhost:3000/register
+- http://localhost:3000/forgot-password
+- http://localhost:3000/account
+
+API auth uses Laravel Sanctum cookies. See [docs/authentication.md](docs/authentication.md).
+
+Local verification and password-reset emails appear in **Mailpit** at http://localhost:8025. Production mail providers are not configured in Day 4.
+
+## Administration (Day 5)
+
+Admin console: http://localhost:3000/admin
+
+```bash
+cd backend
+php artisan access-control:sync
+php artisan admin:create
+```
+
+See [docs/authorization.md](docs/authorization.md) for roles, permissions, audit logs, and last-active-admin protection.
+
+| Backend API | http://localhost:8000 |
 | Backend health | http://localhost:8000/api/health |
 | Frontend health | http://localhost:3000/api/health |
 | Mailpit UI | http://localhost:8025 |
@@ -152,7 +188,10 @@ Day 1 uses Laravel’s local disk (`FILESYSTEM_DISK=local`). Object storage (for
 make migrate
 # or
 docker compose exec backend php artisan migrate
+php artisan access-control:sync
 ```
+
+Administrators are created with `php artisan admin:create` — never via production seeders.
 
 ## Environment-variable rules
 
@@ -233,4 +272,3 @@ See [docs/architecture.md](docs/architecture.md).
 - Never expose server-only variables to Next.js client bundles.
 - Do not publish MySQL or Redis publicly in production.
 - Local defaults must be replaced before Hostinger/production deployment.
-# Outdoor-Commerce

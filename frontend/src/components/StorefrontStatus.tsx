@@ -1,9 +1,15 @@
 import styles from "./StorefrontStatus.module.css";
 
-export function StorefrontStatus() {
+type StorefrontStatusProps = {
+  label?: string;
+};
+
+export function StorefrontStatus({
+  label = "Frontend health: ready",
+}: StorefrontStatusProps) {
   return (
     <p className={styles.status} data-testid="storefront-status">
-      Frontend health: ready
+      {label}
     </p>
   );
 }
