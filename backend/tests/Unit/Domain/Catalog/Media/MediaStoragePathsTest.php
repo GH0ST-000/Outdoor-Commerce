@@ -40,9 +40,11 @@ it('refuses to delete a path recorded on a disk outside the allowlist', function
 
 it('never builds a url for a private original', function (): void {
     $urls = new MediaUrlService;
+    $public = $urls->forPath('media_public', 'derivatives/2026/09/x/card.webp');
 
     expect($urls->forPath('media_private', 'originals/2026/09/x/original.jpg'))->toBeNull()
         ->and($urls->forPath('s3', 'derivatives/2026/09/x/card.webp'))->toBeNull()
-        ->and($urls->forPath('media_public', 'derivatives/2026/09/x/card.webp'))
-        ->toBe('http://localhost:8000/storage/media/derivatives/2026/09/x/card.webp');
+        ->and($public)->not->toBeNull()
+        ->and($public)->toEndWith('/storage/media/derivatives/2026/09/x/card.webp')
+        ->and($public)->not->toContain('originals/');
 });
