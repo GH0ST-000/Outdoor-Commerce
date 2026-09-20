@@ -3,6 +3,8 @@
 use App\Domains\Catalog\Exceptions\ProductNotReadyException;
 use App\Domains\Identity\Exceptions\AuthenticationFailedException;
 use App\Domains\Identity\Exceptions\LastActiveAdminException;
+use App\Domains\Inventory\Exceptions\InventoryStateConflictException;
+use App\Domains\Pricing\Exceptions\PricingStateConflictException;
 use App\Domains\Shared\Exceptions\DomainException;
 use App\Domains\Shared\Exceptions\ProvidesErrorDetails;
 use App\Domains\Shared\Support\CorrelationId;
@@ -13,6 +15,7 @@ use App\Http\Middleware\EnsureUserIsActive;
 use App\Http\Support\ApiErrorResponse;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\AuthenticationException;
+use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -28,6 +31,9 @@ return Application::configure(basePath: dirname(__DIR__))
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
     )
+    ->withSchedule(function (Schedule $schedule): void {
+        $schedule->command('inventory:expire-reservations')->everyMinute();
+    })
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->statefulApi();
 
@@ -67,6 +73,30 @@ return Application::configure(basePath: dirname(__DIR__))
         $exceptions->render(function (LastActiveAdminException $e, Request $request) {
             if ($request->is('api/*') || $request->expectsJson()) {
                 return ApiErrorResponse::make($request, $e->errorCode(), $e->getMessage(), 422);
+            }
+        });
+
+        $exceptions->render(function (InventoryStateConflictException $e, Request $request) {
+            if ($request->is('api/*') || $request->expectsJson()) {
+                return ApiErrorResponse::make(
+                    $request,
+                    $e->errorCode(),
+                    $e->getMessage(),
+                    409,
+                    $e instanceof ProvidesErrorDetails ? $e->errorDetails() : null,
+                );
+            }
+        });
+
+        $exceptions->render(function (PricingStateConflictException $e, Request $request) {
+            if ($request->is('api/*') || $request->expectsJson()) {
+                return ApiErrorResponse::make(
+                    $request,
+                    $e->errorCode(),
+                    $e->getMessage(),
+                    409,
+                    $e instanceof ProvidesErrorDetails ? $e->errorDetails() : null,
+                );
             }
         });
 

@@ -1,4 +1,5 @@
 import type { StorefrontCategory } from "@/features/storefront/types";
+import { storefrontMedia } from "@/features/storefront/config/media";
 
 /**
  * DEMO DATA — hand-written placeholder catalogue structure.
@@ -17,10 +18,10 @@ export const categoryFixtures: StorefrontCategory[] = [
       ka: "აღჭურვილობა გრძელი მიდგომებისა და მოთმინებიანი დილებისთვის — დატვირთვის ზურგჩანთები, მოსახმობები და დასაჯდომი სისტემები ტყის ზოლს ზემოთ ცივი საათებისთვის.",
     },
     image: {
-      src: "/storefront/category-hunting.svg",
+      src: storefrontMedia.categories.hunting,
       alt: {
-        en: "Illustrated ridgeline at first light",
-        ka: "ილუსტრირებული ქედი პირველი სინათლეზე",
+        en: "Forest path at first light",
+        ka: "ტყის ბილიკი პირველ სინათლეზე",
       },
       width: 800,
       height: 1000,
@@ -50,10 +51,10 @@ export const categoryFixtures: StorefrontCategory[] = [
       ka: "შექმნილია ქართული მდინარეებისთვის, რომლებიც ყოველ კილომეტრზე იცვლიან ხასიათს — სწრაფი სათავეები, ხრეშიანი ტოტები და დაბლობის ნელი მოსახვევები.",
     },
     image: {
-      src: "/storefront/category-fishing.svg",
+      src: storefrontMedia.categories.fishing,
       alt: {
-        en: "Illustrated river channel between gravel bars",
-        ka: "ილუსტრირებული მდინარის კალაპოტი ხრეშიან ზოლებს შორის",
+        en: "River channel between gravel bars",
+        ka: "მდინარის კალაპოტი ხრეშიან ზოლებს შორის",
       },
       width: 800,
       height: 1000,
@@ -83,10 +84,10 @@ export const categoryFixtures: StorefrontCategory[] = [
       ka: "თავშესაფრისა და ძილის სისტემები ღია ბანაკებისთვის, სადაც ქარი ტემპერატურაზე მეტად მნიშვნელოვანია და ყოველი გრამი ზურგზე მიგაქვს.",
     },
     image: {
-      src: "/storefront/category-camping.svg",
+      src: storefrontMedia.categories.camping,
       alt: {
-        en: "Illustrated tent silhouette under a high pass",
-        ka: "ილუსტრირებული კარვის სილუეტი მაღალი უღელტეხილის ქვეშ",
+        en: "Tent under a high pass",
+        ka: "კარავი მაღალი უღელტეხილის ქვეშ",
       },
       width: 800,
       height: 1000,
@@ -119,10 +120,10 @@ export const categoryFixtures: StorefrontCategory[] = [
       ka: "შრეების სისტემა, რომელიც სველშიც მუშაობს — მერინო კანთან, ქარისგან დაცვა, რომელიც პატარად იკეცება, და გარეთა ფენები, რომლებიც საფარში ხმას არ იღებს.",
     },
     image: {
-      src: "/storefront/category-clothing.svg",
+      src: storefrontMedia.categories.clothing,
       alt: {
-        en: "Illustrated layered garment silhouette",
-        ka: "ილუსტრირებული მრავალშრიანი ტანსაცმლის სილუეტი",
+        en: "Outdoor layering in the field",
+        ka: "აუთდორ შრეები ველზე",
       },
       width: 800,
       height: 1000,
@@ -155,10 +156,10 @@ export const categoryFixtures: StorefrontCategory[] = [
       ka: "ოპტიკა არის იქ, სადაც მოთმინება ანაზღაურდება. ფართო ხედვის არეები ქედების დათვალიერებისთვის და დაბალი განათების მაჩვენებლები იმ ოცი წუთისთვის, რომელსაც მნიშვნელობა აქვს.",
     },
     image: {
-      src: "/storefront/category-optics.svg",
+      src: storefrontMedia.categories.optics,
       alt: {
-        en: "Illustrated binocular silhouette with twin barrels",
-        ka: "ილუსტრირებული ბინოკლის სილუეტი ორი მილით",
+        en: "High ridge under night sky",
+        ka: "მაღალი ქედი ღამის ცის ქვეშ",
       },
       width: 800,
       height: 1000,
@@ -191,10 +192,10 @@ export const categoryFixtures: StorefrontCategory[] = [
       ka: "პირები, რომლებიც სრული სამუშაო დღეს უძლებენ, და გალესვისა და შეკეთების ნაკრები, რომელიც მოგზაურობას აგრძელებს რაღაცის გატეხვის შემდეგ.",
     },
     image: {
-      src: "/storefront/category-knives-tools.svg",
+      src: storefrontMedia.categories.knives,
       alt: {
-        en: "Illustrated fixed-blade knife silhouette",
-        ka: "ილუსტრირებული ფიქსირებული პირის დანის სილუეტი",
+        en: "Fixed-blade field knife",
+        ka: "ფიქსირებული პირის საველე დანა",
       },
       width: 800,
       height: 1000,

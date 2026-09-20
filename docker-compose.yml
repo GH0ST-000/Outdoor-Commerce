@@ -106,6 +106,7 @@ services:
       FILESYSTEM_DISK: local
       MEILISEARCH_HOST: http://meilisearch:7700
       MEILISEARCH_KEY: ${MEILI_MASTER_KEY:-masterKey_change_me}
+      MEDIA_AVIF_ENABLED: ${MEDIA_AVIF_ENABLED:-false}
     depends_on:
       mysql:
         condition: service_healthy
@@ -127,7 +128,56 @@ services:
       start_period: 40s
     command: >
       sh -c "if [ ! -d vendor ]; then composer install --no-interaction; fi &&
+             php artisan storage:link --force &&
              php artisan serve --host=0.0.0.0 --port=8000"
+
+  # Derivative generation for Day 9 media. Shares the ./backend bind mount with the
+  # API container, so originals written by a request are visible to the worker and
+  # the generated derivatives are visible back to the API — no object storage and no
+  # named volume required. Media lives under backend/storage/app/{private,public}/media
+  # and therefore persists on the host across container rebuilds.
+  queue:
+    build:
+      context: .
+      dockerfile: docker/backend/Dockerfile
+      args:
+        UID: ${HOST_UID:-1000}
+        GID: ${HOST_GID:-1000}
+    restart: unless-stopped
+    working_dir: /var/www/html
+    volumes:
+      - ./backend:/var/www/html
+    environment:
+      APP_NAME: ${APP_NAME:-Outdoor Commerce}
+      APP_ENV: ${APP_ENV:-local}
+      APP_DEBUG: ${APP_DEBUG:-true}
+      APP_URL: ${BACKEND_URL:-http://localhost:8000}
+      APP_KEY: ${APP_KEY:-}
+      DB_CONNECTION: mysql
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_DATABASE: ${MYSQL_DATABASE:-outdoor_commerce}
+      DB_USERNAME: ${MYSQL_USER:-outdoor}
+      DB_PASSWORD: ${MYSQL_PASSWORD:-secret}
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-}
+      CACHE_STORE: redis
+      QUEUE_CONNECTION: redis
+      SESSION_DRIVER: redis
+      MAIL_MAILER: smtp
+      MAIL_HOST: mailpit
+      MAIL_PORT: 1025
+      FILESYSTEM_DISK: local
+      MEDIA_AVIF_ENABLED: ${MEDIA_AVIF_ENABLED:-false}
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - outdoor
+    command: >
+      sh -c "if [ ! -d vendor ]; then composer install --no-interaction; fi &&
+             php artisan queue:work --queue=media,default --tries=3 --timeout=180"
 
   frontend:
     build:

@@ -10,6 +10,19 @@ use App\Http\Controllers\Api\V1\Admin\AdminUserController;
 use App\Http\Controllers\Api\V1\Admin\Attributes\AdminAttributeController;
 use App\Http\Controllers\Api\V1\Admin\Attributes\AdminAttributeValueController;
 use App\Http\Controllers\Api\V1\Admin\Catalog\CatalogOptionsController;
+use App\Http\Controllers\Api\V1\Admin\Inventory\AdminInventoryAdjustmentController;
+use App\Http\Controllers\Api\V1\Admin\Inventory\AdminInventoryController;
+use App\Http\Controllers\Api\V1\Admin\Inventory\AdminInventoryReceiptController;
+use App\Http\Controllers\Api\V1\Admin\Inventory\AdminInventoryReservationController;
+use App\Http\Controllers\Api\V1\Admin\Inventory\AdminInventoryStockCountController;
+use App\Http\Controllers\Api\V1\Admin\Inventory\AdminInventoryTransferController;
+use App\Http\Controllers\Api\V1\Admin\Inventory\AdminWarehouseController;
+use App\Http\Controllers\Api\V1\Admin\Media\AdminMediaStatusController;
+use App\Http\Controllers\Api\V1\Admin\Media\AdminProductMediaController;
+use App\Http\Controllers\Api\V1\Admin\Media\AdminProductVariantMediaController;
+use App\Http\Controllers\Api\V1\Admin\Pricing\AdminPriceController;
+use App\Http\Controllers\Api\V1\Admin\Pricing\AdminPriceListController;
+use App\Http\Controllers\Api\V1\Admin\Pricing\AdminPromotionController;
 use App\Http\Controllers\Api\V1\Admin\Products\AdminProductController;
 use App\Http\Controllers\Api\V1\Admin\Products\AdminProductVariantAxesController;
 use App\Http\Controllers\Api\V1\Admin\Products\AdminProductVariantController;
@@ -153,4 +166,152 @@ Route::prefix('v1/admin')
             ->middleware([EnsureHasPermission::class.':catalog.manage', 'throttle:admin.mutations']);
         Route::post('/products/{product}/variants/{variant}/restore', [AdminProductVariantController::class, 'restore'])
             ->middleware([EnsureHasPermission::class.':catalog.manage', 'throttle:admin.mutations']);
+
+        // Day 9: local media pipeline. Uploads answer 202; derivatives are queued.
+        Route::get('/products/{product}/media', [AdminProductMediaController::class, 'index'])
+            ->middleware(EnsureHasPermission::class.':catalog.view');
+        Route::post('/products/{product}/media', [AdminProductMediaController::class, 'store'])
+            ->middleware([
+                EnsureHasPermission::class.':catalog.manage',
+                'throttle:admin.media-uploads',
+            ]);
+        Route::post('/products/{product}/media/reorder', [AdminProductMediaController::class, 'reorder'])
+            ->middleware([EnsureHasPermission::class.':catalog.manage', 'throttle:admin.mutations']);
+        Route::patch('/products/{product}/media/{attachment}', [AdminProductMediaController::class, 'update'])
+            ->middleware([EnsureHasPermission::class.':catalog.manage', 'throttle:admin.mutations']);
+        Route::patch('/products/{product}/media/{attachment}/primary', [AdminProductMediaController::class, 'primary'])
+            ->middleware([EnsureHasPermission::class.':catalog.manage', 'throttle:admin.mutations']);
+        Route::delete('/products/{product}/media/{attachment}', [AdminProductMediaController::class, 'destroy'])
+            ->middleware([EnsureHasPermission::class.':catalog.manage', 'throttle:admin.mutations']);
+        Route::post('/products/{product}/media/{attachment}/retry', [AdminProductMediaController::class, 'retry'])
+            ->middleware([EnsureHasPermission::class.':catalog.manage', 'throttle:admin.mutations']);
+
+        Route::get('/products/{product}/variants/{variant}/media', [AdminProductVariantMediaController::class, 'index'])
+            ->middleware(EnsureHasPermission::class.':catalog.view');
+        Route::post('/products/{product}/variants/{variant}/media', [AdminProductVariantMediaController::class, 'store'])
+            ->middleware([
+                EnsureHasPermission::class.':catalog.manage',
+                'throttle:admin.media-uploads',
+            ]);
+        Route::post('/products/{product}/variants/{variant}/media/reorder', [AdminProductVariantMediaController::class, 'reorder'])
+            ->middleware([EnsureHasPermission::class.':catalog.manage', 'throttle:admin.mutations']);
+        Route::patch('/products/{product}/variants/{variant}/media/{attachment}', [AdminProductVariantMediaController::class, 'update'])
+            ->middleware([EnsureHasPermission::class.':catalog.manage', 'throttle:admin.mutations']);
+        Route::patch('/products/{product}/variants/{variant}/media/{attachment}/primary', [AdminProductVariantMediaController::class, 'primary'])
+            ->middleware([EnsureHasPermission::class.':catalog.manage', 'throttle:admin.mutations']);
+        Route::delete('/products/{product}/variants/{variant}/media/{attachment}', [AdminProductVariantMediaController::class, 'destroy'])
+            ->middleware([EnsureHasPermission::class.':catalog.manage', 'throttle:admin.mutations']);
+        Route::post('/products/{product}/variants/{variant}/media/{attachment}/retry', [AdminProductVariantMediaController::class, 'retry'])
+            ->middleware([EnsureHasPermission::class.':catalog.manage', 'throttle:admin.mutations']);
+
+        Route::get('/media/{asset}/status', AdminMediaStatusController::class)
+            ->middleware(EnsureHasPermission::class.':catalog.view');
+
+        // Day 10: inventory ledger, warehouses, reservations.
+        Route::get('/warehouses', [AdminWarehouseController::class, 'index'])
+            ->middleware(EnsureHasPermission::class.':inventory.view');
+        Route::post('/warehouses', [AdminWarehouseController::class, 'store'])
+            ->middleware([EnsureHasPermission::class.':inventory.manage', 'throttle:admin.mutations']);
+        Route::get('/warehouses/{warehouse}', [AdminWarehouseController::class, 'show'])
+            ->middleware(EnsureHasPermission::class.':inventory.view');
+        Route::patch('/warehouses/{warehouse}', [AdminWarehouseController::class, 'update'])
+            ->middleware([EnsureHasPermission::class.':inventory.manage', 'throttle:admin.mutations']);
+        Route::patch('/warehouses/{warehouse}/status', [AdminWarehouseController::class, 'updateStatus'])
+            ->middleware([EnsureHasPermission::class.':inventory.manage', 'throttle:admin.mutations']);
+        Route::patch('/warehouses/{warehouse}/default', [AdminWarehouseController::class, 'updateDefault'])
+            ->middleware([EnsureHasPermission::class.':inventory.manage', 'throttle:admin.mutations']);
+        Route::delete('/warehouses/{warehouse}', [AdminWarehouseController::class, 'destroy'])
+            ->middleware([EnsureHasPermission::class.':inventory.manage', 'throttle:admin.mutations']);
+        Route::post('/warehouses/{warehouse}/restore', [AdminWarehouseController::class, 'restore'])
+            ->middleware([EnsureHasPermission::class.':inventory.manage', 'throttle:admin.mutations']);
+
+        Route::get('/inventory', [AdminInventoryController::class, 'index'])
+            ->middleware(EnsureHasPermission::class.':inventory.view');
+
+        Route::post('/inventory/receipts', [AdminInventoryReceiptController::class, 'store'])
+            ->middleware([EnsureHasPermission::class.':inventory.adjust', 'throttle:admin.mutations']);
+        Route::post('/inventory/adjustments', [AdminInventoryAdjustmentController::class, 'store'])
+            ->middleware([EnsureHasPermission::class.':inventory.adjust', 'throttle:admin.mutations']);
+        Route::post('/inventory/stock-counts', [AdminInventoryStockCountController::class, 'store'])
+            ->middleware([EnsureHasPermission::class.':inventory.adjust', 'throttle:admin.mutations']);
+        Route::post('/inventory/transfers', [AdminInventoryTransferController::class, 'store'])
+            ->middleware([EnsureHasPermission::class.':inventory.transfer', 'throttle:admin.mutations']);
+
+        Route::get('/inventory/reservations', [AdminInventoryReservationController::class, 'index'])
+            ->middleware(EnsureHasPermission::class.':inventory.view');
+        Route::get('/inventory/reservations/{reservation}', [AdminInventoryReservationController::class, 'show'])
+            ->middleware(EnsureHasPermission::class.':inventory.view');
+        Route::post('/inventory/reservations/{reservation}/release', [AdminInventoryReservationController::class, 'release'])
+            ->middleware([EnsureHasPermission::class.':inventory.reservations.manage', 'throttle:admin.mutations']);
+        Route::post('/inventory/reservations/{reservation}/cancel', [AdminInventoryReservationController::class, 'cancel'])
+            ->middleware([EnsureHasPermission::class.':inventory.reservations.manage', 'throttle:admin.mutations']);
+
+        Route::get('/inventory/{warehouse}/{variant}', [AdminInventoryController::class, 'show'])
+            ->middleware(EnsureHasPermission::class.':inventory.view');
+        Route::get('/inventory/{warehouse}/{variant}/ledger', [AdminInventoryController::class, 'ledger'])
+            ->middleware(EnsureHasPermission::class.':inventory.view');
+        Route::patch('/inventory/{warehouse}/{variant}/settings', [AdminInventoryController::class, 'updateSettings'])
+            ->middleware([EnsureHasPermission::class.':inventory.manage', 'throttle:admin.mutations']);
+
+        // Day 11: pricing engine.
+
+        Route::get('/prices', [AdminPriceController::class, 'index'])
+            ->middleware(EnsureHasPermission::class.':pricing.view');
+        Route::post('/prices/bulk', [AdminPriceController::class, 'bulk'])
+            ->middleware([EnsureHasPermission::class.':pricing.publish', 'throttle:admin.pricing-bulk']);
+        Route::get('/price-lists', [AdminPriceListController::class, 'index'])
+            ->middleware(EnsureHasPermission::class.':pricing.view');
+        Route::post('/price-lists', [AdminPriceListController::class, 'store'])
+            ->middleware([EnsureHasPermission::class.':pricing.manage', 'throttle:admin.mutations']);
+        Route::get('/price-lists/{priceList}', [AdminPriceListController::class, 'show'])
+            ->middleware(EnsureHasPermission::class.':pricing.view');
+        Route::patch('/price-lists/{priceList}', [AdminPriceListController::class, 'update'])
+            ->middleware([EnsureHasPermission::class.':pricing.manage', 'throttle:admin.mutations']);
+        Route::patch('/price-lists/{priceList}/status', [AdminPriceListController::class, 'updateStatus'])
+            ->middleware([EnsureHasPermission::class.':pricing.publish', 'throttle:admin.mutations']);
+        Route::patch('/price-lists/{priceList}/default', [AdminPriceListController::class, 'updateDefault'])
+            ->middleware([EnsureHasPermission::class.':pricing.publish', 'throttle:admin.mutations']);
+        Route::delete('/price-lists/{priceList}', [AdminPriceListController::class, 'destroy'])
+            ->middleware([EnsureHasPermission::class.':pricing.publish', 'throttle:admin.mutations']);
+        Route::post('/price-lists/{priceList}/restore', [AdminPriceListController::class, 'restore'])
+            ->middleware([EnsureHasPermission::class.':pricing.publish', 'throttle:admin.mutations']);
+
+        Route::get('/price-lists/{priceList}/variants/{variant}/prices', [AdminPriceController::class, 'showVariant'])
+            ->middleware(EnsureHasPermission::class.':pricing.view');
+        Route::post('/price-lists/{priceList}/variants/{variant}/prices', [AdminPriceController::class, 'store'])
+            ->middleware([EnsureHasPermission::class.':pricing.manage', 'throttle:admin.mutations']);
+        Route::post('/price-lists/{priceList}/variants/{variant}/prices/replace', [AdminPriceController::class, 'replace'])
+            ->middleware([EnsureHasPermission::class.':pricing.publish', 'throttle:admin.mutations']);
+
+        Route::get('/price-periods/{pricePeriod}', [AdminPriceController::class, 'showPeriod'])
+            ->middleware(EnsureHasPermission::class.':pricing.view');
+        Route::patch('/price-periods/{pricePeriod}', [AdminPriceController::class, 'updatePeriod'])
+            ->middleware([EnsureHasPermission::class.':pricing.manage', 'throttle:admin.mutations']);
+        Route::post('/price-periods/{pricePeriod}/publish', [AdminPriceController::class, 'publishPeriod'])
+            ->middleware([EnsureHasPermission::class.':pricing.publish', 'throttle:admin.mutations']);
+        Route::post('/price-periods/{pricePeriod}/cancel', [AdminPriceController::class, 'cancelPeriod'])
+            ->middleware([EnsureHasPermission::class.':pricing.publish', 'throttle:admin.mutations']);
+
+        Route::get('/promotions', [AdminPromotionController::class, 'index'])
+            ->middleware(EnsureHasPermission::class.':promotions.view');
+        Route::post('/promotions', [AdminPromotionController::class, 'store'])
+            ->middleware([EnsureHasPermission::class.':promotions.manage', 'throttle:admin.mutations']);
+        Route::post('/promotions/preview', [AdminPromotionController::class, 'preview'])
+            ->middleware([EnsureHasPermission::class.':promotions.view', 'throttle:admin.pricing-preview']);
+        Route::get('/promotions/{promotion}', [AdminPromotionController::class, 'show'])
+            ->middleware(EnsureHasPermission::class.':promotions.view');
+        Route::patch('/promotions/{promotion}', [AdminPromotionController::class, 'update'])
+            ->middleware([EnsureHasPermission::class.':promotions.manage', 'throttle:admin.mutations']);
+        Route::put('/promotions/{promotion}/targets', [AdminPromotionController::class, 'syncTargets'])
+            ->middleware([EnsureHasPermission::class.':promotions.manage', 'throttle:admin.mutations']);
+        Route::post('/promotions/{promotion}/activate', [AdminPromotionController::class, 'activate'])
+            ->middleware([EnsureHasPermission::class.':promotions.publish', 'throttle:admin.mutations']);
+        Route::post('/promotions/{promotion}/pause', [AdminPromotionController::class, 'pause'])
+            ->middleware([EnsureHasPermission::class.':promotions.publish', 'throttle:admin.mutations']);
+        Route::post('/promotions/{promotion}/archive', [AdminPromotionController::class, 'archive'])
+            ->middleware([EnsureHasPermission::class.':promotions.publish', 'throttle:admin.mutations']);
+        Route::post('/promotions/{promotion}/restore', [AdminPromotionController::class, 'restore'])
+            ->middleware([EnsureHasPermission::class.':promotions.publish', 'throttle:admin.mutations']);
+        Route::post('/promotions/{promotion}/preview', [AdminPromotionController::class, 'previewExisting'])
+            ->middleware([EnsureHasPermission::class.':promotions.view', 'throttle:admin.pricing-preview']);
     });

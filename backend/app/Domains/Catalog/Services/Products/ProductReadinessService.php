@@ -5,21 +5,32 @@ declare(strict_types=1);
 namespace App\Domains\Catalog\Services\Products;
 
 use App\Domains\Catalog\Enums\CatalogStatus;
+use App\Domains\Catalog\Enums\MediaStatus;
 use App\Domains\Catalog\Enums\ProductStatus;
 use App\Domains\Catalog\Enums\ProductVariantStatus;
 use App\Domains\Catalog\Exceptions\ProductNotReadyException;
+use App\Domains\Catalog\Models\MediaAttachment;
 use App\Domains\Catalog\Models\Product;
 use App\Domains\Catalog\Support\CatalogLocales;
 use App\Domains\Catalog\Support\CatalogSlug;
+use App\Domains\Pricing\Services\PricingReadinessService;
 
 final class ProductReadinessService
 {
+    public function __construct(
+        private readonly PricingReadinessService $pricingReadiness,
+    ) {}
+
     /**
      * Reports readiness without ever mutating the product. Active products that
      * regress (for example after their last variant is archived) surface the same
      * issues as warnings; demotion is always an explicit admin action.
      *
-     * @return array{ready: bool, issues: array<string, list<string>>, issue_count: int, warnings: array<string, list<string>>}
+     * `media_warnings` is reported separately and never contributes to `ready`:
+     * an imageless product is a merchandising gap, not a broken one, and blocking
+     * activation on it would stall launches for no correctness gain.
+     *
+     * @return array{ready: bool, issues: array<string, list<string>>, issue_count: int, warnings: array<string, list<string>>, media_warnings: array<string, list<string>>, pricing_warnings: array<string, list<string>>}
      */
     public function evaluate(Product $product): array
     {
@@ -81,12 +92,61 @@ final class ProductReadinessService
             $issues[$key] = $messages;
         }
 
+        $pricingWarnings = $this->pricingReadiness->warningsFor($product);
+
         return [
             'ready' => $issues === [],
             'issues' => $issues,
             'issue_count' => count($issues),
             'warnings' => $product->status === ProductStatus::Active ? $issues : [],
+            'media_warnings' => $this->mediaWarnings($product),
+            'pricing_warnings' => $pricingWarnings,
         ];
+    }
+
+    /**
+     * Advisory media gaps: no processed image anywhere on the product, no primary
+     * image, or a primary image without Georgian alt text (the default storefront
+     * locale, so its absence is an accessibility regression for every visitor).
+     *
+     * @return array<string, list<string>>
+     */
+    public function mediaWarnings(Product $product): array
+    {
+        $product->loadMissing([
+            'mediaAttachments.asset',
+            'mediaAttachments.translations',
+            'variants.mediaAttachments.asset',
+        ]);
+
+        /** @var array<string, list<string>> $warnings */
+        $warnings = [];
+
+        $productReady = $product->mediaAttachments
+            ->filter(static fn (MediaAttachment $attachment): bool => $attachment->asset?->status === MediaStatus::Ready);
+
+        $variantReadyCount = $product->variants
+            ->sum(static fn ($variant): int => $variant->mediaAttachments
+                ->filter(static fn (MediaAttachment $attachment): bool => $attachment->asset?->status === MediaStatus::Ready)
+                ->count());
+
+        if ($productReady->isEmpty() && $variantReadyCount === 0) {
+            $warnings['media.images'] = ['No processed image is attached to this product or any of its variants.'];
+        }
+
+        $primary = $productReady->first(static fn (MediaAttachment $attachment): bool => $attachment->is_primary);
+
+        if ($primary === null) {
+            $warnings['media.primary'] = ['This product has no processed primary image.'];
+
+            return $warnings;
+        }
+
+        if ($primary->altText(CatalogLocales::default()) === null) {
+            $warnings['media.primary.alt_text.ka'] = ['The primary image is missing Georgian alt text.'];
+        }
+
+        return $warnings;
     }
 
     /**

@@ -75,18 +75,18 @@ export function SiteHeader() {
         className={cn(
           "sticky top-0 z-50 transition-[background-color,border-color,backdrop-filter] duration-[var(--duration-control)]",
           solid
-            ? "border-b border-border/60 bg-[color-mix(in_oklab,var(--surface-light)_92%,transparent)] backdrop-blur-xl"
+            ? "border-b border-border/70 bg-background"
             : "border-b border-transparent bg-transparent",
         )}
       >
-        <div className="sf-container-wide flex h-16 items-center justify-between gap-4 lg:h-[4.25rem]">
-          <div className="flex items-center gap-2 lg:gap-3">
+        <div className="sf-container-wide flex h-14 min-w-0 items-center justify-between gap-2 sm:h-16 sm:gap-3 lg:h-[4.25rem]">
+          <div className="flex min-w-0 items-center gap-1.5 sm:gap-2 lg:gap-3">
             <Button
               type="button"
               variant="ghost"
               size="icon"
               className={cn(
-                "lg:hidden",
+                "shrink-0 lg:hidden",
                 !solid &&
                   isHome &&
                   "text-warm-bone text-[#eee9de] hover:bg-white/10",
@@ -101,7 +101,7 @@ export function SiteHeader() {
             <Link
               href="/"
               className={cn(
-                "sf-display text-xl tracking-tight no-underline sm:text-2xl",
+                "sf-display truncate text-lg tracking-tight no-underline sm:text-xl md:text-2xl",
                 solid || !isHome ? "text-foreground" : "text-[#eee9de]",
               )}
             >
@@ -111,18 +111,21 @@ export function SiteHeader() {
 
           <nav
             aria-label="Primary"
-            className="hidden items-center gap-1 xl:flex"
+            className="hidden items-center gap-0.5 xl:flex"
           >
             {primaryNav.slice(0, 6).map((item) => (
               <Link
                 key={item.id}
                 href={item.href}
                 className={cn(
-                  "rounded-md px-2.5 py-2 text-sm font-medium no-underline transition-colors",
+                  "sf-nav-label rounded-md px-2 py-2 text-[0.8125rem] font-medium no-underline transition-colors",
                   solid || !isHome
                     ? "text-foreground/80 hover:bg-muted hover:text-foreground"
                     : "text-[#eee9de]/80 hover:bg-white/10 hover:text-[#eee9de]",
-                  pathname.startsWith(item.href) && "text-foreground",
+                  pathname.startsWith(item.href) &&
+                    (solid || !isHome
+                      ? "bg-muted text-foreground"
+                      : "bg-white/10 text-[#eee9de]"),
                 )}
               >
                 {t.nav[item.labelKey]}
@@ -130,7 +133,7 @@ export function SiteHeader() {
             ))}
           </nav>
 
-          <div className="flex items-center gap-1 sm:gap-2">
+          <div className="flex shrink-0 items-center gap-0.5 sm:gap-1.5">
             <Button
               ref={searchTriggerRef}
               type="button"
@@ -140,6 +143,7 @@ export function SiteHeader() {
               aria-controls="storefront-search"
               aria-label={t.nav.search}
               className={cn(
+                "size-9 sm:size-10",
                 !solid && isHome && "text-[#eee9de] hover:bg-white/10",
               )}
               onClick={() => setSearchOpen(true)}
@@ -153,7 +157,10 @@ export function SiteHeader() {
               disabled
               aria-disabled="true"
               title={t.nav.wishlistSoon}
-              className={cn(!solid && isHome && "text-[#eee9de]/50")}
+              className={cn(
+                "hidden size-9 sm:inline-flex sm:size-10",
+                !solid && isHome && "text-[#eee9de]/50",
+              )}
             >
               <Heart />
               <span className="sr-only">{t.nav.wishlistSoon}</span>
@@ -165,7 +172,10 @@ export function SiteHeader() {
               disabled
               aria-disabled="true"
               title={t.nav.cartSoon}
-              className={cn(!solid && isHome && "text-[#eee9de]/50")}
+              className={cn(
+                "hidden size-9 sm:inline-flex sm:size-10",
+                !solid && isHome && "text-[#eee9de]/50",
+              )}
             >
               <ShoppingBag />
               <span className="sr-only">{t.nav.cartSoon}</span>
@@ -175,6 +185,7 @@ export function SiteHeader() {
               variant="ghost"
               size="icon"
               className={cn(
+                "size-9 sm:size-10",
                 !solid && isHome && "text-[#eee9de] hover:bg-white/10",
               )}
             >

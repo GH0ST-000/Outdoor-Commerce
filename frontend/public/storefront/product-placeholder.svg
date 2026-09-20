@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 500" role="img" aria-label="Product image placeholder">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#2a3d36"/>
+      <stop offset="100%" stop-color="#1a2420"/>
+    </linearGradient>
+    <linearGradient id="ridge" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#3d5248"/>
+      <stop offset="50%" stop-color="#4a6358"/>
+      <stop offset="100%" stop-color="#32463d"/>
+    </linearGradient>
+  </defs>
+  <rect width="400" height="500" fill="url(#sky)"/>
+  <path d="M0 320 L120 260 200 290 280 240 400 300 L400 500 L0 500 Z" fill="url(#ridge)" opacity="0.85"/>
+  <path d="M0 360 L160 310 240 330 320 290 400 340 L400 500 L0 500 Z" fill="#243229" opacity="0.9"/>
+  <circle cx="320" cy="88" r="36" fill="#c4a574" opacity="0.35"/>
+  <rect x="48" y="380" width="304" height="2" rx="1" fill="#c4a574" opacity="0.25"/>
+  <text x="200" y="430" text-anchor="middle" fill="#8a9a90" font-family="system-ui,sans-serif" font-size="13" letter-spacing="0.12em">NO IMAGE</text>
+</svg>

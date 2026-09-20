@@ -47,6 +47,32 @@ return [
             'report' => false,
         ],
 
+        /*
+         | Media originals. Private, never served by the web server, and only
+         | ever read through App\Domains\Catalog\Services\Media services.
+         */
+        'media_private' => [
+            'driver' => 'local',
+            'root' => storage_path('app/private/media'),
+            'visibility' => 'private',
+            'serve' => false,
+            'throw' => false,
+            'report' => false,
+        ],
+
+        /*
+         | Generated derivatives. The only publicly reachable media artifacts.
+         | Requires `php artisan storage:link`.
+         */
+        'media_public' => [
+            'driver' => 'local',
+            'root' => storage_path('app/public/media'),
+            'url' => rtrim(env('APP_URL', 'http://localhost'), '/').'/storage/media',
+            'visibility' => 'public',
+            'throw' => false,
+            'report' => false,
+        ],
+
         's3' => [
             'driver' => 's3',
             'key' => env('AWS_ACCESS_KEY_ID'),

@@ -1,3 +1,5 @@
+import type { ResponsiveMedia } from "@/features/storefront/media/types";
+
 export type StorefrontLocale = "en" | "ka";
 
 export type StorefrontNavItem = {
@@ -13,11 +15,24 @@ export type ProductCardData = {
   name: Record<StorefrontLocale, string>;
   href: string;
   imageSrc: string;
+  /** Day 9+ responsive manifest; fixtures may omit and use imageSrc. */
+  imageMedia?: ResponsiveMedia;
   imageAlt: Record<StorefrontLocale, string>;
   badges?: Array<"featured" | "new">;
   attributePreview?: Record<StorefrontLocale, string>;
-  /** Presentation only — not authoritative pricing. */
+  /** Presentation only — not authoritative pricing. Prefer structured quote when present. */
   priceLabel?: Record<StorefrontLocale, string>;
+  /** Backend-ready structured pricing (Day 11+). Prefer over priceLabel when set. */
+  pricing?: {
+    currency: string;
+    amount_minor?: number | null;
+    min_amount_minor?: number | null;
+    max_amount_minor?: number | null;
+    is_range?: boolean;
+    base_amount_minor?: number | null;
+    final_amount_minor?: number | null;
+    discount_percentage_basis_points?: number | null;
+  };
   availabilityLabel?: Record<StorefrontLocale, string>;
 };
 
@@ -65,6 +80,7 @@ export type ProductDetailFixture = ProductCardData & {
   shortDescription: Record<StorefrontLocale, string>;
   description: Record<StorefrontLocale, string>;
   gallery: string[];
+  galleryMedia?: ResponsiveMedia[];
   variants: {
     axes: Array<{
       id: string;
@@ -139,6 +155,19 @@ export type StorefrontCopy = {
     empty: string;
     clearFilters: string;
     applyFilters: string;
+    filterHint: string;
+    brand: string;
+    status: string;
+    layout: string;
+    layoutGrid: string;
+    layoutComfortable: string;
+    layoutList: string;
+    sortFeatured: string;
+    sortName: string;
+    sortBrand: string;
+    showing: string;
+    allCategories: string;
+    closeFilters: string;
   };
   product: {
     model: string;

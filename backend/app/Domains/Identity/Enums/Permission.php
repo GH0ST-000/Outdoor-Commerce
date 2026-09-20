@@ -26,9 +26,16 @@ enum Permission: string
 
     case InventoryView = 'inventory.view';
     case InventoryManage = 'inventory.manage';
+    case InventoryAdjust = 'inventory.adjust';
+    case InventoryTransfer = 'inventory.transfer';
+    case InventoryReservationsManage = 'inventory.reservations.manage';
 
     case PricingView = 'pricing.view';
     case PricingManage = 'pricing.manage';
+    case PricingPublish = 'pricing.publish';
+    case PromotionsView = 'promotions.view';
+    case PromotionsManage = 'promotions.manage';
+    case PromotionsPublish = 'promotions.publish';
 
     case OrdersView = 'orders.view';
     case OrdersManage = 'orders.manage';

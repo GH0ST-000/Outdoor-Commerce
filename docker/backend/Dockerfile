@@ -12,9 +12,13 @@ RUN apt-get update \
         ca-certificates \
         libzip-dev \
         libpng-dev \
+        libjpeg62-turbo-dev \
+        libwebp-dev \
+        libfreetype6-dev \
         libicu-dev \
         libonig-dev \
         $PHPIZE_DEPS \
+    && docker-php-ext-configure gd --with-jpeg --with-webp --with-freetype \
     && docker-php-ext-install -j$(nproc) \
         pdo_mysql \
         mbstring \
@@ -23,6 +27,7 @@ RUN apt-get update \
         pcntl \
         bcmath \
         opcache \
+        gd \
     && pecl install redis \
     && docker-php-ext-enable redis \
     && curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer \

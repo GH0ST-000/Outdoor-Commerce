@@ -10,7 +10,9 @@ Configured in `src/features/storefront/config/brand.ts`. Replace when legal nami
 
 ## Fixture boundary
 
-Demo catalog lives in `features/storefront/fixtures/`. Adapters in `features/storefront/adapters/` are the swap point for the future public catalog API. Legal demo rows always show `LegalDemoBanner`. Prices/stock are labeled non-authoritative.
+Demo catalog lives in `features/storefront/fixtures/`. Adapters in `features/storefront/adapters/` are the swap point for the future public catalog API (Day 12 will feed `ResponsiveMedia` manifests from the API; Day 9 components are ready). Legal demo rows always show `LegalDemoBanner`. Prices/stock are labeled non-authoritative.
+
+Product imagery uses `ResponsiveProductImage` / `ProductGallery` with a muted local placeholder at `/storefront/product-placeholder.svg` when no asset is available. Admin-uploaded derivatives are served from the backend `APP_URL` + `/storage/media/…` in development.
 
 ## Photography still needed
 

@@ -2,30 +2,30 @@
 
 ## Responsibility
 
-List/sale prices, promotions, and coupon eligibility.
+List/sale prices, promotions, and checkout price quotes.
 
 ## Data owned
 
-Price lists, promotions, coupon definitions.
+`price_lists`, `variant_prices`, `price_periods`, `promotions`, `promotion_targets`.
 
 ## Public contracts
 
-Price resolution contracts used by Cart/Checkout.
-
-Classes under `Contracts/`, and any Action/Query/DTO explicitly listed here as public, are the only approved entry points for other modules.
+- `Contracts/CheckoutPriceResolver` → `DefaultCheckoutPriceResolver` / `PriceQuoteService`
+- Admin Actions under `Actions/PriceLists`, `Actions/Prices`, `Actions/Promotions`
+- Admin Queries: `AdminPriceListListQuery`, `AdminPriceListQuery` / `AdminPriceIndexQuery`, `AdminPromotionListQuery`
 
 ## Events this module may publish
 
-PriceUpdated, PromotionActivated (examples for later).
+`PriceListActivated`, `PricePublished`, `PriceCancelled`, `PriceChanged`, `PromotionActivated`, `PromotionPaused`, `PromotionEnded`, `PromotionTargetsChanged` (dispatched after commit).
 
 ## May depend on
 
-Shared; Catalog identifiers via contracts.
+Shared (`Clock`); Catalog identifiers for promotion targets and readiness warnings.
 
 ## Explicitly outside this module
 
-Inventory quantities, order persistence.
+Inventory quantities, order persistence, FX conversion, tax calculation engines.
 
-## Structure
+## Docs
 
-Follow the standard module layout documented in `docs/architecture.md` when implementing features. Day 2 ships boundaries only—no business behavior yet.
+See `docs/pricing.md` and ADR 0006.

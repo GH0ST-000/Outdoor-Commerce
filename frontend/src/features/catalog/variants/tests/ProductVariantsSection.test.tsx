@@ -42,6 +42,12 @@ vi.mock("@/features/catalog/attributes/api/attributes-api", () => ({
     fetchAdminAttributeValues(...args),
 }));
 
+vi.mock("@/features/catalog/media/components/VariantMediaPanel", () => ({
+  VariantMediaPanel: () => (
+    <div data-testid="variant-media-panel">Variant media panel</div>
+  ),
+}));
+
 const pagination = {
   current_page: 1,
   last_page: 1,

@@ -16,8 +16,8 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        if ($this->command?->option('class') === null && app()->environment('local')) {
-            // Optional local demo — not run automatically to keep migrate:fresh clean.
+        if (app()->environment(['local', 'testing'])) {
+            $this->call(PricingDemoSeeder::class);
         }
     }
 }

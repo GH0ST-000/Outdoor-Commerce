@@ -35,7 +35,7 @@ describe("permission labels", () => {
     expect(grouped.map((group) => group.label)).toEqual([
       "Admin access",
       "People & security",
-      "Catalog & inventory",
+      "Catalog",
     ]);
     expect(grouped[2]?.permissions.map(permissionLabel)).toEqual([
       "View products",

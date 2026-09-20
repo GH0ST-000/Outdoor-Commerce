@@ -20,6 +20,7 @@ import { CombinationBuilder } from "@/features/catalog/variants/components/Combi
 import { VariantArchiveDialog } from "@/features/catalog/variants/components/VariantArchiveDialog";
 import { VariantAxesEditor } from "@/features/catalog/variants/components/VariantAxesEditor";
 import { VariantFormDialog } from "@/features/catalog/variants/components/VariantFormDialog";
+import { VariantMediaPanel } from "@/features/catalog/media/components/VariantMediaPanel";
 import { VariantsTable } from "@/features/catalog/variants/components/VariantsTable";
 import type {
   ProductVariantListItem,
@@ -60,6 +61,8 @@ export function ProductVariantsSection({
   const [pending, setPending] = useState(false);
   const [actionError, setActionError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
+  const [mediaVariant, setMediaVariant] =
+    useState<ProductVariantListItem | null>(null);
 
   const [refreshNonce, setRefreshNonce] = useState(0);
   const reloadVariants = () => setRefreshNonce((value) => value + 1);
@@ -283,6 +286,16 @@ export function ProductVariantsSection({
         />
       ) : null}
 
+      {mediaVariant ? (
+        <VariantMediaPanel
+          productId={productId}
+          variantId={mediaVariant.id}
+          variantSku={mediaVariant.sku}
+          canManage={canManage}
+          onClose={() => setMediaVariant(null)}
+        />
+      ) : null}
+
       {archiveTarget ? (
         <VariantArchiveDialog
           variant={archiveTarget}
@@ -329,6 +342,7 @@ export function ProductVariantsSection({
           onSetDefault={(variant) => void onSetDefault(variant)}
           onArchive={(variant) => setArchiveTarget(variant)}
           onRestore={(variant) => void onRestore(variant)}
+          onManageMedia={(variant) => setMediaVariant(variant)}
         />
       </AdminPanel>
     </div>

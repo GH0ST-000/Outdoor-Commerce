@@ -26,6 +26,14 @@ export class ApiClientError extends Error {
 type RequestOptions = {
   method?: string;
   body?: unknown;
+  headers?: Record<string, string>;
+  csrfRetry?: boolean;
+  signal?: AbortSignal;
+};
+
+type FormRequestOptions = {
+  method?: string;
+  formData: FormData;
   csrfRetry?: boolean;
   signal?: AbortSignal;
 };
@@ -130,6 +138,10 @@ export async function apiRequest<T>(
     headers["Content-Type"] = "application/json";
   }
 
+  if (options.headers) {
+    Object.assign(headers, options.headers);
+  }
+
   const response = await fetch(`${getApiBaseUrl()}${path}`, {
     method,
     credentials: "include",
@@ -142,6 +154,66 @@ export async function apiRequest<T>(
     csrfReady = false;
     await ensureCsrfCookie();
     return apiRequest<T>(path, { ...options, csrfRetry: false });
+  }
+
+  if (response.status === 204) {
+    return undefined as T;
+  }
+
+  if (!response.ok) {
+    throw await parseError(response);
+  }
+
+  if (response.status === 202) {
+    try {
+      return (await response.json()) as T;
+    } catch {
+      return undefined as T;
+    }
+  }
+
+  return (await response.json()) as T;
+}
+
+/**
+ * Multipart mutation (upload). Does not set Content-Type so the browser adds the
+ * boundary. JSON Accept header is still sent for Laravel error envelopes.
+ */
+export async function apiFormRequest<T>(
+  path: string,
+  options: FormRequestOptions,
+): Promise<T> {
+  const method = (options.method ?? "POST").toUpperCase();
+  const isMutation = !["GET", "HEAD", "OPTIONS"].includes(method);
+
+  if (isMutation && !csrfReady) {
+    await ensureCsrfCookie();
+  }
+
+  const headers: Record<string, string> = {
+    Accept: "application/json",
+    "X-Requested-With": "XMLHttpRequest",
+  };
+
+  if (isMutation) {
+    const xsrf = readCookie("XSRF-TOKEN");
+    if (xsrf) {
+      headers["X-XSRF-TOKEN"] = xsrf;
+    }
+  }
+
+  const response = await fetch(`${getApiBaseUrl()}${path}`, {
+    method,
+    credentials: "include",
+    headers,
+    body: options.formData,
+    signal: options.signal,
+  });
+
+  if (response.status === 419 && isMutation && options.csrfRetry !== false) {
+    csrfReady = false;
+    await ensureCsrfCookie();
+    return apiFormRequest<T>(path, { ...options, csrfRetry: false });
   }
 
   if (response.status === 204) {
