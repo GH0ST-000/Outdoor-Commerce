@@ -114,7 +114,7 @@ return new class extends Migration
             $table->unique('reservation_key');
             $table->unique('idempotency_key');
             $table->index(['status', 'expires_at']);
-            $table->index(['warehouse_id', 'product_variant_id', 'status']);
+            $table->index(['warehouse_id', 'product_variant_id', 'status'], 'inventory_reservations_wh_variant_status_index');
             $table->index(['reference_type', 'reference_id']);
         });
     }
