@@ -50,7 +50,8 @@ function readParams(searchParams: URLSearchParams): VariantPriceListParams & {
   return {
     search: searchParams.get("search") ?? "",
     price_list_id: searchParams.get("price_list_id") ?? "",
-    period_status: (searchParams.get("period_status") ?? "") as VariantPriceListParams["period_status"],
+    period_status: (searchParams.get("period_status") ??
+      "") as VariantPriceListParams["period_status"],
     pricing_ready:
       searchParams.get("pricing_ready") === "1"
         ? "1"
@@ -93,7 +94,8 @@ export function PricesPage() {
     (next: VariantPriceListParams & { bulk?: boolean }) => {
       const qs = new URLSearchParams();
       if (next.search) qs.set("search", next.search);
-      if (next.price_list_id) qs.set("price_list_id", String(next.price_list_id));
+      if (next.price_list_id)
+        qs.set("price_list_id", String(next.price_list_id));
       if (next.period_status) qs.set("period_status", next.period_status);
       if (next.pricing_ready === "1" || next.pricing_ready === "0") {
         qs.set("pricing_ready", next.pricing_ready);
@@ -222,7 +224,9 @@ export function PricesPage() {
           </Field>
           <Field label="Price list" className="lg:col-span-3">
             <Select
-              value={params.price_list_id ? String(params.price_list_id) : "all"}
+              value={
+                params.price_list_id ? String(params.price_list_id) : "all"
+              }
               onValueChange={(value) =>
                 syncUrl({
                   ...params,

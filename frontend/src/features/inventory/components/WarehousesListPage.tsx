@@ -204,12 +204,18 @@ export function WarehousesListPage() {
       </form>
 
       {actionError ? (
-        <p className="rounded-xl border border-destructive/20 bg-destructive/10 px-4 py-3 text-sm text-destructive" role="alert">
+        <p
+          className="rounded-xl border border-destructive/20 bg-destructive/10 px-4 py-3 text-sm text-destructive"
+          role="alert"
+        >
           {actionError}
         </p>
       ) : null}
       {actionNotice ? (
-        <p className="rounded-xl border border-border/70 bg-muted/40 px-4 py-3 text-sm" role="status">
+        <p
+          className="rounded-xl border border-border/70 bg-muted/40 px-4 py-3 text-sm"
+          role="status"
+        >
           {actionNotice}
         </p>
       ) : null}
@@ -221,13 +227,19 @@ export function WarehousesListPage() {
       ) : null}
 
       {error ? (
-        <p className="rounded-xl border border-destructive/20 bg-destructive/10 px-4 py-3 text-sm text-destructive" role="alert">
+        <p
+          className="rounded-xl border border-destructive/20 bg-destructive/10 px-4 py-3 text-sm text-destructive"
+          role="alert"
+        >
           {error}
         </p>
       ) : null}
 
       {!loading && !error && warehouses.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-border/80 bg-card/50 px-6 py-16 text-center" role="status">
+        <div
+          className="rounded-2xl border border-dashed border-border/80 bg-card/50 px-6 py-16 text-center"
+          role="status"
+        >
           <p className="text-sm text-muted-foreground">
             No warehouses match these filters.
           </p>
@@ -263,7 +275,9 @@ export function WarehousesListPage() {
                         </Link>
                       )}
                     </td>
-                    <td className={`${adminTdClassName()} text-muted-foreground`}>
+                    <td
+                      className={`${adminTdClassName()} text-muted-foreground`}
+                    >
                       {warehouse.code}
                     </td>
                     <td className={adminTdClassName()}>

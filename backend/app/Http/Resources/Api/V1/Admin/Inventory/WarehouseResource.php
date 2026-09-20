@@ -11,6 +11,9 @@ use Illuminate\Http\Resources\Json\JsonResource;
 /** @mixin Warehouse */
 final class WarehouseResource extends JsonResource
 {
+    /**
+     * @return array<string, mixed>
+     */
     public function toArray(Request $request): array
     {
         return [

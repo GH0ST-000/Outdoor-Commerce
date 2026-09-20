@@ -22,6 +22,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property bool $is_default
  * @property int $priority
  * @property bool $prices_include_tax
+ * @property-read int|null $priced_variant_count
  */
 class PriceList extends Model
 {

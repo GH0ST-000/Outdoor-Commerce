@@ -114,7 +114,10 @@ export async function postAdminInventoryReceipt(
 
 export async function postAdminInventoryAdjustment(
   payload: AdjustInventoryPayload,
-): Promise<{ operation: InventoryOperation; balance: InventoryBalanceRef | null }> {
+): Promise<{
+  operation: InventoryOperation;
+  balance: InventoryBalanceRef | null;
+}> {
   const response = await apiRequest<
     MutationEnvelope<{
       operation: InventoryOperation;
@@ -130,7 +133,10 @@ export async function postAdminInventoryAdjustment(
 
 export async function postAdminInventoryStockCount(
   payload: StockCountPayload,
-): Promise<{ operation: InventoryOperation; balance: InventoryBalanceRef | null }> {
+): Promise<{
+  operation: InventoryOperation;
+  balance: InventoryBalanceRef | null;
+}> {
   const response = await apiRequest<
     MutationEnvelope<{
       operation: InventoryOperation;

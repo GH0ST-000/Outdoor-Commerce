@@ -133,7 +133,11 @@ export function TransferDialog({
             </SelectContent>
           </Select>
         </Field>
-        <Field label="Quantity" htmlFor="transfer-quantity" error={errors.quantity}>
+        <Field
+          label="Quantity"
+          htmlFor="transfer-quantity"
+          error={errors.quantity}
+        >
           <Input
             id="transfer-quantity"
             type="number"

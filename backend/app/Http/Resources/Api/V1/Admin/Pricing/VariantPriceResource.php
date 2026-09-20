@@ -15,6 +15,9 @@ use Illuminate\Http\Resources\Json\JsonResource;
 /** @mixin VariantPrice */
 final class VariantPriceResource extends JsonResource
 {
+    /**
+     * @return array<string, mixed>
+     */
     public function toArray(Request $request): array
     {
         $locale = is_string($this->getAttribute('admin_locale'))
@@ -29,9 +32,7 @@ final class VariantPriceResource extends JsonResource
             : app(Clock::class)->now();
 
         $presentation = AdminPriceIndexQuery::presentPeriods($this->resource, $effectiveAt);
-        $productName = $this->productVariant?->product?->translations
-            ->firstWhere('locale', $locale)?->name
-            ?? $this->productVariant?->product?->translations->first()?->name;
+        $productName = $this->productVariant?->product?->translation($locale)?->name;
 
         return [
             'id' => $this->id,

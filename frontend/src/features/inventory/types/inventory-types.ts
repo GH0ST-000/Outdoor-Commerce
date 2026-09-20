@@ -16,11 +16,7 @@ export type InventoryReasonCode =
 export type WarehouseStatus = "active" | "inactive" | "archived";
 
 export type InventoryReservationStatus =
-  | "active"
-  | "committed"
-  | "released"
-  | "expired"
-  | "cancelled";
+  "active" | "committed" | "released" | "expired" | "cancelled";
 
 export type InventoryQuantities = {
   on_hand: number;
@@ -55,7 +51,13 @@ export type InventoryListParams = {
   out_of_stock?: boolean | "1" | "0" | "";
   has_reservations?: boolean | "1" | "0" | "";
   locale?: string;
-  sort?: "on_hand" | "reserved" | "updated_at" | "last_movement_at" | "warehouse_id" | "product_variant_id";
+  sort?:
+    | "on_hand"
+    | "reserved"
+    | "updated_at"
+    | "last_movement_at"
+    | "warehouse_id"
+    | "product_variant_id";
   direction?: "asc" | "desc";
   per_page?: number;
   page?: number;

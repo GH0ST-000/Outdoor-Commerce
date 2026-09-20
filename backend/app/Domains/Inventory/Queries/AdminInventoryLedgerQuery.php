@@ -21,7 +21,7 @@ final class AdminInventoryLedgerQuery
         $perPage = min(max((int) ($filters['per_page'] ?? 10), 1), 50);
 
         $query = InventoryLedgerEntry::query()
-            ->with(['operation:id,uuid,type,reason_code,note,reference_type,reference_id,performed_by,correlation_id,occurred_at', 'operation.performer:id,name,email']);
+            ->with(['operation:id,uuid,type,reason_code,note,reference_type,reference_id,performed_by,correlation_id,occurred_at', 'operation.performer:id,first_name,last_name,email']);
 
         if (! empty($filters['warehouse_id'])) {
             $query->where('warehouse_id', (int) $filters['warehouse_id']);

@@ -13,6 +13,9 @@ final class UpdatePricePeriodRequest extends FormRequest
         return true;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function rules(): array
     {
         return [

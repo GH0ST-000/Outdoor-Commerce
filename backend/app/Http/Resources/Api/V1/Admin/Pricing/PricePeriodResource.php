@@ -14,6 +14,9 @@ use Illuminate\Http\Resources\Json\JsonResource;
 /** @mixin PricePeriod */
 final class PricePeriodResource extends JsonResource
 {
+    /**
+     * @return array<string, mixed>
+     */
     public function toArray(Request $request): array
     {
         $now = app(Clock::class)->now();

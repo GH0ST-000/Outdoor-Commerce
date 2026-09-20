@@ -14,10 +14,7 @@ export function validateReceiptForm(input: {
   if (!input.reason_code) {
     errors.reason_code = "Reason is required.";
   }
-  if (
-    reasonCodeRequiresNote(input.reason_code) &&
-    input.note.trim() === ""
-  ) {
+  if (reasonCodeRequiresNote(input.reason_code) && input.note.trim() === "") {
     errors.note = "A note is required when reason is Other.";
   }
   return errors;

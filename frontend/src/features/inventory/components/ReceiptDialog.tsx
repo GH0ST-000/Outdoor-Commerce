@@ -90,7 +90,11 @@ export function ReceiptDialog({
         description="Increase on-hand quantity for this variant at the selected warehouse."
       />
       <form className="space-y-4" onSubmit={(event) => void onSubmit(event)}>
-        <Field label="Quantity" htmlFor="receipt-quantity" error={errors.quantity}>
+        <Field
+          label="Quantity"
+          htmlFor="receipt-quantity"
+          error={errors.quantity}
+        >
           <Input
             id="receipt-quantity"
             type="number"

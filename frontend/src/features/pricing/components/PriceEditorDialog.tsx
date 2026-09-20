@@ -68,7 +68,9 @@ export function PriceEditorDialog({
         : null;
 
   const [amountInput, setAmountInput] = useState("");
-  const [startsAt, setStartsAt] = useState(toDatetimeLocalValue(new Date().toISOString()));
+  const [startsAt, setStartsAt] = useState(
+    toDatetimeLocalValue(new Date().toISOString()),
+  );
   const [endsAt, setEndsAt] = useState("");
   const [confirmReplace, setConfirmReplace] = useState(false);
   const [history, setHistory] = useState<PricePeriod[]>([]);
@@ -153,20 +155,28 @@ export function PriceEditorDialog({
       }
 
       if (row.current_period) {
-        await replaceAdminVariantPrice(row.price_list_id, row.product_variant_id, {
-          amount_minor: parsed.amount_minor,
-          starts_at,
-          ends_at,
-          expected_version: expectedVersion,
-          confirm_replace: true,
-        });
+        await replaceAdminVariantPrice(
+          row.price_list_id,
+          row.product_variant_id,
+          {
+            amount_minor: parsed.amount_minor,
+            starts_at,
+            ends_at,
+            expected_version: expectedVersion,
+            confirm_replace: true,
+          },
+        );
         onSaved("Price replacement scheduled.");
       } else {
-        await createAdminVariantPrice(row.price_list_id, row.product_variant_id, {
-          amount_minor: parsed.amount_minor,
-          starts_at,
-          ends_at,
-        });
+        await createAdminVariantPrice(
+          row.price_list_id,
+          row.product_variant_id,
+          {
+            amount_minor: parsed.amount_minor,
+            starts_at,
+            ends_at,
+          },
+        );
         onSaved("Draft price created.");
       }
       onClose();
@@ -232,12 +242,19 @@ export function PriceEditorDialog({
           ) : null}
 
           {!loadingDetail && canManage ? (
-            <form className="space-y-4" onSubmit={(event) => void onSubmit(event)}>
+            <form
+              className="space-y-4"
+              onSubmit={(event) => void onSubmit(event)}
+            >
               <p className="text-xs text-muted-foreground">
-                Version {expectedVersion}. Draft periods allow amount edits; published
-                prices require replace with confirmation.
+                Version {expectedVersion}. Draft periods allow amount edits;
+                published prices require replace with confirmation.
               </p>
-              <Field label="Amount" htmlFor="price-amount" error={errors.amount}>
+              <Field
+                label="Amount"
+                htmlFor="price-amount"
+                error={errors.amount}
+              >
                 <Input
                   id="price-amount"
                   value={amountInput}

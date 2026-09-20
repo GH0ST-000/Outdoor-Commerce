@@ -193,9 +193,16 @@ export function PriceListFormPage({
       {!loading ? (
         <AdminPanel>
           <AdminPanelHeader title="Details" />
-          <form className="space-y-4" onSubmit={(event) => void onSubmit(event)}>
+          <form
+            className="space-y-4"
+            onSubmit={(event) => void onSubmit(event)}
+          >
             <div className="grid gap-4 sm:grid-cols-2">
-              <Field label="Code" htmlFor={`${formId}-code`} error={errors.code}>
+              <Field
+                label="Code"
+                htmlFor={`${formId}-code`}
+                error={errors.code}
+              >
                 <Input
                   id={`${formId}-code`}
                   value={form.code}
@@ -205,7 +212,11 @@ export function PriceListFormPage({
                   disabled={mode === "edit"}
                 />
               </Field>
-              <Field label="Name" htmlFor={`${formId}-name`} error={errors.name}>
+              <Field
+                label="Name"
+                htmlFor={`${formId}-name`}
+                error={errors.name}
+              >
                 <Input
                   id={`${formId}-name`}
                   value={form.name}
@@ -238,7 +249,10 @@ export function PriceListFormPage({
                   min={0}
                   value={form.priority}
                   onChange={(event) =>
-                    setForm((prev) => ({ ...prev, priority: event.target.value }))
+                    setForm((prev) => ({
+                      ...prev,
+                      priority: event.target.value,
+                    }))
                   }
                 />
               </Field>

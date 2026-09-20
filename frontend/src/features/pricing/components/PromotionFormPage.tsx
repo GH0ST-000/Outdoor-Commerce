@@ -12,7 +12,10 @@ import {
   updateAdminPromotion,
   updateAdminPromotionTargets,
 } from "@/features/pricing/api/promotions-api";
-import { basisPointsToPercentLabel, formatMoneyMinor } from "@/features/pricing/lib/money";
+import {
+  basisPointsToPercentLabel,
+  formatMoneyMinor,
+} from "@/features/pricing/lib/money";
 import {
   buildPromotionWritePayload,
   mapApiFieldErrors,
@@ -70,10 +73,7 @@ export function PromotionFormPage({
   const formId = useId();
   const { permissions } = useAdminContext();
   const canManage = hasPermission(permissions, PERMISSIONS.PROMOTIONS_MANAGE);
-  const canPublish = hasPermission(
-    permissions,
-    PERMISSIONS.PROMOTIONS_PUBLISH,
-  );
+  const canPublish = hasPermission(permissions, PERMISSIONS.PROMOTIONS_PUBLISH);
 
   const [code, setCode] = useState("");
   const [name, setName] = useState("");
@@ -94,9 +94,8 @@ export function PromotionFormPage({
   ]);
   const [excludeTargets, setExcludeTargets] = useState<PromotionTarget[]>([]);
   const [previewVariantIds, setPreviewVariantIds] = useState("");
-  const [previewResult, setPreviewResult] = useState<PromotionPreviewResult | null>(
-    null,
-  );
+  const [previewResult, setPreviewResult] =
+    useState<PromotionPreviewResult | null>(null);
 
   const [loading, setLoading] = useState(mode === "edit");
   const [pending, setPending] = useState(false);
@@ -131,12 +130,16 @@ export function PromotionFormPage({
           setFixedAmountInput(String(promotion.fixed_amount_minor / 100));
         }
         if (promotion.maximum_discount_minor != null) {
-          setMaximumDiscountInput(String(promotion.maximum_discount_minor / 100));
+          setMaximumDiscountInput(
+            String(promotion.maximum_discount_minor / 100),
+          );
         }
         const targets = promotion.targets ?? [];
         const includes = targets.filter((target) => target.mode === "include");
         const excludes = targets.filter((target) => target.mode === "exclude");
-        setIncludeTargets(includes.length > 0 ? includes : [emptyTarget("include")]);
+        setIncludeTargets(
+          includes.length > 0 ? includes : [emptyTarget("include")],
+        );
         setExcludeTargets(excludes);
       })
       .catch((err: unknown) => {
@@ -202,10 +205,7 @@ export function PromotionFormPage({
     setPending(true);
     setFormError(null);
     try {
-      const targets = normalizeTargets([
-        ...includeTargets,
-        ...excludeTargets,
-      ]);
+      const targets = normalizeTargets([...includeTargets, ...excludeTargets]);
       let savedId = promotionId;
       if (mode === "create") {
         const created = await createAdminPromotion(built.payload);
@@ -405,7 +405,11 @@ export function PromotionFormPage({
           <AdminPanel>
             <AdminPanelHeader title="General" />
             <div className="grid gap-4 sm:grid-cols-2">
-              <Field label="Code" htmlFor={`${formId}-code`} error={errors.code}>
+              <Field
+                label="Code"
+                htmlFor={`${formId}-code`}
+                error={errors.code}
+              >
                 <Input
                   id={`${formId}-code`}
                   value={code}
@@ -413,7 +417,11 @@ export function PromotionFormPage({
                   disabled={mode === "edit"}
                 />
               </Field>
-              <Field label="Name" htmlFor={`${formId}-name`} error={errors.name}>
+              <Field
+                label="Name"
+                htmlFor={`${formId}-name`}
+                error={errors.name}
+              >
                 <Input
                   id={`${formId}-name`}
                   value={name}
@@ -481,7 +489,9 @@ export function PromotionFormPage({
                   <Input
                     id={`${formId}-fixed`}
                     value={fixedAmountInput}
-                    onChange={(event) => setFixedAmountInput(event.target.value)}
+                    onChange={(event) =>
+                      setFixedAmountInput(event.target.value)
+                    }
                     placeholder="10.00"
                   />
                 </Field>
@@ -587,7 +597,10 @@ export function PromotionFormPage({
 
           <AdminPanel>
             <AdminPanelHeader title="Preview" />
-            <Field label="Variant ids (comma-separated)" htmlFor={`${formId}-preview`}>
+            <Field
+              label="Variant ids (comma-separated)"
+              htmlFor={`${formId}-preview`}
+            >
               <Input
                 id={`${formId}-preview`}
                 value={previewVariantIds}
@@ -624,7 +637,11 @@ export function PromotionFormPage({
                       sample.base_amount_minor != null ? (
                         <span className="text-muted-foreground">
                           {" "}
-                          — {formatMoneyMinor(sample.base_amount_minor, currencyCode)}{" "}
+                          —{" "}
+                          {formatMoneyMinor(
+                            sample.base_amount_minor,
+                            currencyCode,
+                          )}{" "}
                           →{" "}
                           {formatMoneyMinor(
                             sample.final_amount_minor,

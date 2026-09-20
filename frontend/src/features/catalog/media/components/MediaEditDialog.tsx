@@ -12,7 +12,9 @@ import { Textarea } from "@/components/ui/textarea";
 
 type LocaleDraft = { alt_text: string; caption: string };
 
-function draftFrom(attachment: MediaAttachment): Record<"ka" | "en", LocaleDraft> {
+function draftFrom(
+  attachment: MediaAttachment,
+): Record<"ka" | "en", LocaleDraft> {
   const ka = attachment.translations.find((row) => row.locale === "ka");
   const en = attachment.translations.find((row) => row.locale === "en");
   return {
@@ -78,7 +80,9 @@ export function MediaEditDialog({
     <AdminPanel className="border-primary/20 shadow-lg">
       <AdminPanelHeader
         title="Edit media"
-        description={attachment.original_filename ?? `Attachment #${attachment.id}`}
+        description={
+          attachment.original_filename ?? `Attachment #${attachment.id}`
+        }
       />
       <form className="space-y-4" onSubmit={onSubmit}>
         <div className="flex gap-2">

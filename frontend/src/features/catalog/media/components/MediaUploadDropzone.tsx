@@ -38,7 +38,10 @@ export function MediaUploadDropzone({
     const accepted: File[] = [];
     const errors: string[] = [];
 
-    for (const file of Array.from(fileList).slice(0, MEDIA_UPLOAD.maxFilesPerRequest)) {
+    for (const file of Array.from(fileList).slice(
+      0,
+      MEDIA_UPLOAD.maxFilesPerRequest,
+    )) {
       if (file.size > MEDIA_UPLOAD.maxFileSizeBytes) {
         errors.push(`${file.name} exceeds ${MEDIA_UPLOAD.maxFileSizeLabel}.`);
         continue;

@@ -53,9 +53,7 @@ function readParams(searchParams: URLSearchParams): PromotionListParams {
 
 function discountLabel(promotion: Promotion): string {
   if (promotion.discount_type === "percentage") {
-    return basisPointsToPercentLabel(
-      promotion.percentage_basis_points ?? 0,
-    );
+    return basisPointsToPercentLabel(promotion.percentage_basis_points ?? 0);
   }
   if (promotion.fixed_amount_minor != null && promotion.currency_code) {
     return `${(promotion.fixed_amount_minor / 100).toFixed(2)} ${promotion.currency_code}`;
@@ -69,10 +67,7 @@ export function PromotionsPage() {
   const searchParams = useSearchParams();
   const { permissions } = useAdminContext();
   const canManage = hasPermission(permissions, PERMISSIONS.PROMOTIONS_MANAGE);
-  const canPublish = hasPermission(
-    permissions,
-    PERMISSIONS.PROMOTIONS_PUBLISH,
-  );
+  const canPublish = hasPermission(permissions, PERMISSIONS.PROMOTIONS_PUBLISH);
 
   const params = useMemo(() => readParams(searchParams), [searchParams]);
   const requestKey = JSON.stringify(params);
@@ -290,11 +285,15 @@ export function PromotionsPage() {
                   <td className={`${adminTdClassName()} text-muted-foreground`}>
                     {promotion.code}
                   </td>
-                  <td className={adminTdClassName()}>{discountLabel(promotion)}</td>
+                  <td className={adminTdClassName()}>
+                    {discountLabel(promotion)}
+                  </td>
                   <td className={adminTdClassName()}>
                     <StatusBadge status={promotion.status} />
                   </td>
-                  <td className={`${adminTdClassName()} text-xs text-muted-foreground`}>
+                  <td
+                    className={`${adminTdClassName()} text-xs text-muted-foreground`}
+                  >
                     {new Date(promotion.starts_at).toLocaleDateString()}
                     {promotion.ends_at
                       ? ` – ${new Date(promotion.ends_at).toLocaleDateString()}`

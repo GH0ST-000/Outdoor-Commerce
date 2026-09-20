@@ -246,7 +246,9 @@ export function ReservationsListPage() {
           }
           description={`${pendingAction.reservation.reservation_key} · ${pendingAction.reservation.quantity} units at ${pendingAction.reservation.warehouse.name}.`}
           confirmLabel={
-            pendingAction.type === "release" ? "Confirm release" : "Confirm cancel"
+            pendingAction.type === "release"
+              ? "Confirm release"
+              : "Confirm cancel"
           }
           pending={actionPending}
           onConfirm={() => void confirmAction()}
@@ -255,12 +257,18 @@ export function ReservationsListPage() {
       ) : null}
 
       {actionError ? (
-        <p className="rounded-xl border border-destructive/20 bg-destructive/10 px-4 py-3 text-sm text-destructive" role="alert">
+        <p
+          className="rounded-xl border border-destructive/20 bg-destructive/10 px-4 py-3 text-sm text-destructive"
+          role="alert"
+        >
           {actionError}
         </p>
       ) : null}
       {actionNotice ? (
-        <p className="rounded-xl border border-border/70 bg-muted/40 px-4 py-3 text-sm" role="status">
+        <p
+          className="rounded-xl border border-border/70 bg-muted/40 px-4 py-3 text-sm"
+          role="status"
+        >
           {actionNotice}
         </p>
       ) : null}
@@ -272,13 +280,19 @@ export function ReservationsListPage() {
       ) : null}
 
       {error ? (
-        <p className="rounded-xl border border-destructive/20 bg-destructive/10 px-4 py-3 text-sm text-destructive" role="alert">
+        <p
+          className="rounded-xl border border-destructive/20 bg-destructive/10 px-4 py-3 text-sm text-destructive"
+          role="alert"
+        >
           {error}
         </p>
       ) : null}
 
       {!loading && !error && reservations.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-border/80 bg-card/50 px-6 py-16 text-center" role="status">
+        <div
+          className="rounded-2xl border border-dashed border-border/80 bg-card/50 px-6 py-16 text-center"
+          role="status"
+        >
           <p className="text-sm text-muted-foreground">
             No reservations match these filters.
           </p>
@@ -302,7 +316,9 @@ export function ReservationsListPage() {
             <tbody>
               {reservations.map((reservation) => (
                 <tr key={reservation.id} className="hover:bg-muted/30">
-                  <td className={adminTdClassName()}>{reservation.reservation_key}</td>
+                  <td className={adminTdClassName()}>
+                    {reservation.reservation_key}
+                  </td>
                   <td className={`${adminTdClassName()} text-muted-foreground`}>
                     {reservation.warehouse.name}
                   </td>

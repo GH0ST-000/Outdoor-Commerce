@@ -1,18 +1,10 @@
 export type MediaStatus =
-  | "pending"
-  | "processing"
-  | "ready"
-  | "failed"
-  | "quarantined";
+  "pending" | "processing" | "ready" | "failed" | "quarantined";
 
 export type MediaAttachmentRole = "gallery";
 
 export type MediaPreset =
-  | "thumbnail"
-  | "card"
-  | "card_large"
-  | "detail"
-  | "zoom";
+  "thumbnail" | "card" | "card_large" | "detail" | "zoom";
 
 export type MediaFormat = "webp" | "jpeg" | "png" | "avif";
 

@@ -5,9 +5,7 @@ import { MediaGallery } from "@/features/catalog/media/components/MediaGallery";
 import type { MediaAttachment } from "@/features/catalog/media/types/media-types";
 import { TestProviders } from "@/test/providers";
 
-function attachment(
-  overrides: Partial<MediaAttachment> = {},
-): MediaAttachment {
+function attachment(overrides: Partial<MediaAttachment> = {}): MediaAttachment {
   return {
     id: 1,
     asset_id: 10,
@@ -95,9 +93,7 @@ describe("MediaGallery", () => {
       </TestProviders>,
     );
 
-    expect(
-      screen.getByText(/catalog.manage required/i),
-    ).toBeInTheDocument();
+    expect(screen.getByText(/catalog.manage required/i)).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Set primary" })).toBeNull();
   });
 });

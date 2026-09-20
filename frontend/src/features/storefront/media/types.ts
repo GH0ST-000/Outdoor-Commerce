@@ -1,18 +1,10 @@
 import type { StorefrontLocale } from "@/features/storefront/types/storefront-types";
 
 export type MediaStatus =
-  | "pending"
-  | "processing"
-  | "ready"
-  | "failed"
-  | "quarantined";
+  "pending" | "processing" | "ready" | "failed" | "quarantined";
 
 export type MediaPreset =
-  | "thumbnail"
-  | "card"
-  | "card_large"
-  | "detail"
-  | "zoom";
+  "thumbnail" | "card" | "card_large" | "detail" | "zoom";
 
 export type MediaFormat = "webp" | "jpeg" | "png" | "avif";
 

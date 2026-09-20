@@ -10,6 +10,7 @@ use Database\Factories\InventoryLedgerEntryFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
@@ -20,6 +21,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property int $quantity_delta
  * @property int $on_hand_after
  * @property int $reserved_after
+ * @property Carbon|null $created_at
  */
 class InventoryLedgerEntry extends Model
 {

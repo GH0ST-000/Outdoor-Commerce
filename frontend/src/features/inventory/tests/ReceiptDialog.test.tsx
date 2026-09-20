@@ -35,7 +35,9 @@ describe("ReceiptDialog", () => {
       screen.getByRole("button", { name: "Confirm receipt" }).closest("form")!,
     );
 
-    expect(screen.getByText("Quantity must be at least 1.")).toBeInTheDocument();
+    expect(
+      screen.getByText("Quantity must be at least 1."),
+    ).toBeInTheDocument();
     expect(postAdminInventoryReceipt).not.toHaveBeenCalled();
 
     fireEvent.change(quantityInput, { target: { value: "2" } });

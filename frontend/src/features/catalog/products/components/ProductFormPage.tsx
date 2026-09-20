@@ -48,12 +48,7 @@ import { Textarea } from "@/components/ui/textarea";
 
 type LocaleTab = "ka" | "en";
 type WizardStep =
-  | "basics"
-  | "catalog"
-  | "variants"
-  | "media"
-  | "content"
-  | "publish";
+  "basics" | "catalog" | "variants" | "media" | "content" | "publish";
 
 type TranslationDraft = {
   name: string;

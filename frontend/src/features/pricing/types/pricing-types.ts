@@ -6,19 +6,10 @@ export type PromotionStatus = "draft" | "active" | "paused" | "archived";
 export type DiscountType = "percentage" | "fixed_amount";
 export type StackingMode = "exclusive" | "combinable";
 export type PromotionTargetType =
-  | "all_products"
-  | "product"
-  | "product_variant"
-  | "category"
-  | "brand";
+  "all_products" | "product" | "product_variant" | "category" | "brand";
 export type PromotionTargetMode = "include" | "exclude";
 export type PromotionLifecycle =
-  | "draft"
-  | "scheduled"
-  | "live"
-  | "paused"
-  | "expired"
-  | "archived";
+  "draft" | "scheduled" | "live" | "paused" | "expired" | "archived";
 
 export type PriceList = {
   id: number;

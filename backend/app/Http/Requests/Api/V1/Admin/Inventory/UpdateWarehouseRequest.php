@@ -15,6 +15,9 @@ final class UpdateWarehouseRequest extends FormRequest
         return true;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function rules(): array
     {
         $warehouseId = $this->route('warehouse')?->id;

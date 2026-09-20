@@ -16,6 +16,9 @@ final class ReleaseInventoryReservationRequest extends FormRequest
         return true;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function rules(): array
     {
         return ['release_reason' => ['nullable', 'string', 'max:64']];

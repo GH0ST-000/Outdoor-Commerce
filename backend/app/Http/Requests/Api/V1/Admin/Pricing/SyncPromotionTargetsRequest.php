@@ -16,6 +16,9 @@ final class SyncPromotionTargetsRequest extends FormRequest
         return true;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function rules(): array
     {
         return [

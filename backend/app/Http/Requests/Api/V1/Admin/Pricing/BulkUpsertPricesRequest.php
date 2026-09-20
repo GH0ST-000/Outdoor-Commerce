@@ -13,6 +13,9 @@ final class BulkUpsertPricesRequest extends FormRequest
         return true;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function rules(): array
     {
         $max = (int) config('pricing.bulk.max_rows', 100);

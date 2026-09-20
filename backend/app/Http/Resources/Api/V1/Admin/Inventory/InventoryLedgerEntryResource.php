@@ -11,6 +11,9 @@ use Illuminate\Http\Resources\Json\JsonResource;
 /** @mixin InventoryLedgerEntry */
 final class InventoryLedgerEntryResource extends JsonResource
 {
+    /**
+     * @return array<string, mixed>
+     */
     public function toArray(Request $request): array
     {
         $operation = $this->operation;
@@ -32,7 +35,7 @@ final class InventoryLedgerEntryResource extends JsonResource
             ],
             'actor' => $operation?->performer ? [
                 'id' => $operation->performer->id,
-                'name' => $operation->performer->name,
+                'name' => $operation->performer->fullName(),
             ] : null,
             'occurred_at' => $operation?->occurred_at?->toIso8601String(),
             'correlation_id' => $operation?->correlation_id,

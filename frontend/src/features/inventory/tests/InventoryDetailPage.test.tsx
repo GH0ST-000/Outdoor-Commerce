@@ -108,9 +108,15 @@ describe("InventoryDetailPage permissions", () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByRole("button", { name: "Receive" })).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: "Receive" }),
+      ).toBeInTheDocument();
     });
-    expect(screen.getByRole("button", { name: "Transfer" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Settings" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Transfer" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Settings" }),
+    ).toBeInTheDocument();
   });
 });

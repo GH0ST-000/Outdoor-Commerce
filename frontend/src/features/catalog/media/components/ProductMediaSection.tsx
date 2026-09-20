@@ -95,8 +95,7 @@ export function ProductMediaSection({
 
   useEffect(() => {
     const needsPoll = (attachments ?? []).some(
-      (item) =>
-        item.status === "pending" || item.status === "processing",
+      (item) => item.status === "pending" || item.status === "processing",
     );
     if (!needsPoll) {
       if (pollRef.current) {
@@ -111,10 +110,7 @@ export function ProductMediaSection({
         const current = attachments ?? [];
         let changed = false;
         for (const item of current) {
-          if (
-            item.status !== "pending" &&
-            item.status !== "processing"
-          ) {
+          if (item.status !== "pending" && item.status !== "processing") {
             continue;
           }
           try {

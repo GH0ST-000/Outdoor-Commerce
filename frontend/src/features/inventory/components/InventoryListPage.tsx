@@ -47,8 +47,7 @@ function readParams(searchParams: URLSearchParams): InventoryListParams {
     warehouse_id: searchParams.get("warehouse_id") ?? "",
     low_stock: searchParams.get("low_stock") === "1" ? "1" : "",
     out_of_stock: searchParams.get("out_of_stock") === "1" ? "1" : "",
-    has_reservations:
-      searchParams.get("has_reservations") === "1" ? "1" : "",
+    has_reservations: searchParams.get("has_reservations") === "1" ? "1" : "",
     per_page: Number(searchParams.get("per_page") ?? 10) || 10,
     page: Number(searchParams.get("page") ?? 1) || 1,
   };
@@ -314,14 +313,10 @@ export function InventoryListPage() {
                       {row.product.name ?? `Product #${row.product.id}`}
                     </Link>
                   </td>
-                  <td
-                    className={`${adminTdClassName()} text-muted-foreground`}
-                  >
+                  <td className={`${adminTdClassName()} text-muted-foreground`}>
                     {row.variant.sku ?? row.variant.combination_label ?? "—"}
                   </td>
-                  <td
-                    className={`${adminTdClassName()} text-muted-foreground`}
-                  >
+                  <td className={`${adminTdClassName()} text-muted-foreground`}>
                     {row.warehouse.name}
                   </td>
                   <td className={adminTdClassName()}>

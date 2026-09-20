@@ -12,15 +12,16 @@ use Illuminate\Http\Resources\Json\JsonResource;
 /** @mixin InventoryBalance */
 final class InventoryBalanceResource extends JsonResource
 {
+    /**
+     * @return array<string, mixed>
+     */
     public function toArray(Request $request): array
     {
         $locale = CatalogLocales::isSupported((string) $request->query('locale', ''))
             ? (string) $request->query('locale')
             : CatalogLocales::default();
         $quantities = $this->quantities();
-        $productName = $this->variant?->product?->translations
-            ->firstWhere('locale', $locale)?->name
-            ?? $this->variant?->product?->translations->first()?->name;
+        $productName = $this->variant?->product?->translation($locale)?->name;
 
         return [
             'warehouse' => [

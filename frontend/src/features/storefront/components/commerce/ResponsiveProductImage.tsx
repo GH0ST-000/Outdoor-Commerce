@@ -58,7 +58,7 @@ export function ResponsiveProductImage({
   const entry = presetEntry(resolved, preset);
   const src =
     failed || !entry?.url
-      ? resolved.fallbackSrc ?? PRODUCT_IMAGE_PLACEHOLDER
+      ? (resolved.fallbackSrc ?? PRODUCT_IMAGE_PLACEHOLDER)
       : entry.url;
   const position = objectPosition(resolved);
   const width = entry?.width ?? resolved.width ?? undefined;
@@ -96,8 +96,8 @@ export function ResponsiveProductImage({
       src={src}
       alt={label}
       fill={fill}
-      width={fill ? undefined : width ?? 640}
-      height={fill ? undefined : height ?? 800}
+      width={fill ? undefined : (width ?? 640)}
+      height={fill ? undefined : (height ?? 800)}
       sizes={sizes}
       priority={priority}
       className={cn(fill && "object-cover", className)}

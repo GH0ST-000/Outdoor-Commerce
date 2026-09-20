@@ -19,6 +19,9 @@ final class PreviewPromotionRequest extends FormRequest
         return true;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function rules(): array
     {
         $enabled = app(CurrencyCatalog::class)->enabledCodes();

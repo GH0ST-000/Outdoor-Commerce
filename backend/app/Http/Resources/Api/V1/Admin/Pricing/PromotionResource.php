@@ -12,6 +12,9 @@ use Illuminate\Http\Resources\Json\JsonResource;
 /** @mixin Promotion */
 final class PromotionResource extends JsonResource
 {
+    /**
+     * @return array<string, mixed>
+     */
     public function toArray(Request $request): array
     {
         $now = app(Clock::class)->now();

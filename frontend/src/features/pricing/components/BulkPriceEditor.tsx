@@ -20,11 +20,15 @@ function parseBulkRows(
   raw: string,
   priceListId: number,
   currencyCode: string,
-): { items: BulkRow[]; errors: string | null; payloadItems: Array<{
-  price_list_id: number;
-  product_variant_id: number;
-  amount_minor: number;
-}> } {
+): {
+  items: BulkRow[];
+  errors: string | null;
+  payloadItems: Array<{
+    price_list_id: number;
+    product_variant_id: number;
+    amount_minor: number;
+  }>;
+} {
   const lines = raw
     .split("\n")
     .map((line) => line.trim())
@@ -36,7 +40,9 @@ function parseBulkRows(
   }> = [];
 
   for (const [index, line] of lines.entries()) {
-    const [variantPart, amountPart] = line.split(/[,;\t]/).map((part) => part.trim());
+    const [variantPart, amountPart] = line
+      .split(/[,;\t]/)
+      .map((part) => part.trim());
     const variant_id = Number(variantPart);
     if (!Number.isFinite(variant_id) || variant_id < 1) {
       return {

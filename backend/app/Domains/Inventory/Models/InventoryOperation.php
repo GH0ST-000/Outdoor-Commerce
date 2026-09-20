@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Carbon;
 
 /**
  * Immutable logical inventory command.
@@ -20,6 +21,14 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property InventoryOperationType $type
  * @property string $idempotency_key
  * @property string|null $payload_hash
+ * @property string|null $reference_type
+ * @property string|null $reference_id
+ * @property string|null $reason_code
+ * @property string|null $note
+ * @property int|null $performed_by
+ * @property string|null $correlation_id
+ * @property Carbon $occurred_at
+ * @property Carbon|null $created_at
  */
 class InventoryOperation extends Model
 {

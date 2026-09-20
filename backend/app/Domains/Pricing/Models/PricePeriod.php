@@ -20,6 +20,8 @@ use Illuminate\Support\Carbon;
  * @property PricePeriodStatus $status
  * @property Carbon $starts_at
  * @property Carbon|null $ends_at
+ * @property Carbon|null $published_at
+ * @property Carbon|null $cancelled_at
  */
 class PricePeriod extends Model
 {

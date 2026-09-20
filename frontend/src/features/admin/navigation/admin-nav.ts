@@ -2,11 +2,7 @@ import { PERMISSIONS } from "@/features/admin/permissions/permissions";
 import { hasPermission } from "@/features/admin/permissions/has-permission";
 
 export type AdminNavSectionId =
-  | "overview"
-  | "catalog"
-  | "inventory"
-  | "pricing"
-  | "access";
+  "overview" | "catalog" | "inventory" | "pricing" | "access";
 
 export type AdminNavItem = {
   id: string;

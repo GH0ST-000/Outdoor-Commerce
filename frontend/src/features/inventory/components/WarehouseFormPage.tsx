@@ -187,7 +187,10 @@ export function WarehouseFormPage({
       ) : null}
 
       {formError ? (
-        <p className="rounded-xl border border-destructive/20 bg-destructive/10 px-4 py-3 text-sm text-destructive" role="alert">
+        <p
+          className="rounded-xl border border-destructive/20 bg-destructive/10 px-4 py-3 text-sm text-destructive"
+          role="alert"
+        >
           {formError}
         </p>
       ) : null}
@@ -195,9 +198,16 @@ export function WarehouseFormPage({
       {!loading ? (
         <AdminPanel>
           <AdminPanelHeader title="Details" />
-          <form className="space-y-4" onSubmit={(event) => void onSubmit(event)}>
+          <form
+            className="space-y-4"
+            onSubmit={(event) => void onSubmit(event)}
+          >
             <div className="grid gap-4 sm:grid-cols-2">
-              <Field label="Code" htmlFor={`${formId}-code`} error={errors.code}>
+              <Field
+                label="Code"
+                htmlFor={`${formId}-code`}
+                error={errors.code}
+              >
                 <Input
                   id={`${formId}-code`}
                   value={form.code}
@@ -207,7 +217,11 @@ export function WarehouseFormPage({
                   disabled={mode === "edit"}
                 />
               </Field>
-              <Field label="Name" htmlFor={`${formId}-name`} error={errors.name}>
+              <Field
+                label="Name"
+                htmlFor={`${formId}-name`}
+                error={errors.name}
+              >
                 <Input
                   id={`${formId}-name`}
                   value={form.name}

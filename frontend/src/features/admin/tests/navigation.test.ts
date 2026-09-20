@@ -166,9 +166,9 @@ describe("admin navigation", () => {
     expect(
       isAdminNavActive("/admin/inventory/warehouses", "/admin/inventory"),
     ).toBe(false);
-    expect(
-      isAdminNavActive("/admin/inventory/1/2", "/admin/inventory"),
-    ).toBe(true);
+    expect(isAdminNavActive("/admin/inventory/1/2", "/admin/inventory")).toBe(
+      true,
+    );
     expect(
       isAdminNavActive(
         "/admin/inventory/warehouses/new",

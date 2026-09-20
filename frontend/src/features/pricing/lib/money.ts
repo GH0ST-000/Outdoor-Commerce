@@ -35,8 +35,7 @@ export type ParseMoneyError =
   | "overflow";
 
 export type ParseMoneyResult =
-  | { ok: true; amount_minor: number }
-  | { ok: false; error: ParseMoneyError };
+  { ok: true; amount_minor: number } | { ok: false; error: ParseMoneyError };
 
 /**
  * Strict major-unit decimal → minor units. Accepts "." as decimal separator only.

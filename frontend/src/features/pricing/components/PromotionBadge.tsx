@@ -25,10 +25,7 @@ export function PromotionBadge({
   }
 
   return (
-    <span
-      className={className}
-      data-testid="promotion-badge"
-    >
+    <span className={className} data-testid="promotion-badge">
       {text}
     </span>
   );

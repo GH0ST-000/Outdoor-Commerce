@@ -15,12 +15,16 @@ final class UpdatePriceListRequest extends FormRequest
         return true;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function rules(): array
     {
-        $id = $this->route('priceList')?->id ?? $this->route('price_list');
+        $priceList = $this->route('priceList');
+        $ignoreId = is_object($priceList) ? $priceList->id : $priceList;
 
         return [
-            'code' => ['required', 'string', 'max:64', Rule::unique('price_lists', 'code')->ignore($id)],
+            'code' => ['required', 'string', 'max:64', Rule::unique('price_lists', 'code')->ignore($ignoreId)],
             'name' => ['required', 'string', 'max:255'],
             'currency_code' => ['required', 'string', 'size:3'],
             'status' => ['sometimes', Rule::enum(PriceListStatus::class)],

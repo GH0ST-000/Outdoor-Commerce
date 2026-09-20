@@ -32,12 +32,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
 type ActiveDialog =
-  | "receipt"
-  | "adjust"
-  | "count"
-  | "transfer"
-  | "settings"
-  | null;
+  "receipt" | "adjust" | "count" | "transfer" | "settings" | null;
 
 export function InventoryDetailPage({
   warehouseId,
@@ -48,7 +43,10 @@ export function InventoryDetailPage({
 }) {
   const { permissions } = useAdminContext();
   const canAdjust = hasPermission(permissions, PERMISSIONS.INVENTORY_ADJUST);
-  const canTransfer = hasPermission(permissions, PERMISSIONS.INVENTORY_TRANSFER);
+  const canTransfer = hasPermission(
+    permissions,
+    PERMISSIONS.INVENTORY_TRANSFER,
+  );
   const canManage = hasPermission(permissions, PERMISSIONS.INVENTORY_MANAGE);
 
   type DetailResult = {
@@ -119,8 +117,7 @@ export function InventoryDetailPage({
   }
 
   const title =
-    balance?.product.name ??
-    (loading ? "Loading…" : `Variant #${variantId}`);
+    balance?.product.name ?? (loading ? "Loading…" : `Variant #${variantId}`);
 
   return (
     <div className="space-y-6">
@@ -232,7 +229,9 @@ export function InventoryDetailPage({
               ).map(([label, value]) => (
                 <div key={label}>
                   <dt className="text-xs text-muted-foreground">{label}</dt>
-                  <dd className="text-lg font-semibold tabular-nums">{value}</dd>
+                  <dd className="text-lg font-semibold tabular-nums">
+                    {value}
+                  </dd>
                 </div>
               ))}
             </dl>

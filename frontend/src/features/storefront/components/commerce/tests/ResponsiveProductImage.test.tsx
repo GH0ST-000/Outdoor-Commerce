@@ -20,6 +20,9 @@ describe("ResponsiveProductImage", () => {
     );
 
     const img = screen.getByRole("img", { name: "Missing product" });
-    expect(img).toHaveAttribute("src", expect.stringContaining(PRODUCT_IMAGE_PLACEHOLDER));
+    expect(img).toHaveAttribute(
+      "src",
+      expect.stringContaining(PRODUCT_IMAGE_PLACEHOLDER),
+    );
   });
 });

@@ -1,4 +1,7 @@
-import type { MediaAttachment, MediaPreset } from "@/features/catalog/media/types/media-types";
+import type {
+  MediaAttachment,
+  MediaPreset,
+} from "@/features/catalog/media/types/media-types";
 
 const FORMAT_PRIORITY = ["webp", "jpeg", "png", "avif"] as const;
 

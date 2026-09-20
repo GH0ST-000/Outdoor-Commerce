@@ -83,8 +83,7 @@ export function PriceDisplay({
     );
   }
 
-  const single =
-    finalAmountMinor ?? amountMinor ?? baseAmountMinor ?? null;
+  const single = finalAmountMinor ?? amountMinor ?? baseAmountMinor ?? null;
 
   if (single == null || !Number.isInteger(single)) {
     return (

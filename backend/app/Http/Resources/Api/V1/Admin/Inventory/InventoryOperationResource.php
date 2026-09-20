@@ -11,6 +11,9 @@ use Illuminate\Http\Resources\Json\JsonResource;
 /** @mixin InventoryOperation */
 final class InventoryOperationResource extends JsonResource
 {
+    /**
+     * @return array<string, mixed>
+     */
     public function toArray(Request $request): array
     {
         return [
