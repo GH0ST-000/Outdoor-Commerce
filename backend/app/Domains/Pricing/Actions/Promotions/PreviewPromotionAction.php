@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domains\Pricing\Actions\Promotions;
 
-use App\Domains\Catalog\Models\ProductVariant;
+use App\Domains\Catalog\Contracts\CatalogProductLookup;
 use App\Domains\Pricing\DTOs\PreviewPromotionData;
 use App\Domains\Pricing\DTOs\PromotionTargetData;
 use App\Domains\Pricing\DTOs\PromotionWriteData;
@@ -28,6 +28,7 @@ final class PreviewPromotionAction
         private readonly PromotionEligibilityService $eligibility,
         private readonly PromotionCalculator $calculator,
         private readonly Clock $clock,
+        private readonly CatalogProductLookup $catalog,
     ) {}
 
     /**
@@ -41,7 +42,7 @@ final class PreviewPromotionAction
 
         $variantIds = $data->variantIds;
         if ($variantIds === []) {
-            $variantIds = ProductVariant::query()->active()->limit(5)->pluck('id')->all();
+            $variantIds = $this->catalog->sampleActiveVariantIds(5);
         }
 
         $samples = [];
@@ -53,8 +54,8 @@ final class PreviewPromotionAction
         }
 
         foreach ($variantIds as $variantId) {
-            $variant = ProductVariant::query()->with('product')->find($variantId);
-            if ($variant === null) {
+            $sellable = $this->catalog->sellableRef($variantId);
+            if ($sellable === null) {
                 $samples[] = [
                     'variant_id' => $variantId,
                     'eligible' => false,
@@ -65,7 +66,7 @@ final class PreviewPromotionAction
             }
 
             try {
-                $base = $this->basePrices->resolveForVariant($variant->id, $data->priceListId);
+                $base = $this->basePrices->resolveForVariant($sellable->variantId, $data->priceListId);
             } catch (\Throwable $e) {
                 $samples[] = [
                     'variant_id' => $variantId,
@@ -79,7 +80,7 @@ final class PreviewPromotionAction
                 continue;
             }
 
-            $eligible = $this->eligibility->isEligible($promotion, $variant, $variant->product, $base->amount->currencyCode);
+            $eligible = $this->eligibility->isEligible($promotion, $sellable, $base->amount->currencyCode);
             if (! $eligible) {
                 $samples[] = [
                     'variant_id' => $variantId,

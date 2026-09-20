@@ -55,12 +55,13 @@ The backend begins as a **modular monolith**:
 - Public Actions and Queries documented as cross-module entry points
 - Domain/application events (past tense) carrying identifiers and safe payload data
 - DTOs that are part of a module’s public contract (`*Data`)
+- Owned Eloquent models for foreign-key relations and persistence identity
 - Shared value objects from `App\Domains\Shared`
 
 ### Forbidden
 
-- Importing another module’s internal Services, Models, or Support classes for arbitrary use
-- Writing directly to another module’s tables
+- Importing another module’s internal Services or Support classes for arbitrary use
+- Writing directly to another module’s tables outside that module’s Actions
 - Calling another module’s HTTP controllers
 - Sharing mutable global state
 - Copying another module’s business rules

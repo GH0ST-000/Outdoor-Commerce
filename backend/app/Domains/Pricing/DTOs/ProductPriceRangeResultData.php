@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domains\Pricing\DTOs;
 
-final readonly class ProductPriceRangeResult
+final readonly class ProductPriceRangeResultData
 {
     public function __construct(
         public string $currencyCode,

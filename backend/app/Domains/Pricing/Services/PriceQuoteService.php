@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Domains\Pricing\Services;
 
-use App\Domains\Catalog\Models\Product;
-use App\Domains\Catalog\Models\ProductVariant;
+use App\Domains\Catalog\Contracts\CatalogProductLookup;
+use App\Domains\Pricing\Exceptions\PriceUnavailableException;
 use App\Domains\Pricing\ValueObjects\PriceQuote;
 use App\Domains\Shared\Support\Clock;
 use Carbon\CarbonImmutable;
@@ -17,25 +17,29 @@ final class PriceQuoteService
         private readonly EffectiveBasePriceResolver $basePriceResolver,
         private readonly PromotionEligibilityService $eligibility,
         private readonly PromotionCalculator $calculator,
+        private readonly CatalogProductLookup $catalog,
     ) {}
 
     public function quoteVariant(
-        ProductVariant $variant,
+        int $variantId,
         ?int $priceListId = null,
         ?CarbonImmutable $effectiveAt = null,
     ): PriceQuote {
-        $at = $effectiveAt ?? $this->clock->now();
-        $baseResult = $this->basePriceResolver->resolveForVariant($variant->id, $priceListId, $at);
+        $sellable = $this->catalog->sellableRef($variantId);
+        if ($sellable === null) {
+            throw new PriceUnavailableException('Variant is not available for pricing.');
+        }
 
-        $variant->loadMissing('product');
-        $product = $variant->product;
+        $at = $effectiveAt ?? $this->clock->now();
+        $baseResult = $this->basePriceResolver->resolveForVariant($variantId, $priceListId, $at);
+
         $promotions = $this->eligibility->effectivePromotions($baseResult->amount->currencyCode, $at)
-            ->filter(fn ($promotion) => $this->eligibility->isEligible($promotion, $variant, $product, $baseResult->amount->currencyCode));
+            ->filter(fn ($promotion) => $this->eligibility->isEligible($promotion, $sellable, $baseResult->amount->currencyCode));
 
         $calc = $this->calculator->calculate($baseResult->amount, $promotions);
 
         return PriceQuote::fromParts(
-            variantId: $variant->id,
+            variantId: $variantId,
             priceListId: $baseResult->priceListId,
             base: $baseResult->amount,
             final: $calc['final'],
@@ -46,14 +50,15 @@ final class PriceQuoteService
         );
     }
 
-    public function quoteProductDefaultVariant(Product $product, ?int $priceListId = null): ?PriceQuote
+    public function quoteProductDefaultVariant(int $productId, ?int $priceListId = null): ?PriceQuote
     {
-        $product->loadMissing('variants');
-        $default = $product->variants->firstWhere('is_default', true);
+        $default = collect($this->catalog->sellableRefsForProduct($productId))
+            ->first(static fn ($ref): bool => $ref->isDefault);
+
         if ($default === null) {
             return null;
         }
 
-        return $this->quoteVariant($default, $priceListId);
+        return $this->quoteVariant($default->variantId, $priceListId);
     }
 }

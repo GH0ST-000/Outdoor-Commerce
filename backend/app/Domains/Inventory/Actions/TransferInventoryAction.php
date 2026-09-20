@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domains\Inventory\Actions;
 
-use App\Domains\Inventory\DTOs\InventoryMutationResult;
+use App\Domains\Inventory\DTOs\InventoryMutationResultData;
 use App\Domains\Inventory\DTOs\TransferInventoryData;
 use App\Domains\Inventory\Enums\InventoryMovementType;
 use App\Domains\Inventory\Enums\InventoryOperationType;
@@ -45,7 +45,7 @@ final class TransferInventoryAction
         ?string $requestId = null,
         ?string $ipAddress = null,
         ?string $userAgent = null,
-    ): InventoryMutationResult {
+    ): InventoryMutationResultData {
         if ($data->sourceWarehouseId === $data->destinationWarehouseId) {
             throw new TransferWarehousesMatchException;
         }
@@ -71,8 +71,8 @@ final class TransferInventoryAction
 
         $actorId = (int) $actor->getAuthIdentifier();
 
-        return $this->deadlockRetry->run(function () use ($data, $source, $destination, $payloadHash, $actorId, $requestId, $ipAddress, $userAgent): InventoryMutationResult {
-            return DB::transaction(function () use ($data, $source, $destination, $payloadHash, $actorId, $requestId, $ipAddress, $userAgent): InventoryMutationResult {
+        return $this->deadlockRetry->run(function () use ($data, $source, $destination, $payloadHash, $actorId, $requestId, $ipAddress, $userAgent): InventoryMutationResultData {
+            return DB::transaction(function () use ($data, $source, $destination, $payloadHash, $actorId, $requestId, $ipAddress, $userAgent): InventoryMutationResultData {
                 $claim = $this->idempotency->claimOperation(
                     $data->idempotencyKey,
                     $payloadHash,
@@ -91,7 +91,7 @@ final class TransferInventoryAction
                         ->whereIn('product_variant_id', array_column($data->items, 'product_variant_id'))
                         ->get();
 
-                    return new InventoryMutationResult($claim->operation, $balances, true);
+                    return new InventoryMutationResultData($claim->operation, $balances, true);
                 }
 
                 $pairs = [];
@@ -154,7 +154,7 @@ final class TransferInventoryAction
                 $afterCommit[] = fn () => $this->cache->bumpGlobal();
                 $this->lowStock->registerAfterCommit($afterCommit);
 
-                return new InventoryMutationResult($claim->operation, $locked->values(), false);
+                return new InventoryMutationResultData($claim->operation, $locked->values(), false);
             });
         }, $requestId);
     }

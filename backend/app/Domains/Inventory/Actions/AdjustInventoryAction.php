@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Domains\Inventory\Actions;
 
 use App\Domains\Inventory\DTOs\AdjustInventoryData;
-use App\Domains\Inventory\DTOs\InventoryMutationResult;
+use App\Domains\Inventory\DTOs\InventoryMutationResultData;
 use App\Domains\Inventory\Enums\InventoryMovementType;
 use App\Domains\Inventory\Enums\InventoryOperationType;
 use App\Domains\Inventory\Events\InventoryAdjusted;
@@ -43,7 +43,7 @@ final class AdjustInventoryAction
         ?string $requestId = null,
         ?string $ipAddress = null,
         ?string $userAgent = null,
-    ): InventoryMutationResult {
+    ): InventoryMutationResultData {
         if ($data->quantityDelta === 0) {
             throw new \InvalidArgumentException('Adjustment delta cannot be zero.');
         }
@@ -69,8 +69,8 @@ final class AdjustInventoryAction
             ? InventoryMovementType::AdjustmentIn
             : InventoryMovementType::AdjustmentOut;
 
-        return $this->deadlockRetry->run(function () use ($data, $warehouse, $payloadHash, $actorId, $movement, $requestId, $ipAddress, $userAgent): InventoryMutationResult {
-            return DB::transaction(function () use ($data, $warehouse, $payloadHash, $actorId, $movement, $requestId, $ipAddress, $userAgent): InventoryMutationResult {
+        return $this->deadlockRetry->run(function () use ($data, $warehouse, $payloadHash, $actorId, $movement, $requestId, $ipAddress, $userAgent): InventoryMutationResultData {
+            return DB::transaction(function () use ($data, $warehouse, $payloadHash, $actorId, $movement, $requestId, $ipAddress, $userAgent): InventoryMutationResultData {
                 $claim = $this->idempotency->claimOperation(
                     $data->idempotencyKey,
                     $payloadHash,
@@ -89,7 +89,7 @@ final class AdjustInventoryAction
                         ->where('product_variant_id', $data->productVariantId)
                         ->firstOrFail();
 
-                    return new InventoryMutationResult($claim->operation, collect([$balance]), true);
+                    return new InventoryMutationResultData($claim->operation, collect([$balance]), true);
                 }
 
                 $balance = $this->balances->lockForUpdate((int) $warehouse->id, $data->productVariantId);
@@ -129,7 +129,7 @@ final class AdjustInventoryAction
                 $afterCommit[] = fn () => $this->cache->bumpGlobal();
                 $this->lowStock->registerAfterCommit($afterCommit);
 
-                return new InventoryMutationResult($claim->operation, collect([$balance]), false);
+                return new InventoryMutationResultData($claim->operation, collect([$balance]), false);
             });
         }, $requestId);
     }

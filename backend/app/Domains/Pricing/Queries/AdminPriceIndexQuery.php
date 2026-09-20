@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domains\Pricing\Queries;
 
-use App\Domains\Catalog\Support\CatalogLocales;
+use App\Domains\Catalog\Contracts\CatalogLocales;
 use App\Domains\Pricing\Enums\PricePeriodStatus;
 use App\Domains\Pricing\Models\VariantPrice;
 use App\Domains\Shared\Support\Clock;

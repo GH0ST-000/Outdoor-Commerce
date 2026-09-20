@@ -117,7 +117,7 @@ export function PriceEditorDialog({
     return () => {
       cancelled = true;
     };
-  }, [row.price_list_id, row.product_variant_id]);
+  }, [row.price_list_id, row.product_variant_id, currency]);
 
   async function onSubmit(event: FormEvent) {
     event.preventDefault();

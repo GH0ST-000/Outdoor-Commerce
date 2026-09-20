@@ -4,8 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domains\Pricing\Services;
 
-use App\Domains\Catalog\Models\Product;
-use App\Domains\Catalog\Models\ProductVariant;
+use App\Domains\Catalog\DTOs\CatalogSellableRefData;
 use App\Domains\Pricing\Enums\PromotionStatus;
 use App\Domains\Pricing\Enums\PromotionTargetMode;
 use App\Domains\Pricing\Enums\PromotionTargetType;
@@ -43,7 +42,7 @@ final class PromotionEligibilityService
             ->get();
     }
 
-    public function isEligible(Promotion $promotion, ProductVariant $variant, Product $product, string $currencyCode): bool
+    public function isEligible(Promotion $promotion, CatalogSellableRefData $sellable, string $currencyCode): bool
     {
         if ($promotion->status !== PromotionStatus::Active) {
             return false;
@@ -60,22 +59,20 @@ final class PromotionEligibilityService
             return false;
         }
 
-        $product->loadMissing(['categories', 'brand']);
-
-        if ($this->matchesExclusion($targets, $variant, $product)) {
+        if ($this->matchesExclusion($targets, $sellable)) {
             return false;
         }
 
-        return $this->matchesInclusion($targets, $variant, $product);
+        return $this->matchesInclusion($targets, $sellable);
     }
 
     /**
      * @param  Collection<int, PromotionTarget>  $targets
      */
-    private function matchesExclusion(Collection $targets, ProductVariant $variant, Product $product): bool
+    private function matchesExclusion(Collection $targets, CatalogSellableRefData $sellable): bool
     {
         foreach ($targets->where('mode', PromotionTargetMode::Exclude) as $target) {
-            if ($this->targetMatches($target, $variant, $product)) {
+            if ($this->targetMatches($target, $sellable)) {
                 return true;
             }
         }
@@ -86,7 +83,7 @@ final class PromotionEligibilityService
     /**
      * @param  Collection<int, PromotionTarget>  $targets
      */
-    private function matchesInclusion(Collection $targets, ProductVariant $variant, Product $product): bool
+    private function matchesInclusion(Collection $targets, CatalogSellableRefData $sellable): bool
     {
         $includes = $targets->where('mode', PromotionTargetMode::Include);
 
@@ -95,7 +92,7 @@ final class PromotionEligibilityService
         }
 
         foreach ($includes as $target) {
-            if ($this->targetMatches($target, $variant, $product)) {
+            if ($this->targetMatches($target, $sellable)) {
                 return true;
             }
         }
@@ -103,15 +100,15 @@ final class PromotionEligibilityService
         return false;
     }
 
-    private function targetMatches(PromotionTarget $target, ProductVariant $variant, Product $product): bool
+    private function targetMatches(PromotionTarget $target, CatalogSellableRefData $sellable): bool
     {
         return match ($target->target_type) {
             PromotionTargetType::AllProducts => true,
-            PromotionTargetType::Product => $target->target_id === $product->id && ! $product->trashed(),
-            PromotionTargetType::ProductVariant => $target->target_id === $variant->id && ! $variant->trashed(),
-            PromotionTargetType::Category => $product->categories->contains('id', $target->target_id),
-            PromotionTargetType::Brand => $product->brand_id !== null && $product->brand_id === $target->target_id
-                && $product->brand !== null && ! $product->brand->trashed(),
+            PromotionTargetType::Product => $target->target_id === $sellable->productId && ! $sellable->productDeleted,
+            PromotionTargetType::ProductVariant => $target->target_id === $sellable->variantId && ! $sellable->variantDeleted,
+            PromotionTargetType::Category => in_array($target->target_id, $sellable->categoryIds, true),
+            PromotionTargetType::Brand => $sellable->brandId !== null && $sellable->brandId === $target->target_id
+                && ! $sellable->brandDeleted,
         };
     }
 }

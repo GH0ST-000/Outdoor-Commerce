@@ -99,7 +99,7 @@ final class AdminPriceController
 
         $aggregate = $action->execute(
             $priceList,
-            $variant,
+            $variant->id,
             new PricePeriodWriteData(
                 amountMinor: (int) $validated['amount_minor'],
                 startsAt: CarbonImmutable::parse($validated['starts_at'])->utc(),
@@ -141,7 +141,7 @@ final class AdminPriceController
 
         $aggregate = $action->execute(
             $priceList,
-            $variant,
+            $variant->id,
             new ReplaceEffectivePriceData(
                 amountMinor: (int) $validated['amount_minor'],
                 startsAt: CarbonImmutable::parse($validated['starts_at'])->utc(),

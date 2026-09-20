@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domains\Inventory\Actions;
 
-use App\Domains\Inventory\DTOs\InventoryMutationResult;
+use App\Domains\Inventory\DTOs\InventoryMutationResultData;
 use App\Domains\Inventory\DTOs\ReconcileStockCountData;
 use App\Domains\Inventory\Enums\InventoryMovementType;
 use App\Domains\Inventory\Enums\InventoryOperationType;
@@ -44,7 +44,7 @@ final class ReconcileStockCountAction
         ?string $requestId = null,
         ?string $ipAddress = null,
         ?string $userAgent = null,
-    ): InventoryMutationResult {
+    ): InventoryMutationResultData {
         if ($data->countedQuantity < 0) {
             throw new \InvalidArgumentException('Counted quantity cannot be negative.');
         }
@@ -63,8 +63,8 @@ final class ReconcileStockCountAction
 
         $actorId = (int) $actor->getAuthIdentifier();
 
-        return $this->deadlockRetry->run(function () use ($data, $warehouse, $payloadHash, $actorId, $requestId, $ipAddress, $userAgent): InventoryMutationResult {
-            return DB::transaction(function () use ($data, $warehouse, $payloadHash, $actorId, $requestId, $ipAddress, $userAgent): InventoryMutationResult {
+        return $this->deadlockRetry->run(function () use ($data, $warehouse, $payloadHash, $actorId, $requestId, $ipAddress, $userAgent): InventoryMutationResultData {
+            return DB::transaction(function () use ($data, $warehouse, $payloadHash, $actorId, $requestId, $ipAddress, $userAgent): InventoryMutationResultData {
                 $claim = $this->idempotency->claimOperation(
                     $data->idempotencyKey,
                     $payloadHash,
@@ -83,7 +83,7 @@ final class ReconcileStockCountAction
                         ->where('product_variant_id', $data->productVariantId)
                         ->firstOrFail();
 
-                    return new InventoryMutationResult($claim->operation, collect([$balance]), true);
+                    return new InventoryMutationResultData($claim->operation, collect([$balance]), true);
                 }
 
                 $balance = $this->balances->lockForUpdate((int) $warehouse->id, $data->productVariantId);
@@ -131,7 +131,7 @@ final class ReconcileStockCountAction
                 $afterCommit[] = fn () => $this->cache->bumpGlobal();
                 $this->lowStock->registerAfterCommit($afterCommit);
 
-                return new InventoryMutationResult($claim->operation, collect([$balance]), false);
+                return new InventoryMutationResultData($claim->operation, collect([$balance]), false);
             });
         }, $requestId);
     }

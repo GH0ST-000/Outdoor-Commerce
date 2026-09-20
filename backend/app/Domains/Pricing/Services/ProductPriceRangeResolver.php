@@ -4,9 +4,8 @@ declare(strict_types=1);
 
 namespace App\Domains\Pricing\Services;
 
-use App\Domains\Catalog\Enums\ProductVariantStatus;
-use App\Domains\Catalog\Models\Product;
-use App\Domains\Pricing\DTOs\ProductPriceRangeResult;
+use App\Domains\Catalog\Contracts\CatalogProductLookup;
+use App\Domains\Pricing\DTOs\ProductPriceRangeResultData;
 use App\Domains\Pricing\Exceptions\PriceUnavailableException;
 use Carbon\CarbonImmutable;
 
@@ -14,12 +13,15 @@ final class ProductPriceRangeResolver
 {
     public function __construct(
         private readonly EffectiveBasePriceResolver $basePriceResolver,
+        private readonly CatalogProductLookup $catalog,
     ) {}
 
-    public function resolve(Product $product, ?int $priceListId = null, ?CarbonImmutable $effectiveAt = null): ProductPriceRangeResult
+    public function resolve(int $productId, ?int $priceListId = null, ?CarbonImmutable $effectiveAt = null): ProductPriceRangeResultData
     {
-        $product->loadMissing('variants');
-        $activeVariants = $product->variants->where('status', ProductVariantStatus::Active);
+        $activeVariants = array_values(array_filter(
+            $this->catalog->sellableRefsForProduct($productId),
+            static fn ($ref): bool => $ref->variantActive && ! $ref->variantDeleted,
+        ));
 
         $currency = null;
         $min = null;
@@ -29,7 +31,7 @@ final class ProductPriceRangeResolver
 
         foreach ($activeVariants as $variant) {
             try {
-                $base = $this->basePriceResolver->resolveForVariant($variant->id, $priceListId, $effectiveAt);
+                $base = $this->basePriceResolver->resolveForVariant($variant->variantId, $priceListId, $effectiveAt);
             } catch (PriceUnavailableException) {
                 $unpriced++;
 
@@ -44,7 +46,7 @@ final class ProductPriceRangeResolver
         }
 
         if ($currency === null) {
-            return new ProductPriceRangeResult(
+            return new ProductPriceRangeResultData(
                 currencyCode: app(CurrencyCatalog::class)->defaultCode(),
                 minAmountMinor: null,
                 maxAmountMinor: null,
@@ -54,7 +56,7 @@ final class ProductPriceRangeResolver
             );
         }
 
-        return new ProductPriceRangeResult(
+        return new ProductPriceRangeResultData(
             currencyCode: $currency,
             minAmountMinor: $min,
             maxAmountMinor: $max,

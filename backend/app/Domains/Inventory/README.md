@@ -31,7 +31,7 @@ Transition history is recorded in the immutable Operations audit log (`inventory
 
 ## May depend on
 
-Shared; Catalog identifiers (`product_variants.id`); Operations audit; Identity permission names in policies.
+Shared; Catalog contracts (`CatalogProductLookup`, `CatalogLocales`); Operations audit; Identity permission names in policies.
 
 ## Explicitly outside this module
 

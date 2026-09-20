@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domains\Inventory\Actions;
 
-use App\Domains\Inventory\DTOs\InventoryMutationResult;
+use App\Domains\Inventory\DTOs\InventoryMutationResultData;
 use App\Domains\Inventory\DTOs\ReceiveInventoryData;
 use App\Domains\Inventory\Enums\InventoryMovementType;
 use App\Domains\Inventory\Enums\InventoryOperationType;
@@ -43,7 +43,7 @@ final class ReceiveInventoryAction
         ?string $requestId = null,
         ?string $ipAddress = null,
         ?string $userAgent = null,
-    ): InventoryMutationResult {
+    ): InventoryMutationResultData {
         $warehouse = $this->guard->requireActiveWarehouse($data->warehouseId);
         $variantIds = array_column($data->items, 'product_variant_id');
         if (count($variantIds) !== count(array_unique($variantIds))) {
@@ -65,8 +65,8 @@ final class ReceiveInventoryAction
 
         $actorId = (int) $actor->getAuthIdentifier();
 
-        return $this->deadlockRetry->run(function () use ($data, $warehouse, $payloadHash, $actorId, $requestId, $ipAddress, $userAgent): InventoryMutationResult {
-            return DB::transaction(function () use ($data, $warehouse, $payloadHash, $actorId, $requestId, $ipAddress, $userAgent): InventoryMutationResult {
+        return $this->deadlockRetry->run(function () use ($data, $warehouse, $payloadHash, $actorId, $requestId, $ipAddress, $userAgent): InventoryMutationResultData {
+            return DB::transaction(function () use ($data, $warehouse, $payloadHash, $actorId, $requestId, $ipAddress, $userAgent): InventoryMutationResultData {
                 $claim = $this->idempotency->claimOperation(
                     $data->idempotencyKey,
                     $payloadHash,
@@ -85,7 +85,7 @@ final class ReceiveInventoryAction
                         ->whereIn('product_variant_id', array_column($data->items, 'product_variant_id'))
                         ->get();
 
-                    return new InventoryMutationResult($claim->operation, $balances, true);
+                    return new InventoryMutationResultData($claim->operation, $balances, true);
                 }
 
                 $pairs = array_map(static fn (array $item): array => [
@@ -129,7 +129,7 @@ final class ReceiveInventoryAction
                 $afterCommit[] = fn () => $this->cache->bumpGlobal();
                 $this->lowStock->registerAfterCommit($afterCommit);
 
-                return new InventoryMutationResult($claim->operation, $locked->values(), false);
+                return new InventoryMutationResultData($claim->operation, $locked->values(), false);
             });
         }, $requestId);
     }

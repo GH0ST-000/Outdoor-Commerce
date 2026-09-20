@@ -13,12 +13,12 @@ use App\Domains\Catalog\Models\MediaAttachment;
 use App\Domains\Catalog\Models\Product;
 use App\Domains\Catalog\Support\CatalogLocales;
 use App\Domains\Catalog\Support\CatalogSlug;
-use App\Domains\Pricing\Services\PricingReadinessService;
+use App\Domains\Pricing\Contracts\ProductPricingReadiness;
 
 final class ProductReadinessService
 {
     public function __construct(
-        private readonly PricingReadinessService $pricingReadiness,
+        private readonly ProductPricingReadiness $pricingReadiness,
     ) {}
 
     /**
@@ -92,7 +92,7 @@ final class ProductReadinessService
             $issues[$key] = $messages;
         }
 
-        $pricingWarnings = $this->pricingReadiness->warningsFor($product);
+        $pricingWarnings = $this->pricingReadiness->warningsForProduct($product->id);
 
         return [
             'ready' => $issues === [],

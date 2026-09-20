@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domains\Inventory\Queries;
 
-use App\Domains\Catalog\Support\CatalogLocales;
+use App\Domains\Catalog\Contracts\CatalogLocales;
 use App\Domains\Inventory\Models\InventoryBalance;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;

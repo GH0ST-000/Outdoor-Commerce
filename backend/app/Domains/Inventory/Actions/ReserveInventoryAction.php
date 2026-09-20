@@ -45,7 +45,7 @@ final class ReserveInventoryAction
         ?string $ipAddress = null,
         ?string $userAgent = null,
     ): InventoryReservation {
-        $variant = $this->guard->requireActiveVariant($data->productVariantId);
+        $variantId = $this->guard->requireActiveVariant($data->productVariantId);
 
         $payloadHash = PayloadHash::from([
             'product_variant_id' => $data->productVariantId,
@@ -64,10 +64,10 @@ final class ReserveInventoryAction
         $actorId = $actor !== null ? (int) $actor->getAuthIdentifier() : null;
         $expiresAt = $data->expiresAt ?? now()->addMinutes((int) config('inventory.reservation_ttl_minutes', 15));
 
-        return $this->deadlockRetry->run(function () use ($data, $variant, $payloadHash, $actorId, $expiresAt, $requestId, $ipAddress, $userAgent): InventoryReservation {
-            return DB::transaction(function () use ($data, $variant, $payloadHash, $actorId, $expiresAt, $requestId, $ipAddress, $userAgent): InventoryReservation {
-                $warehouse = $this->allocation->resolveWarehouse($data->warehouseId, $variant->id, $data->quantity);
-                $balance = $this->balances->lockForUpdate((int) $warehouse->id, $variant->id);
+        return $this->deadlockRetry->run(function () use ($data, $variantId, $payloadHash, $actorId, $expiresAt, $requestId, $ipAddress, $userAgent): InventoryReservation {
+            return DB::transaction(function () use ($data, $variantId, $payloadHash, $actorId, $expiresAt, $requestId, $ipAddress, $userAgent): InventoryReservation {
+                $warehouse = $this->allocation->resolveWarehouse($data->warehouseId, $variantId, $data->quantity);
+                $balance = $this->balances->lockForUpdate((int) $warehouse->id, $variantId);
                 $before = $balance->quantities();
                 $this->ledger->assertAvailableToSell($balance, $data->quantity);
                 $this->ledger->applyReservedDelta($balance, $data->quantity);
@@ -76,7 +76,7 @@ final class ReserveInventoryAction
                 $reservation = InventoryReservation::query()->create([
                     'reservation_key' => (string) Str::uuid(),
                     'warehouse_id' => $warehouse->id,
-                    'product_variant_id' => $variant->id,
+                    'product_variant_id' => $variantId,
                     'quantity' => $data->quantity,
                     'status' => InventoryReservationStatus::Active,
                     'reference_type' => $data->referenceType,
@@ -109,7 +109,7 @@ final class ReserveInventoryAction
                 $afterCommit[] = fn () => event(new InventoryReserved(
                     $reservation->id,
                     (int) $warehouse->id,
-                    $variant->id,
+                    $variantId,
                     $data->quantity,
                 ));
                 $afterCommit[] = fn () => $this->cache->bumpGlobal();

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Domains\Pricing\Actions\Prices;
 
-use App\Domains\Catalog\Models\ProductVariant;
 use App\Domains\Operations\Actions\RecordAuditEventAction;
 use App\Domains\Operations\DTOs\AuditEventData;
 use App\Domains\Operations\Enums\AuditEvent;
@@ -29,7 +28,7 @@ final class ReplaceEffectivePriceAction
 
     public function execute(
         PriceList $priceList,
-        ProductVariant $variant,
+        int $variantId,
         ReplaceEffectivePriceData $data,
         Authenticatable $actor,
         ?string $requestId = null,
@@ -46,8 +45,8 @@ final class ReplaceEffectivePriceAction
 
         $actorId = (int) $actor->getAuthIdentifier();
 
-        return DB::transaction(function () use ($priceList, $variant, $data, $actorId, $requestId, $ipAddress, $userAgent): VariantPrice {
-            $aggregate = $this->schedule->findOrCreateAggregate($priceList, $variant->id);
+        return DB::transaction(function () use ($priceList, $variantId, $data, $actorId, $requestId, $ipAddress, $userAgent): VariantPrice {
+            $aggregate = $this->schedule->findOrCreateAggregate($priceList, $variantId);
             $period = $this->schedule->replaceEffective(
                 $aggregate,
                 $data->amountMinor,

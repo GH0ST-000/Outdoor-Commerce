@@ -4,12 +4,13 @@ Owns products, categories, brands, variants, attributes, and media metadata.
 
 ## Day 7 public surface
 
+- Contracts: `CatalogLocales`, `CatalogProductLookup` (+ `DTOs/CatalogSellableRefData`)
 - Models: `Product`, `ProductTranslation`, `Category`, `Brand` (+ translation models)
 - Enums: `ProductStatus`, `CatalogStatus`
 - Actions under `Actions/Products/*`
 - Queries under `Queries/Products/*`
-- `Services/CatalogCache`, `Services/Products/*`
-- `Support/*` (locales, slug, HTML sanitizer)
+- `Services/CatalogCache`, `Services/Products/*`, `Services/EloquentCatalogProductLookup`
+- `Support/*` (locales, slug, HTML sanitizer) — internal; prefer `Contracts/CatalogLocales` cross-module
 - `Policies/ProductPolicy`
 
 ## Day 8 public surface

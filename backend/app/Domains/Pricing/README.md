@@ -11,6 +11,7 @@ List/sale prices, promotions, and checkout price quotes.
 ## Public contracts
 
 - `Contracts/CheckoutPriceResolver` → `DefaultCheckoutPriceResolver` / `PriceQuoteService`
+- `Contracts/ProductPricingReadiness` → `PricingReadinessService` (Catalog product readiness)
 - Admin Actions under `Actions/PriceLists`, `Actions/Prices`, `Actions/Promotions`
 - Admin Queries: `AdminPriceListListQuery`, `AdminPriceListQuery` / `AdminPriceIndexQuery`, `AdminPromotionListQuery`
 
@@ -20,7 +21,7 @@ List/sale prices, promotions, and checkout price quotes.
 
 ## May depend on
 
-Shared (`Clock`); Catalog identifiers for promotion targets and readiness warnings.
+Shared (`Clock`); Catalog contracts/DTOs for sellable refs, promotion targets, and readiness warnings.
 
 ## Explicitly outside this module
 

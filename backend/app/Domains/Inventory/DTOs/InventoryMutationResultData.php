@@ -8,7 +8,7 @@ use App\Domains\Inventory\Models\InventoryBalance;
 use App\Domains\Inventory\Models\InventoryOperation;
 use Illuminate\Support\Collection;
 
-final readonly class InventoryMutationResult
+final readonly class InventoryMutationResultData
 {
     /**
      * @param  Collection<int, InventoryBalance>  $balances

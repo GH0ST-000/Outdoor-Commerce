@@ -141,6 +141,7 @@ Http (Controllers, Requests, Resources, Middleware)
 - `Shared` must not depend on business modules.
 - Business modules may depend on `Shared`.
 - Modules must not import another module’s internal implementation.
+- Owned Eloquent `Models` may be referenced across modules for foreign-key relations and persistence identity; business behavior still goes through Contracts, Actions, Queries, DTOs, or Events.
 - Production code must never depend on `Tests\`.
 - `env()` only inside Laravel config files.
 

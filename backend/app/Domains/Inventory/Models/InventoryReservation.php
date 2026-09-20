@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Domains\Inventory\Models;
 
 use App\Domains\Catalog\Models\ProductVariant;
-use App\Domains\Identity\Models\User;
 use App\Domains\Inventory\Enums\InventoryReservationStatus;
+use App\Models\User;
 use Database\Factories\InventoryReservationFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;

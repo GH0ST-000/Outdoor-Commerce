@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Domains\Catalog\DTOs\CatalogSellableRefData;
 use App\Domains\Catalog\Models\Product;
 use App\Domains\Catalog\Models\ProductVariant;
 use App\Domains\Pricing\Enums\DiscountType;
@@ -21,6 +22,17 @@ it('selects best exclusive promotion by lowest final price', function (): void {
     $product = Product::factory()->create();
     $variant = ProductVariant::factory()->active()->for($product)->create();
     PricingFixtures::publishedPrice($variant, 10_000);
+    $sellable = new CatalogSellableRefData(
+        variantId: $variant->id,
+        productId: $product->id,
+        brandId: $product->brand_id,
+        isDefault: $variant->is_default,
+        variantActive: true,
+        variantDeleted: false,
+        productDeleted: false,
+        brandDeleted: false,
+        categoryIds: [],
+    );
 
     $low = Promotion::factory()->active()->create([
         'code' => 'low',
@@ -51,7 +63,7 @@ it('selects best exclusive promotion by lowest final price', function (): void {
     $base = Money::of(10_000, 'GEL');
     $eligible = app(PromotionEligibilityService::class)
         ->effectivePromotions('GEL')
-        ->filter(fn (Promotion $p) => app(PromotionEligibilityService::class)->isEligible($p, $variant, $product, 'GEL'));
+        ->filter(fn (Promotion $p) => app(PromotionEligibilityService::class)->isEligible($p, $sellable, 'GEL'));
 
     $result = app(PromotionCalculator::class)->calculate($base, $eligible);
 

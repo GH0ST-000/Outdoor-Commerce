@@ -4,14 +4,17 @@ declare(strict_types=1);
 
 namespace App\Domains\Inventory\Services;
 
-use App\Domains\Catalog\Enums\ProductVariantStatus;
-use App\Domains\Catalog\Models\ProductVariant;
+use App\Domains\Catalog\Contracts\CatalogProductLookup;
 use App\Domains\Inventory\Exceptions\VariantInactiveException;
 use App\Domains\Inventory\Exceptions\WarehouseInactiveException;
 use App\Domains\Inventory\Models\Warehouse;
 
 final class InventoryGuardService
 {
+    public function __construct(
+        private readonly CatalogProductLookup $catalog,
+    ) {}
+
     public function requireActiveWarehouse(Warehouse|int $warehouse): Warehouse
     {
         if (! $warehouse instanceof Warehouse) {
@@ -25,16 +28,14 @@ final class InventoryGuardService
         return $warehouse;
     }
 
-    public function requireActiveVariant(ProductVariant|int $variant): ProductVariant
+    public function requireActiveVariant(int $variantId): int
     {
-        if (! $variant instanceof ProductVariant) {
-            $variant = ProductVariant::query()->findOrFail($variant);
-        }
+        $ref = $this->catalog->existingSellableRef($variantId);
 
-        if ($variant->trashed() || $variant->status !== ProductVariantStatus::Active) {
+        if (! $ref->variantActive) {
             throw new VariantInactiveException;
         }
 
-        return $variant;
+        return $ref->variantId;
     }
 }

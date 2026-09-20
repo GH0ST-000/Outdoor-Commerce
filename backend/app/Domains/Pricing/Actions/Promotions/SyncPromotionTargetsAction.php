@@ -4,10 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domains\Pricing\Actions\Promotions;
 
-use App\Domains\Catalog\Models\Brand;
-use App\Domains\Catalog\Models\Category;
-use App\Domains\Catalog\Models\Product;
-use App\Domains\Catalog\Models\ProductVariant;
+use App\Domains\Catalog\Contracts\CatalogProductLookup;
 use App\Domains\Operations\Actions\RecordAuditEventAction;
 use App\Domains\Operations\DTOs\AuditEventData;
 use App\Domains\Operations\Enums\AuditEvent;
@@ -27,6 +24,7 @@ final class SyncPromotionTargetsAction
     public function __construct(
         private readonly RecordAuditEventAction $recordAuditEvent,
         private readonly PricingCache $cache,
+        private readonly CatalogProductLookup $catalog,
     ) {}
 
     /**
@@ -111,10 +109,10 @@ final class SyncPromotionTargetsAction
         }
 
         $exists = match ($target->targetType) {
-            PromotionTargetType::Product => Product::query()->whereKey($target->targetId)->exists(),
-            PromotionTargetType::ProductVariant => ProductVariant::query()->whereKey($target->targetId)->exists(),
-            PromotionTargetType::Category => Category::query()->whereKey($target->targetId)->exists(),
-            PromotionTargetType::Brand => Brand::query()->whereKey($target->targetId)->exists(),
+            PromotionTargetType::Product => $this->catalog->existsProduct($target->targetId),
+            PromotionTargetType::ProductVariant => $this->catalog->existsVariant($target->targetId),
+            PromotionTargetType::Category => $this->catalog->existsCategory($target->targetId),
+            PromotionTargetType::Brand => $this->catalog->existsBrand($target->targetId),
         };
 
         if (! $exists) {

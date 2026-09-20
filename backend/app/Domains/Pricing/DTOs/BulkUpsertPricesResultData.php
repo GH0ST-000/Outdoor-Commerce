@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domains\Pricing\DTOs;
 
-final readonly class BulkUpsertPricesResult
+final readonly class BulkUpsertPricesResultData
 {
     public function __construct(
         public int $created,

@@ -7,7 +7,7 @@ namespace App\Domains\Pricing\DTOs;
 use App\Domains\Pricing\ValueObjects\Money;
 use Carbon\CarbonImmutable;
 
-final readonly class EffectiveBasePriceResult
+final readonly class EffectiveBasePriceResultData
 {
     public function __construct(
         public Money $amount,

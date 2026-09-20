@@ -8,7 +8,7 @@ use App\Domains\Operations\Actions\RecordAuditEventAction;
 use App\Domains\Operations\DTOs\AuditEventData;
 use App\Domains\Operations\Enums\AuditEvent;
 use App\Domains\Pricing\DTOs\BulkUpsertPricesData;
-use App\Domains\Pricing\DTOs\BulkUpsertPricesResult;
+use App\Domains\Pricing\DTOs\BulkUpsertPricesResultData;
 use App\Domains\Pricing\Enums\PricePeriodStatus;
 use App\Domains\Pricing\Events\PriceChanged;
 use App\Domains\Pricing\Exceptions\InvalidMoneyAmountException;
@@ -37,7 +37,7 @@ final class BulkUpsertPricesAction
         ?string $requestId = null,
         ?string $ipAddress = null,
         ?string $userAgent = null,
-    ): BulkUpsertPricesResult {
+    ): BulkUpsertPricesResultData {
         $max = (int) config('pricing.bulk.max_rows', 100);
         if (count($data->items) === 0) {
             throw new InvalidMoneyAmountException('Bulk price payload requires at least one item.');
@@ -56,7 +56,7 @@ final class BulkUpsertPricesAction
             static fn ($a, $b): int => [$a->priceListId, $a->productVariantId] <=> [$b->priceListId, $b->productVariantId],
         );
 
-        return DB::transaction(function () use ($sorted, $data, $actorId, $requestId, $ipAddress, $userAgent): BulkUpsertPricesResult {
+        return DB::transaction(function () use ($sorted, $data, $actorId, $requestId, $ipAddress, $userAgent): BulkUpsertPricesResultData {
             $created = 0;
             $updated = 0;
             $events = [];
@@ -130,7 +130,7 @@ final class BulkUpsertPricesAction
                 }
             });
 
-            return new BulkUpsertPricesResult($created, $updated);
+            return new BulkUpsertPricesResultData($created, $updated);
         });
     }
 }

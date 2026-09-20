@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domains\Pricing\Services;
 
-use App\Domains\Pricing\DTOs\EffectiveBasePriceResult;
+use App\Domains\Pricing\DTOs\EffectiveBasePriceResultData;
 use App\Domains\Pricing\Enums\PriceListStatus;
 use App\Domains\Pricing\Enums\PricePeriodStatus;
 use App\Domains\Pricing\Exceptions\DefaultPriceListMissingException;
@@ -29,7 +29,7 @@ final class EffectiveBasePriceResolver
         int $productVariantId,
         ?int $priceListId = null,
         ?CarbonImmutable $effectiveAt = null,
-    ): EffectiveBasePriceResult {
+    ): EffectiveBasePriceResultData {
         $at = $effectiveAt ?? $this->clock->now();
         $list = $this->resolvePriceList($priceListId);
 
@@ -67,7 +67,7 @@ final class EffectiveBasePriceResolver
         /** @var PricePeriod $period */
         $period = $periods->first();
 
-        return new EffectiveBasePriceResult(
+        return new EffectiveBasePriceResultData(
             amount: Money::of($period->amount_minor, $list->currency_code),
             priceListId: $list->id,
             pricePeriodId: $period->id,

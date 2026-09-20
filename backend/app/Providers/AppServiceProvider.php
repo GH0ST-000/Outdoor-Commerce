@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Domains\Catalog\Contracts\CatalogProductLookup;
 use App\Domains\Catalog\Models\Attribute;
 use App\Domains\Catalog\Models\AttributeValue;
 use App\Domains\Catalog\Models\MediaAttachment;
@@ -12,6 +13,7 @@ use App\Domains\Catalog\Policies\AttributeValuePolicy;
 use App\Domains\Catalog\Policies\MediaAttachmentPolicy;
 use App\Domains\Catalog\Policies\ProductPolicy;
 use App\Domains\Catalog\Policies\ProductVariantPolicy;
+use App\Domains\Catalog\Services\EloquentCatalogProductLookup;
 use App\Domains\Identity\Models\User;
 use App\Domains\Identity\Policies\UserPolicy;
 use App\Domains\Identity\Support\EmailNormalizer;
@@ -26,6 +28,7 @@ use App\Domains\Inventory\Policies\WarehousePolicy;
 use App\Domains\Inventory\Services\DefaultCheckoutInventoryService;
 use App\Domains\Inventory\Services\DefaultWarehouseAllocationStrategy;
 use App\Domains\Pricing\Contracts\CheckoutPriceResolver;
+use App\Domains\Pricing\Contracts\ProductPricingReadiness;
 use App\Domains\Pricing\Models\PriceList;
 use App\Domains\Pricing\Models\PricePeriod;
 use App\Domains\Pricing\Models\Promotion;
@@ -33,6 +36,7 @@ use App\Domains\Pricing\Policies\PriceListPolicy;
 use App\Domains\Pricing\Policies\PricePeriodPolicy;
 use App\Domains\Pricing\Policies\PromotionPolicy;
 use App\Domains\Pricing\Services\DefaultCheckoutPriceResolver;
+use App\Domains\Pricing\Services\PricingReadinessService;
 use App\Domains\Shared\Support\Clock;
 use App\Domains\Shared\Support\SystemClock;
 use Illuminate\Cache\RateLimiting\Limit;
@@ -51,6 +55,8 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(CheckoutInventoryService::class, DefaultCheckoutInventoryService::class);
         $this->app->singleton(Clock::class, SystemClock::class);
         $this->app->bind(CheckoutPriceResolver::class, DefaultCheckoutPriceResolver::class);
+        $this->app->bind(CatalogProductLookup::class, EloquentCatalogProductLookup::class);
+        $this->app->bind(ProductPricingReadiness::class, PricingReadinessService::class);
     }
 
     public function boot(): void
