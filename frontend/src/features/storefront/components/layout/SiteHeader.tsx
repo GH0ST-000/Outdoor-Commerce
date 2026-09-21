@@ -67,15 +67,15 @@ export function SiteHeader() {
     <>
       <a
         href="#storefront-main"
-        className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[80] focus:rounded-lg focus:bg-card focus:px-3 focus:py-2 focus:text-sm"
+        className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[var(--z-critical)] focus:rounded-lg focus:bg-card focus:px-3 focus:py-2 focus:text-sm"
       >
         {t.nav.skipToContent}
       </a>
       <header
         className={cn(
-          "sticky top-0 z-50 transition-[background-color,border-color,backdrop-filter] duration-[var(--duration-control)]",
+          "sticky top-0 z-[var(--z-header)] transition-[background-color,border-color,backdrop-filter,box-shadow] duration-[var(--duration-control)] ease-[var(--ease-standard)]",
           solid
-            ? "border-b border-border/70 bg-background"
+            ? "border-b border-border/50 bg-[var(--header-background)] shadow-[0_10px_30px_-24px_rgba(26,22,19,0.35)] backdrop-blur-xl"
             : "border-b border-transparent bg-transparent",
         )}
       >
@@ -89,7 +89,7 @@ export function SiteHeader() {
                 "shrink-0 lg:hidden",
                 !solid &&
                   isHome &&
-                  "text-warm-bone text-[#eee9de] hover:bg-white/10",
+                  "text-[var(--text-inverse)] hover:bg-white/10",
               )}
               aria-expanded={mobileOpen}
               aria-controls="storefront-mobile-nav"
@@ -102,7 +102,9 @@ export function SiteHeader() {
               href="/"
               className={cn(
                 "sf-display truncate text-lg tracking-tight no-underline sm:text-xl md:text-2xl",
-                solid || !isHome ? "text-foreground" : "text-[#eee9de]",
+                solid || !isHome
+                  ? "text-foreground"
+                  : "text-[var(--text-inverse)]",
               )}
             >
               {brandName}
@@ -121,11 +123,11 @@ export function SiteHeader() {
                   "sf-nav-label rounded-md px-2 py-2 text-[0.8125rem] font-medium no-underline transition-colors",
                   solid || !isHome
                     ? "text-foreground/80 hover:bg-muted hover:text-foreground"
-                    : "text-[#eee9de]/80 hover:bg-white/10 hover:text-[#eee9de]",
+                    : "text-[var(--text-inverse)]/80 hover:bg-white/10 hover:text-[var(--text-inverse)]",
                   pathname.startsWith(item.href) &&
                     (solid || !isHome
                       ? "bg-muted text-foreground"
-                      : "bg-white/10 text-[#eee9de]"),
+                      : "bg-white/10 text-[var(--text-inverse)]"),
                 )}
               >
                 {t.nav[item.labelKey]}
@@ -144,7 +146,9 @@ export function SiteHeader() {
               aria-label={t.nav.search}
               className={cn(
                 "size-9 sm:size-10",
-                !solid && isHome && "text-[#eee9de] hover:bg-white/10",
+                !solid &&
+                  isHome &&
+                  "text-[var(--text-inverse)] hover:bg-white/10",
               )}
               onClick={() => setSearchOpen(true)}
             >
@@ -159,7 +163,7 @@ export function SiteHeader() {
               title={t.nav.wishlistSoon}
               className={cn(
                 "hidden size-9 sm:inline-flex sm:size-10",
-                !solid && isHome && "text-[#eee9de]/50",
+                !solid && isHome && "text-[var(--text-inverse)]/50",
               )}
             >
               <Heart />
@@ -174,7 +178,7 @@ export function SiteHeader() {
               title={t.nav.cartSoon}
               className={cn(
                 "hidden size-9 sm:inline-flex sm:size-10",
-                !solid && isHome && "text-[#eee9de]/50",
+                !solid && isHome && "text-[var(--text-inverse)]/50",
               )}
             >
               <ShoppingBag />
@@ -186,7 +190,9 @@ export function SiteHeader() {
               size="icon"
               className={cn(
                 "size-9 sm:size-10",
-                !solid && isHome && "text-[#eee9de] hover:bg-white/10",
+                !solid &&
+                  isHome &&
+                  "text-[var(--text-inverse)] hover:bg-white/10",
               )}
             >
               <Link href="/account" aria-label={t.nav.account}>
@@ -194,7 +200,9 @@ export function SiteHeader() {
               </Link>
             </Button>
             <div
-              className={cn(!solid && isHome && "[&_button]:text-[#eee9de]")}
+              className={cn(
+                !solid && isHome && "[&_button]:text-[var(--text-inverse)]",
+              )}
             >
               <SiteControls tone={solid || !isHome ? "light" : "dark"} />
             </div>
@@ -230,7 +238,7 @@ export function SiteHeader() {
           role="dialog"
           aria-modal="true"
           aria-labelledby={searchTitleId}
-          className="fixed inset-0 z-[60] bg-[color-mix(in_oklab,var(--night-forest)_72%,transparent)] p-4 backdrop-blur-sm sm:p-8"
+          className="fixed inset-0 z-[var(--z-modal)] bg-[color-mix(in_oklab,var(--night-forest)_72%,transparent)] p-4 backdrop-blur-sm sm:p-8"
           onClick={() => {
             setSearchOpen(false);
             searchTriggerRef.current?.focus();

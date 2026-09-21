@@ -42,6 +42,13 @@ SKUs live on `product_variants`. `Product.model_number` / MPN are not SKUs.
 
 Docs: [docs/catalog-media.md](../../../../docs/catalog-media.md), [ADR 0004](../../../../docs/adr/0004-local-media-storage-and-async-derivatives.md).
 
+## Day 12 public catalog
+
+- `PublicApi/` query services, eligibility, presenters, projections, cache
+- HTTP: `GET /api/v1/catalog/{categories,brands,products,products/facets,products/{slug}}`
+- Commands: `catalog:rebuild-public-projections`, `catalog:verify-public-projections`, `catalog:refresh-time-sensitive-projections`
+- Docs: [docs/public-catalog.md](../../../../docs/public-catalog.md), [ADR 0007](../../../../docs/adr/0007-rebuildable-public-catalog-projections.md)
+
 ## Depends on
 
 - `Shared`

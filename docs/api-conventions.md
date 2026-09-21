@@ -114,3 +114,9 @@ Base path: `/api/v1/admin` — requires Sanctum, active user, and `admin.access`
 | POST | `/products/{product}/restore` | `catalog.manage` |
 
 Product Core details: [catalog-product-core.md](catalog-product-core.md).
+
+## Public catalog (Day 12)
+
+Unauthenticated read-only routes live under `/api/v1/catalog`. See [public-catalog.md](public-catalog.md) and [openapi/public-catalog.yaml](openapi/public-catalog.yaml).
+
+Default pagination: 10. Default currency: GEL. Price inputs/outputs use minor units. Attribute groups use AND semantics. Values inside one group use OR semantics. Non-public products return `CATALOG_PRODUCT_NOT_FOUND` (404), never 403.

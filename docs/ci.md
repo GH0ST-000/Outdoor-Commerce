@@ -80,6 +80,8 @@ npm run test:run
 npm run build
 ```
 
+Design-system documentation is development-only (`/dev/design-system` returns 404 in production). Component and accessibility checks live in Vitest (`jest-axe`), not a separate Storybook or Playwright job.
+
 ## Backend test infrastructure (GitHub Actions)
 
 | Setting | Value |

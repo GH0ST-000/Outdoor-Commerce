@@ -1,0 +1,99 @@
+/**
+ * Primitive tokens — warm outdoor atelier, not swamp green.
+ * Feature components should prefer semantic tokens, not these names.
+ */
+
+:root {
+  --night-forest: #14110f;
+  --deep-pine: #1c1814;
+  --field-green: #4a5a48;
+  --moss: #6b6458;
+  --stone: #8a8478;
+  --warm-bone: #f3ece3;
+  --paper: #f7f3ec;
+  --charcoal: #1a1613;
+  --copper: #c45e32;
+  --ember: #d9784a;
+  --amber: #e2a34d;
+  --river: #5b7380;
+  --danger-red: #b8443c;
+  --success-green: #3e7650;
+  --espresso: #14110f;
+  --ink: #1a1613;
+
+  --space-0: 0;
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+  --space-20: 5rem;
+  --space-24: 6rem;
+  --space-32: 8rem;
+  --space-section: clamp(3.5rem, 8vw, 7rem);
+  --space-gutter: clamp(1rem, 3vw, 2rem);
+  --space-safe-bottom: env(safe-area-inset-bottom, 0px);
+
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  --radius-sm: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.25rem;
+  --radius-2xl: 1.5rem;
+  --radius-full: 999px;
+
+  --shadow-subtle: 0 1px 0 rgba(255, 255, 255, 0.4) inset;
+  --shadow-raised: 0 18px 40px -28px rgba(26, 22, 19, 0.45);
+  --shadow-overlay: 0 28px 70px -32px rgba(20, 17, 15, 0.55);
+
+  --z-base: 0;
+  --z-sticky: 20;
+  --z-header: 40;
+  --z-dropdown: 50;
+  --z-drawer-backdrop: 60;
+  --z-drawer: 61;
+  --z-modal-backdrop: 70;
+  --z-modal: 71;
+  --z-toast: 80;
+  --z-critical: 90;
+
+  --duration-instant: 80ms;
+  --duration-fast: 180ms;
+  --duration-normal: 280ms;
+  --duration-slow: 420ms;
+  --duration-micro: var(--duration-fast);
+  --duration-control: var(--duration-normal);
+  --duration-panel: 340ms;
+  --duration-reveal: 700ms;
+
+  --ease-standard: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-enter: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-exit: cubic-bezier(0.4, 0, 1, 1);
+  --ease-emphasized: cubic-bezier(0.33, 1, 0.68, 1);
+  --ease-out: var(--ease-standard);
+  --ease-soft: var(--ease-emphasized);
+
+  --bp-mobile: 23.4375rem;
+  --bp-tablet: 48rem;
+  --bp-desktop: 64rem;
+  --bp-wide: 90rem;
+
+  --container-readable: 42rem;
+  --container-standard: 80rem;
+  --container-wide: 100rem;
+  --container-editorial: var(--container-standard);
+
+  --control-height-sm: 2.25rem;
+  --control-height-md: 2.75rem;
+  --control-height-lg: 3rem;
+  --touch-min: 2.75rem;
+}

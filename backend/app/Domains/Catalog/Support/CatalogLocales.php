@@ -31,4 +31,20 @@ final class CatalogLocales
     {
         return in_array($locale, self::all(), true);
     }
+
+    /**
+     * Storefront paths are locale-agnostic, so slug lookup accepts every supported locale.
+     *
+     * @return list<string>
+     */
+    public static function slugLookupLocales(?string $requested = null): array
+    {
+        $ordered = array_values(array_filter([
+            $requested,
+            self::fallback(),
+            ...self::all(),
+        ], static fn (?string $locale): bool => is_string($locale) && $locale !== ''));
+
+        return array_values(array_unique($ordered));
+    }
 }

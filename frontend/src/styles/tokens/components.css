@@ -1,0 +1,11 @@
+:root {
+  --button-primary-background: var(--action-primary);
+  --button-primary-foreground: var(--primary-foreground);
+  --button-primary-hover: var(--action-primary-hover);
+  --input-border: var(--input);
+  --header-background: color-mix(in oklab, var(--background) 82%, transparent);
+  --dialog-shadow: var(--shadow-overlay);
+  --product-card-image-background: var(--muted);
+  --badge-sale-background: color-mix(in oklab, var(--copper) 16%, transparent);
+  --badge-sale-foreground: var(--copper);
+}

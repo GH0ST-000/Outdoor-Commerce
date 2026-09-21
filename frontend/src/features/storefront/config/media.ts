@@ -6,7 +6,7 @@ const u = (id: string, w = 1600) =>
   `https://images.unsplash.com/${id}?auto=format&fit=crop&w=${w}&q=80`;
 
 export const storefrontMedia = {
-  hero: u("photo-1506905925346-21bda4d32df4", 2400),
+  hero: u("photo-1464822759023-fed622ff2c3b", 2400),
   map: u("photo-1464822759023-fed622ff2c3b", 1600),
   categories: {
     hunting: u("photo-1448375240586-882707db888b"),

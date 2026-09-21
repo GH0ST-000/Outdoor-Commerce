@@ -9,6 +9,7 @@ import {
   useSyncExternalStore,
   type ReactNode,
 } from "react";
+import { useRouter } from "next/navigation";
 import { dictionaries, type Locale, locales } from "@/i18n/dictionaries";
 
 type LocaleContextValue = {
@@ -26,12 +27,20 @@ function isLocale(value: string | null): value is Locale {
 }
 
 function readLocale(): Locale {
+  const match = document.cookie.match(/(?:^|; )outdoor-locale=([^;]*)/);
+  const cookie = match ? decodeURIComponent(match[1]) : null;
+  if (isLocale(cookie)) {
+    return cookie;
+  }
   const stored = window.localStorage.getItem(STORAGE_KEY);
-  return isLocale(stored) ? stored : "en";
+  if (isLocale(stored)) {
+    return stored;
+  }
+  return "ka";
 }
 
 function getServerLocale(): Locale {
-  return "en";
+  return "ka";
 }
 
 function subscribe(callback: () => void) {
@@ -44,17 +53,23 @@ function subscribe(callback: () => void) {
 }
 
 export function LocaleProvider({ children }: { children: ReactNode }) {
+  const router = useRouter();
   const locale = useSyncExternalStore(subscribe, readLocale, getServerLocale);
 
   useEffect(() => {
     document.documentElement.lang = locale;
   }, [locale]);
 
-  const setLocale = useCallback((next: Locale) => {
-    window.localStorage.setItem(STORAGE_KEY, next);
-    document.documentElement.lang = next;
-    window.dispatchEvent(new Event(LOCALE_EVENT));
-  }, []);
+  const setLocale = useCallback(
+    (next: Locale) => {
+      window.localStorage.setItem(STORAGE_KEY, next);
+      document.cookie = `outdoor-locale=${next}; path=/; max-age=31536000; samesite=lax`;
+      document.documentElement.lang = next;
+      window.dispatchEvent(new Event(LOCALE_EVENT));
+      router.refresh();
+    },
+    [router],
+  );
 
   const value = useMemo(
     () => ({

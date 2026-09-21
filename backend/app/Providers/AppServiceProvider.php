@@ -3,22 +3,45 @@
 namespace App\Providers;
 
 use App\Domains\Catalog\Contracts\CatalogProductLookup;
-use App\Domains\Catalog\Models\Attribute;
+use App\Domains\Catalog\Events\CatalogAttributeChanged;
+use App\Domains\Catalog\Events\CatalogBrandChanged;
+use App\Domains\Catalog\Events\CatalogCategoryChanged;
+use App\Domains\Catalog\Events\CatalogMediaChanged;
+use App\Domains\Catalog\Events\CatalogProductChanged;
+use App\Domains\Catalog\Events\CatalogVariantChanged;
+use App\Domains\Catalog\Models\Attribute as CatalogAttribute;
 use App\Domains\Catalog\Models\AttributeValue;
+use App\Domains\Catalog\Models\Brand;
+use App\Domains\Catalog\Models\Category;
+use App\Domains\Catalog\Models\MediaAsset;
 use App\Domains\Catalog\Models\MediaAttachment;
 use App\Domains\Catalog\Models\Product;
+use App\Domains\Catalog\Models\ProductTranslation;
 use App\Domains\Catalog\Models\ProductVariant;
 use App\Domains\Catalog\Policies\AttributePolicy;
 use App\Domains\Catalog\Policies\AttributeValuePolicy;
 use App\Domains\Catalog\Policies\MediaAttachmentPolicy;
 use App\Domains\Catalog\Policies\ProductPolicy;
 use App\Domains\Catalog\Policies\ProductVariantPolicy;
+use App\Domains\Catalog\PublicApi\Listeners\CatalogProjectionObserver;
+use App\Domains\Catalog\PublicApi\Listeners\RefreshPublicCatalogProjections;
 use App\Domains\Catalog\Services\EloquentCatalogProductLookup;
 use App\Domains\Identity\Models\User;
 use App\Domains\Identity\Policies\UserPolicy;
 use App\Domains\Identity\Support\EmailNormalizer;
 use App\Domains\Inventory\Contracts\CheckoutInventoryService;
 use App\Domains\Inventory\Contracts\InventoryAllocationStrategy;
+use App\Domains\Inventory\Contracts\PublicInventoryAvailability;
+use App\Domains\Inventory\Events\InventoryAdjusted;
+use App\Domains\Inventory\Events\InventoryCountReconciled;
+use App\Domains\Inventory\Events\InventoryOutOfStock;
+use App\Domains\Inventory\Events\InventoryReceived;
+use App\Domains\Inventory\Events\InventoryReservationCancelled;
+use App\Domains\Inventory\Events\InventoryReservationCommitted;
+use App\Domains\Inventory\Events\InventoryReservationExpired;
+use App\Domains\Inventory\Events\InventoryReservationReleased;
+use App\Domains\Inventory\Events\InventoryReserved;
+use App\Domains\Inventory\Events\InventoryTransferred;
 use App\Domains\Inventory\Models\InventoryBalance;
 use App\Domains\Inventory\Models\InventoryReservation;
 use App\Domains\Inventory\Models\Warehouse;
@@ -27,8 +50,16 @@ use App\Domains\Inventory\Policies\InventoryReservationPolicy;
 use App\Domains\Inventory\Policies\WarehousePolicy;
 use App\Domains\Inventory\Services\DefaultCheckoutInventoryService;
 use App\Domains\Inventory\Services\DefaultWarehouseAllocationStrategy;
+use App\Domains\Inventory\Services\EloquentPublicInventoryAvailability;
 use App\Domains\Pricing\Contracts\CheckoutPriceResolver;
 use App\Domains\Pricing\Contracts\ProductPricingReadiness;
+use App\Domains\Pricing\Contracts\PublicCatalogPricing;
+use App\Domains\Pricing\Events\PriceCancelled;
+use App\Domains\Pricing\Events\PriceChanged;
+use App\Domains\Pricing\Events\PricePublished;
+use App\Domains\Pricing\Events\PromotionActivated;
+use App\Domains\Pricing\Events\PromotionPaused;
+use App\Domains\Pricing\Events\PromotionTargetsChanged;
 use App\Domains\Pricing\Models\PriceList;
 use App\Domains\Pricing\Models\PricePeriod;
 use App\Domains\Pricing\Models\Promotion;
@@ -36,12 +67,14 @@ use App\Domains\Pricing\Policies\PriceListPolicy;
 use App\Domains\Pricing\Policies\PricePeriodPolicy;
 use App\Domains\Pricing\Policies\PromotionPolicy;
 use App\Domains\Pricing\Services\DefaultCheckoutPriceResolver;
+use App\Domains\Pricing\Services\DefaultPublicCatalogPricing;
 use App\Domains\Pricing\Services\PricingReadinessService;
 use App\Domains\Shared\Support\Clock;
 use App\Domains\Shared\Support\SystemClock;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
@@ -57,16 +90,20 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(CheckoutPriceResolver::class, DefaultCheckoutPriceResolver::class);
         $this->app->bind(CatalogProductLookup::class, EloquentCatalogProductLookup::class);
         $this->app->bind(ProductPricingReadiness::class, PricingReadinessService::class);
+        $this->app->bind(PublicCatalogPricing::class, DefaultPublicCatalogPricing::class);
+        $this->app->bind(PublicInventoryAvailability::class, EloquentPublicInventoryAvailability::class);
     }
 
     public function boot(): void
     {
         $this->enforceMorphMap();
+        $this->registerPublicCatalogObservers();
+        $this->registerPublicCatalogListeners();
 
         Gate::policy(User::class, UserPolicy::class);
         Gate::policy(\App\Models\User::class, UserPolicy::class);
         Gate::policy(Product::class, ProductPolicy::class);
-        Gate::policy(Attribute::class, AttributePolicy::class);
+        Gate::policy(CatalogAttribute::class, AttributePolicy::class);
         Gate::policy(AttributeValue::class, AttributeValuePolicy::class);
         Gate::policy(ProductVariant::class, ProductVariantPolicy::class);
         Gate::policy(MediaAttachment::class, MediaAttachmentPolicy::class);
@@ -138,6 +175,73 @@ class AppServiceProvider extends ServiceProvider
 
             return Limit::perMinute(30)->by($userId.'|'.$request->ip());
         });
+
+        RateLimiter::for('catalog.public', function (Request $request) {
+            return Limit::perMinute((int) config('catalog.public.rate_limits.browse_per_minute', 120))
+                ->by((string) $request->ip());
+        });
+
+        RateLimiter::for('catalog.public.list', function (Request $request) {
+            $limit = $request->filled('q')
+                ? (int) config('catalog.public.rate_limits.search_per_minute', 20)
+                : (int) config('catalog.public.rate_limits.list_per_minute', 60);
+
+            return Limit::perMinute($limit)->by((string) $request->ip());
+        });
+
+        RateLimiter::for('catalog.public.facets', function (Request $request) {
+            return Limit::perMinute((int) config('catalog.public.rate_limits.facets_per_minute', 30))
+                ->by((string) $request->ip());
+        });
+    }
+
+    private function registerPublicCatalogObservers(): void
+    {
+        $observer = $this->app->make(CatalogProjectionObserver::class);
+
+        Product::saved(fn (Product $product) => $observer->productSaved($product));
+        Product::deleted(fn (Product $product) => $observer->productDeleted($product));
+        ProductTranslation::saved(fn (ProductTranslation $translation) => $observer->translationSaved($translation));
+        ProductVariant::saved(fn (ProductVariant $variant) => $observer->variantSaved($variant));
+        ProductVariant::deleted(fn (ProductVariant $variant) => $observer->variantDeleted($variant));
+        Brand::saved(fn (Brand $brand) => $observer->brandSaved($brand));
+        Category::saved(fn (Category $category) => $observer->categorySaved($category));
+        CatalogAttribute::saved(fn (CatalogAttribute $attribute) => $observer->attributeSaved($attribute));
+        AttributeValue::saved(fn (AttributeValue $value) => $observer->attributeValueSaved($value));
+        MediaAttachment::saved(fn (MediaAttachment $attachment) => $observer->mediaAttachmentSaved($attachment));
+        MediaAsset::saved(fn (MediaAsset $asset) => $observer->mediaAssetSaved($asset));
+    }
+
+    private function registerPublicCatalogListeners(): void
+    {
+        $listen = [
+            CatalogProductChanged::class => 'productChanged',
+            CatalogVariantChanged::class => 'variantChanged',
+            CatalogBrandChanged::class => 'brandChanged',
+            CatalogCategoryChanged::class => 'categoryChanged',
+            CatalogAttributeChanged::class => 'attributeChanged',
+            CatalogMediaChanged::class => 'mediaChanged',
+            InventoryReserved::class => 'inventoryReserved',
+            InventoryReservationReleased::class => 'inventoryReservationReleased',
+            InventoryReservationCancelled::class => 'inventoryReservationCancelled',
+            InventoryReservationExpired::class => 'inventoryReservationExpired',
+            InventoryReservationCommitted::class => 'inventoryReservationCommitted',
+            InventoryAdjusted::class => 'inventoryAdjusted',
+            InventoryCountReconciled::class => 'inventoryReconciled',
+            InventoryTransferred::class => 'inventoryTransferred',
+            InventoryReceived::class => 'inventoryReceived',
+            InventoryOutOfStock::class => 'inventoryOutOfStock',
+            PriceChanged::class => 'priceChanged',
+            PricePublished::class => 'pricePublished',
+            PriceCancelled::class => 'priceCancelled',
+            PromotionActivated::class => 'promotionChanged',
+            PromotionPaused::class => 'promotionChanged',
+            PromotionTargetsChanged::class => 'promotionChanged',
+        ];
+
+        foreach ($listen as $event => $method) {
+            Event::listen($event, [RefreshPublicCatalogProjections::class, $method]);
+        }
     }
 
     /**

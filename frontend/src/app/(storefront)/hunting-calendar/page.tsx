@@ -19,10 +19,13 @@ export default function HuntingCalendarPage() {
   }, [locale, query]);
 
   return (
-    <div className="sf-section">
+    <div className="sf-band-paper sf-section">
       <div className="sf-container space-y-6">
         <header className="max-w-2xl">
-          <h1 className="sf-display text-4xl sm:text-5xl">
+          <p className="sf-label text-[var(--copper)]">
+            {locale === "ka" ? "კალენდარი" : "Calendar"}
+          </p>
+          <h1 className="sf-display mt-2 text-4xl sm:text-5xl">
             {t.calendar.title}
           </h1>
           <p className="mt-3 text-muted-foreground">{t.calendar.lead}</p>
@@ -35,7 +38,28 @@ export default function HuntingCalendarPage() {
           aria-label={t.calendar.search}
           className="max-w-md"
         />
-        <div className="overflow-hidden rounded-2xl border border-border/70">
+        <div className="grid gap-3 md:hidden">
+          {rows.map((row) => (
+            <article
+              key={row.id}
+              className="rounded-2xl border border-border/70 bg-card p-4"
+            >
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <p className="font-semibold">{row.species[locale]}</p>
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    {row.region[locale]} · {row.month[locale]}
+                  </p>
+                </div>
+                <SeasonStatusBadge status={row.status} />
+              </div>
+              <p className="mt-3 text-sm text-muted-foreground">
+                {row.limit[locale]}
+              </p>
+            </article>
+          ))}
+        </div>
+        <div className="hidden overflow-hidden rounded-2xl border border-border/70 md:block">
           <table className="w-full text-left text-sm">
             <thead className="bg-muted/50 text-xs uppercase tracking-wide text-muted-foreground">
               <tr>
@@ -48,7 +72,10 @@ export default function HuntingCalendarPage() {
             </thead>
             <tbody>
               {rows.map((row) => (
-                <tr key={row.id} className="border-t border-border/50">
+                <tr
+                  key={row.id}
+                  className="border-t border-border/50 transition-colors hover:bg-muted/40"
+                >
                   <td className="px-4 py-3 font-medium">
                     {row.species[locale]}
                   </td>

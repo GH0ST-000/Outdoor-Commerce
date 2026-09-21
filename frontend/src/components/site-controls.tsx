@@ -92,13 +92,22 @@ export function SiteControls({ className, tone = "dark" }: SiteControlsProps) {
         <DropdownMenuContent align="end">
           <DropdownMenuLabel>{t.common.theme}</DropdownMenuLabel>
           <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={() => setTheme("light")}>
+          <DropdownMenuItem
+            onClick={() => setTheme("light")}
+            className={theme === "light" ? "bg-muted" : undefined}
+          >
             {t.common.light}
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => setTheme("dark")}>
+          <DropdownMenuItem
+            onClick={() => setTheme("dark")}
+            className={theme === "dark" ? "bg-muted" : undefined}
+          >
             {t.common.dark}
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => setTheme("system")}>
+          <DropdownMenuItem
+            onClick={() => setTheme("system")}
+            className={theme === "system" ? "bg-muted" : undefined}
+          >
             {t.common.system}
           </DropdownMenuItem>
         </DropdownMenuContent>

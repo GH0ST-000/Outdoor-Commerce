@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Database\Seeders;
 
 use App\Domains\Catalog\Models\ProductVariant;
+use App\Domains\Identity\Models\User;
 use App\Domains\Pricing\Enums\DiscountType;
 use App\Domains\Pricing\Enums\PriceListStatus;
 use App\Domains\Pricing\Enums\PromotionStackingMode;
@@ -38,23 +39,26 @@ final class PricingDemoSeeder extends Seeder
             ],
         );
 
-        $schedule = app(PriceScheduleService::class);
-        ProductVariant::query()->limit(20)->get()->each(function (ProductVariant $variant) use ($list, $schedule): void {
-            $aggregate = $schedule->findOrCreateAggregate($list, $variant->id);
-            if ($aggregate->periods()->exists()) {
-                return;
-            }
+        $actorId = User::query()->value('id');
+        if ($actorId !== null) {
+            $schedule = app(PriceScheduleService::class);
+            ProductVariant::query()->limit(20)->get()->each(function (ProductVariant $variant) use ($list, $schedule, $actorId): void {
+                $aggregate = $schedule->findOrCreateAggregate($list, $variant->id);
+                if ($aggregate->periods()->exists()) {
+                    return;
+                }
 
-            $schedule->replaceEffective(
-                $aggregate,
-                amountMinor: 12_999,
-                startsAt: CarbonImmutable::now('UTC')->subDays(7),
-                endsAt: null,
-                actorId: 1,
-                expectedVersion: null,
-                closePreviousAtStart: true,
-            );
-        });
+                $schedule->replaceEffective(
+                    $aggregate,
+                    amountMinor: 12_999,
+                    startsAt: CarbonImmutable::now('UTC')->subDays(7),
+                    endsAt: null,
+                    actorId: (int) $actorId,
+                    expectedVersion: null,
+                    closePreviousAtStart: true,
+                );
+            });
+        }
 
         $percent = Promotion::query()->firstOrCreate(
             ['code' => 'demo-10-off'],

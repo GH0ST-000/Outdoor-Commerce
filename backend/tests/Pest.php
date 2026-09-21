@@ -10,3 +10,10 @@ pest()->extend(TestCase::class)
     ->in('Feature');
 
 pest()->extend(TestCase::class)->in('Unit', 'Architecture');
+
+uses()->beforeEach(function (): void {
+    $this->withHeaders([
+        'X-Locale' => 'ka',
+        'Accept-Language' => 'ka',
+    ]);
+})->in('Feature/Catalog/PublicApi');

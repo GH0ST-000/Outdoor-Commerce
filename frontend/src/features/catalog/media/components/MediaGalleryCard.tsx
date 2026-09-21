@@ -55,6 +55,19 @@ export function MediaGalleryCard({
             <Badge variant="default">Primary</Badge>
           ) : null}
         </div>
+        {canManage ? (
+          <Button
+            type="button"
+            size="sm"
+            variant="destructive"
+            className="absolute top-2 right-2"
+            disabled={pending}
+            aria-label={`Remove ${label}`}
+            onClick={onRemove}
+          >
+            Remove
+          </Button>
+        ) : null}
       </div>
       <div className="space-y-2 p-3">
         <p className="truncate text-xs font-medium" title={label}>

@@ -1020,37 +1020,39 @@ export function ProductFormPage({
             </TabsContent>
           </fieldset>
 
-          <div className="sticky bottom-0 z-10 -mx-1 border-t border-border/60 bg-background/90 px-1 py-4 backdrop-blur-md">
-            <div className="flex flex-wrap gap-2">
-              {canManage ? (
-                <Button type="submit" size="sm" disabled={submitting}>
-                  {submitting
-                    ? "Saving…"
-                    : mode === "create"
-                      ? "Create product"
-                      : "Save changes"}
+          {wizardStep !== "media" && wizardStep !== "variants" ? (
+            <div className="sticky bottom-0 z-10 -mx-1 border-t border-border/60 bg-background/90 px-1 py-4 backdrop-blur-md">
+              <div className="flex flex-wrap gap-2">
+                {canManage ? (
+                  <Button type="submit" size="sm" disabled={submitting}>
+                    {submitting
+                      ? "Saving…"
+                      : mode === "create"
+                        ? "Create product"
+                        : "Save changes"}
+                  </Button>
+                ) : (
+                  <p className="text-sm text-muted-foreground">
+                    You can view products but need catalog.manage to edit.
+                  </p>
+                )}
+                {mode === "edit" && canManage ? (
+                  <Button
+                    type="button"
+                    variant="destructive"
+                    size="sm"
+                    disabled={submitting}
+                    onClick={() => setConfirmArchive(true)}
+                  >
+                    Archive
+                  </Button>
+                ) : null}
+                <Button asChild variant="outline" size="sm">
+                  <Link href="/admin/catalog/products">Cancel</Link>
                 </Button>
-              ) : (
-                <p className="text-sm text-muted-foreground">
-                  You can view products but need catalog.manage to edit.
-                </p>
-              )}
-              {mode === "edit" && canManage ? (
-                <Button
-                  type="button"
-                  variant="destructive"
-                  size="sm"
-                  disabled={submitting}
-                  onClick={() => setConfirmArchive(true)}
-                >
-                  Archive
-                </Button>
-              ) : null}
-              <Button asChild variant="outline" size="sm">
-                <Link href="/admin/catalog/products">Cancel</Link>
-              </Button>
+              </div>
             </div>
-          </div>
+          ) : null}
         </form>
 
         <TabsContent value="media">

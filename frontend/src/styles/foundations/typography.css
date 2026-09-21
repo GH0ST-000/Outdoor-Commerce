@@ -1,0 +1,153 @@
+/**
+ * Typography scale. Prefer these classes over ad-hoc font sizes.
+ * Georgian never uses Latin-only display fonts or automatic uppercase.
+ */
+
+:root {
+  --text-display-xl: clamp(2.5rem, 6vw, 4.5rem);
+  --text-display-l: clamp(2rem, 4.5vw, 3.5rem);
+  --text-h1: clamp(1.75rem, 3vw, 2.5rem);
+  --text-h2: clamp(1.5rem, 2.4vw, 2rem);
+  --text-h3: 1.25rem;
+  --text-h4: 1.125rem;
+  --text-h5: 1rem;
+  --text-body-lg: 1.125rem;
+  --text-body: 1rem;
+  --text-body-sm: 0.875rem;
+  --text-caption: 0.75rem;
+  --text-label: 0.6875rem;
+  --text-button: 0.875rem;
+  --text-price-lg: 1.5rem;
+  --text-price: 1rem;
+  --leading-display: 1.08;
+  --leading-heading: 1.2;
+  --leading-body: 1.6;
+  --leading-geo: 1.7;
+  --measure: 68ch;
+}
+
+.sf-display,
+.type-display-xl,
+.type-display-l {
+  font-family: var(--font-display);
+  font-weight: var(--font-weight-medium);
+  letter-spacing: -0.03em;
+  line-height: var(--leading-display);
+}
+
+.type-display-xl {
+  font-size: var(--text-display-xl);
+}
+
+.type-display-l {
+  font-size: var(--text-display-l);
+}
+
+.type-h1 {
+  font-family: var(--font-display);
+  font-size: var(--text-h1);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--leading-heading);
+}
+
+.type-h2 {
+  font-size: var(--text-h2);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--leading-heading);
+}
+
+.type-h3 {
+  font-size: var(--text-h3);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--leading-heading);
+}
+
+.type-h4 {
+  font-size: var(--text-h4);
+  font-weight: var(--font-weight-semibold);
+}
+
+.type-h5 {
+  font-size: var(--text-h5);
+  font-weight: var(--font-weight-semibold);
+}
+
+.type-body-lg {
+  font-size: var(--text-body-lg);
+  line-height: var(--leading-body);
+}
+
+.type-body {
+  font-size: var(--text-body);
+  line-height: var(--leading-body);
+}
+
+.type-body-sm {
+  font-size: var(--text-body-sm);
+  line-height: var(--leading-body);
+}
+
+.type-caption {
+  font-size: var(--text-caption);
+  line-height: 1.45;
+}
+
+.sf-label,
+.type-label {
+  font-size: var(--text-label);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.type-button {
+  font-size: var(--text-button);
+  font-weight: var(--font-weight-semibold);
+}
+
+.type-price-lg,
+.type-price,
+.type-numeric {
+  font-variant-numeric: tabular-nums;
+}
+
+.type-price-lg {
+  font-size: var(--text-price-lg);
+  font-weight: var(--font-weight-semibold);
+}
+
+.type-price {
+  font-size: var(--text-price);
+  font-weight: var(--font-weight-medium);
+}
+
+.type-measure {
+  max-width: var(--measure);
+}
+
+:lang(ka) .sf-display,
+:lang(ka) .type-display-xl,
+:lang(ka) .type-display-l,
+:lang(ka) .type-h1,
+[lang="ka"] .sf-display,
+[lang="ka"] .type-display-xl,
+[lang="ka"] .type-display-l,
+[lang="ka"] .type-h1 {
+  font-family: var(--font-geo-serif), var(--font-geo), serif;
+  letter-spacing: 0;
+  line-height: var(--leading-geo);
+}
+
+:lang(ka) .sf-label,
+:lang(ka) .type-label,
+[lang="ka"] .sf-label,
+[lang="ka"] .type-label {
+  letter-spacing: 0.04em;
+  text-transform: none;
+}
+
+:lang(ka) .type-body,
+:lang(ka) .type-body-lg,
+:lang(ka) .type-body-sm {
+  line-height: var(--leading-geo);
+}

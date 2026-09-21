@@ -29,4 +29,52 @@ return [
             'allowed_lengths' => [8, 12, 13, 14],
         ],
     ],
+    /**
+     * Day 12 public catalog API.
+     *
+     * Prices and availability in list responses come from rebuildable projections.
+     * Product detail re-quotes pricing and availability from the source domains.
+     */
+    'public' => [
+        'currency' => 'GEL',
+        'require_ready_media' => (bool) env('CATALOG_PUBLIC_REQUIRE_READY_MEDIA', true),
+        'expose_exact_quantity' => false,
+        'include_category_descendants' => true,
+        'max_category_depth' => 12,
+        'pagination' => [
+            'default_per_page' => 10,
+            'max_per_page' => (int) env('CATALOG_PUBLIC_MAX_PER_PAGE', 48),
+        ],
+        'filters' => [
+            'max_brands' => 20,
+            'max_attribute_groups' => 8,
+            'max_values_per_attribute' => 20,
+            'max_query_length' => 80,
+        ],
+        'cache' => [
+            'ttl_seconds' => (int) env('CATALOG_PUBLIC_CACHE_TTL', 60),
+            'stale_while_revalidate_seconds' => (int) env('CATALOG_PUBLIC_SWR', 300),
+            'lock_seconds' => 10,
+            'prefix' => 'public-catalog',
+        ],
+        'http' => [
+            'max_age_seconds' => 60,
+            'stale_while_revalidate_seconds' => 300,
+        ],
+        'rate_limits' => [
+            'browse_per_minute' => 120,
+            'list_per_minute' => 60,
+            'facets_per_minute' => 30,
+            'search_per_minute' => 20,
+        ],
+        'projections' => [
+            'chunk' => 500,
+            'queue' => env('CATALOG_PUBLIC_PROJECTION_QUEUE', 'catalog'),
+        ],
+        'storefront_paths' => [
+            'category' => '/catalog/%s',
+            'brand' => '/brands/%s',
+            'product' => '/products/%s',
+        ],
+    ],
 ];

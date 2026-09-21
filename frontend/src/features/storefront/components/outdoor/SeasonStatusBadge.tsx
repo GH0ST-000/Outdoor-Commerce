@@ -29,11 +29,11 @@ export function SeasonStatusBadge({ status }: { status: SeasonStatus }) {
       className={cn(
         "inline-flex items-center gap-1.5 rounded-md border px-2.5 py-1 text-xs font-semibold",
         status === "open" &&
-          "border-[color-mix(in_oklab,var(--success)_35%,transparent)] bg-[color-mix(in_oklab,var(--success)_12%,transparent)] text-[var(--success)]",
+          "border-[color-mix(in_oklab,var(--status-success)_35%,transparent)] bg-[color-mix(in_oklab,var(--status-success)_12%,transparent)] text-[var(--status-success)]",
         status === "closed" &&
-          "border-[color-mix(in_oklab,var(--destructive)_35%,transparent)] bg-[color-mix(in_oklab,var(--destructive)_12%,transparent)] text-destructive",
+          "border-[color-mix(in_oklab,var(--status-danger)_35%,transparent)] bg-[color-mix(in_oklab,var(--status-danger)_12%,transparent)] text-destructive",
         status === "conditional" &&
-          "border-[color-mix(in_oklab,var(--warning)_35%,transparent)] bg-[color-mix(in_oklab,var(--warning)_12%,transparent)] text-[var(--warning)]",
+          "border-[color-mix(in_oklab,var(--status-warning)_35%,transparent)] bg-[color-mix(in_oklab,var(--status-warning)_12%,transparent)] text-[var(--status-warning)]",
         status === "unknown" && "border-border bg-muted text-muted-foreground",
       )}
     >
