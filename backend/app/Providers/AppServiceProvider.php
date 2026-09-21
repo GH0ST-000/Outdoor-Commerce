@@ -182,11 +182,13 @@ class AppServiceProvider extends ServiceProvider
         });
 
         RateLimiter::for('catalog.public.list', function (Request $request) {
-            $limit = $request->filled('q')
+            $searching = filled($request->query('q'));
+            $limit = $searching
                 ? (int) config('catalog.public.rate_limits.search_per_minute', 20)
                 : (int) config('catalog.public.rate_limits.list_per_minute', 60);
 
-            return Limit::perMinute($limit)->by((string) $request->ip());
+            return Limit::perMinute($limit)
+                ->by($request->ip().'|'.($searching ? 'search' : 'list'));
         });
 
         RateLimiter::for('catalog.public.facets', function (Request $request) {

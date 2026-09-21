@@ -14,7 +14,7 @@ All routes are unauthenticated `GET` under `/api/v1/catalog`.
 | GET | `/categories/{slug}` | `catalog.public` |
 | GET | `/brands` | `catalog.public` |
 | GET | `/brands/{slug}` | `catalog.public` |
-| GET | `/products` | `catalog.public.list` (60/min; 20/min when `q` is present) |
+| GET | `/products` | `catalog.public.list` (60/min/IP). Search (`q`) uses a separate 20/min/IP bucket |
 | GET | `/products/facets` | `catalog.public.facets` (30/min) |
 | GET | `/products/{slug}` | `catalog.public` |
 

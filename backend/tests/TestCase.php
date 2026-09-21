@@ -33,6 +33,11 @@ abstract class TestCase extends BaseTestCase
 
         foreach (['127.0.0.1', '::1'] as $ip) {
             RateLimiter::clear(md5('auth.register'.$ip));
+            RateLimiter::clear(md5('catalog.public'.$ip));
+            RateLimiter::clear(md5('catalog.public.list'.$ip));
+            RateLimiter::clear(md5('catalog.public.list'.$ip.'|list'));
+            RateLimiter::clear(md5('catalog.public.list'.$ip.'|search'));
+            RateLimiter::clear(md5('catalog.public.facets'.$ip));
         }
     }
 

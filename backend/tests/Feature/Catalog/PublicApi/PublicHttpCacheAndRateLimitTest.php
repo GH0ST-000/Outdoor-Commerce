@@ -31,6 +31,22 @@ it('emits etag cache-control content-language and 304 without a body', function 
     expect($changed->headers->get('ETag'))->not->toBe($etag);
 });
 
+it('does not spend the search budget on ordinary product list requests', function (): void {
+    PublicCatalogFixtures::publicProduct(['ka_name' => 'Searchable optic', 'sku' => 'PRD-SEARCH-1']);
+    Cache::flush();
+    config(['catalog.public.rate_limits.search_per_minute' => 2]);
+
+    $this->getJson('/api/v1/catalog/products')->assertOk();
+    $this->getJson('/api/v1/catalog/products')->assertOk();
+    $this->getJson('/api/v1/catalog/products')->assertOk();
+
+    $this->getJson('/api/v1/catalog/products?q=PRD-SEARCH-1')->assertOk();
+    $this->getJson('/api/v1/catalog/products?q=PRD-SEARCH-1')->assertOk();
+    $this->getJson('/api/v1/catalog/products?q=PRD-SEARCH-1')
+        ->assertStatus(429)
+        ->assertJsonPath('error.code', 'CATALOG_RATE_LIMITED');
+});
+
 it('rate limits excessive public catalog browsing and returns standard headers', function (): void {
     PublicCatalogFixtures::priceList();
     Cache::flush();
