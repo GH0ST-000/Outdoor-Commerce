@@ -21,6 +21,7 @@ export function VariantsTable({
   onSetDefault,
   onArchive,
   onRestore,
+  onManageMedia,
 }: {
   variants: ProductVariantListItem[] | null;
   error: string | null;
@@ -30,6 +31,7 @@ export function VariantsTable({
   onSetDefault: (variant: ProductVariantListItem) => void;
   onArchive: (variant: ProductVariantListItem) => void;
   onRestore: (variant: ProductVariantListItem) => void;
+  onManageMedia: (variant: ProductVariantListItem) => void;
 }) {
   if (error) {
     return (
@@ -126,6 +128,17 @@ export function VariantsTable({
                         onClick={() => onEdit(variant)}
                       >
                         Edit
+                      </Button>
+                    ) : null}
+                    {!isDeleted ? (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        disabled={pending}
+                        onClick={() => onManageMedia(variant)}
+                      >
+                        Media
                       </Button>
                     ) : null}
                     {canManage && !isDeleted && !variant.is_default ? (

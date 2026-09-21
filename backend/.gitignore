@@ -19,6 +19,8 @@
 /public/hot
 /public/storage
 /storage/*.key
+/storage/app/private/media/**
+/storage/app/public/media/**
 /storage/pail
 /vendor
 _ide_helper.php

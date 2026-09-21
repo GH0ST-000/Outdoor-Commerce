@@ -135,14 +135,20 @@
     @apply border-border;
   }
 
+  html {
+    overflow-x: clip;
+  }
+
   html,
   body {
     @apply min-h-full;
+    max-width: 100%;
   }
 
   body {
     @apply bg-background text-foreground antialiased;
     font-family: var(--font-sans);
+    overflow-x: clip;
   }
 
   a {
@@ -174,6 +180,19 @@
     padding-inline: clamp(1rem, 3vw, 2rem);
   }
 
+  .sf-scroll-x {
+    display: flex;
+    gap: 0.5rem;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .sf-scroll-x::-webkit-scrollbar {
+    display: none;
+  }
+
   .sf-display {
     font-family: var(--font-display);
     font-weight: 500;
@@ -190,6 +209,7 @@
 
   .sf-section {
     padding-block: var(--space-section);
+    scroll-margin-top: 5rem;
   }
 
   .sf-paper-grain {
@@ -214,6 +234,53 @@
 
   .sf-reveal-delay-3 {
     animation-delay: 240ms;
+  }
+
+  /*
+    Editorial bands lock ink/paper so dark-mode theme tokens
+    cannot wash headings out on light surfaces (or the reverse).
+  */
+  .sf-band-paper {
+    background-color: var(--paper);
+    color: var(--charcoal);
+  }
+
+  .sf-band-paper .text-muted-foreground,
+  .sf-band-paper [class*="text-muted"] {
+    color: color-mix(in oklab, var(--charcoal) 58%, transparent) !important;
+  }
+
+  .sf-band-ink {
+    background-color: var(--night-forest);
+    color: var(--warm-bone);
+  }
+
+  .sf-band-pine {
+    background-color: var(--deep-pine);
+    color: var(--warm-bone);
+  }
+
+  .sf-hero-media {
+    animation: drift 28s var(--ease-soft) infinite alternate;
+    will-change: transform;
+  }
+
+  .sf-line-clamp-2 {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
+  }
+
+  .sf-line-clamp-3 {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    overflow: hidden;
+  }
+
+  .sf-nav-label {
+    white-space: nowrap;
   }
 }
 

@@ -6,7 +6,9 @@ import {
 } from "@/features/storefront/fixtures/demo-catalog";
 
 /**
- * Fixture-backed adapter. Swap implementation when public catalog API lands.
+ * Fixture-backed adapter. Swap implementation when public catalog API lands (Day 12).
+ * Media manifests from the API should map into `imageMedia` / `galleryMedia` on
+ * storefront types; string `imageSrc` / `gallery` remain valid for demos.
  */
 export function listFeaturedProducts(): ProductCardData[] {
   return featuredProducts;
@@ -15,9 +17,13 @@ export function listFeaturedProducts(): ProductCardData[] {
 export function listCatalogProducts(categorySlug?: string): ProductCardData[] {
   if (!categorySlug) return featuredProducts;
   const map: Record<string, string[]> = {
-    hunting: ["alpine-hunting-jacket", "ridge-optic-scope"],
+    hunting: [
+      "alpine-hunting-jacket",
+      "ridge-optic-scope",
+      "fixed-blade-knife",
+    ],
     fishing: ["river-braided-line"],
-    camping: [],
+    camping: ["alpine-hunting-jacket"],
     clothing: ["alpine-hunting-jacket"],
     optics: ["ridge-optic-scope"],
     knives: ["fixed-blade-knife"],

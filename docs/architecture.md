@@ -8,6 +8,8 @@ See also:
 
 - [ADR 0001: Modular monolith](adr/0001-modular-monolith.md)
 - [API conventions](api-conventions.md)
+- [Catalog media (Day 9)](catalog-media.md)
+- [Inventory ledger (Day 10)](inventory-ledger.md)
 - Per-module notes under `backend/app/Domains/*/README.md`
 
 ## Modular monolith definition
@@ -25,7 +27,7 @@ See also:
 | --- | --- | --- |
 | Shared | Cross-cutting technical primitives (correlation ID, future money/clock/pagination types) | Business workflows, product/order rules |
 | Identity | Accounts, credentials, sessions, roles/permissions | Catalog content, payments |
-| Catalog | Products, variants, categories, attributes, media metadata | Stock reservations, final payable prices |
+| Catalog | Products, variants, categories, attributes, media (Day 9 local pipeline + manifests) | Stock reservations, final payable prices |
 | Inventory | Stock ledger, availability, reservations | Product descriptions, payments |
 | Pricing | List/sale prices, promotions, coupon eligibility | Inventory quantities |
 | Cart | Cart composition for a shopper session | Final order persistence, payment capture |
@@ -139,6 +141,7 @@ Http (Controllers, Requests, Resources, Middleware)
 - `Shared` must not depend on business modules.
 - Business modules may depend on `Shared`.
 - Modules must not import another module’s internal implementation.
+- Owned Eloquent `Models` may be referenced across modules for foreign-key relations and persistence identity; business behavior still goes through Contracts, Actions, Queries, DTOs, or Events.
 - Production code must never depend on `Tests\`.
 - `env()` only inside Laravel config files.
 

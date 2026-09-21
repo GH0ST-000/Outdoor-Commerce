@@ -117,7 +117,7 @@ final class DomainDependencyScanner
      */
     public static function findInternalCrossModuleImports(string $domainsRoot): array
     {
-        $publicSegments = ['Contracts', 'Actions', 'Queries', 'DTOs', 'Events', 'Enums'];
+        $publicSegments = ['Contracts', 'Actions', 'Queries', 'DTOs', 'Events', 'Enums', 'Models'];
         $violations = [];
         $allModules = array_merge(['Shared'], self::businessModules());
 

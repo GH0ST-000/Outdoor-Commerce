@@ -36,11 +36,13 @@ Uses [`spatie/laravel-permission`](https://github.com/spatie/laravel-permission)
 
 ## Initial roles
 
-| Role | Purpose (Day 5) |
+| Role | Purpose |
 | --- | --- |
 | `admin` | Full admin console + user/role/audit management |
-| `catalog-manager` | Admin shell + catalog/inventory/pricing/recommendations foundation |
-| `order-manager` | Admin shell + orders foundation (+ inventory/pricing view for support) |
+| `catalog-manager` | Admin shell + catalog/pricing/recommendations (`inventory.view` only) |
+| `inventory-manager` | Warehouses, stock movements, transfers, reservation admin |
+| `pricing-manager` | Price lists, schedules, and promotions (publish included) |
+| `order-manager` | Admin shell + orders (+ inventory view + reservation management for support) |
 | `legal-editor` | Admin shell + legal-rules foundation (+ content view) |
 
 `content-manager` is **not** created yet — deferred until content workflows need a dedicated role.
@@ -49,40 +51,50 @@ Ordinary customers have **no** administrative role.
 
 ## Permission matrix
 
-| Permission | Admin | Catalog Manager | Order Manager | Legal Editor |
-| --- | ---: | ---: | ---: | ---: |
-| `admin.access` | Yes | Yes | Yes | Yes |
-| `users.view` | Yes | No | No | No |
-| `users.status.manage` | Yes | No | No | No |
-| `users.roles.manage` | Yes | No | No | No |
-| `roles.view` | Yes | No | No | No |
-| `roles.manage` | Yes | No | No | No |
-| `audit-logs.view` | Yes | No | No | No |
-| `catalog.view` | Yes | Yes | No | No |
-| `catalog.manage` | Yes | Yes | No | No |
-| `catalog.publish` | Yes | Yes | No | No |
-| `inventory.view` | Yes | Yes | Yes | No |
-| `inventory.manage` | Yes | Yes | No | No |
-| `pricing.view` | Yes | Yes | Yes | No |
-| `pricing.manage` | Yes | Yes | No | No |
-| `orders.view` | Yes | No | Yes | No |
-| `orders.manage` | Yes | No | Yes | No |
-| `legal-rules.view` | Yes | No | No | Yes |
-| `legal-rules.manage` | Yes | No | No | Yes |
-| `legal-rules.publish` | Yes | No | No | Yes |
-| `content.view` | Yes | Yes | No | Yes |
-| `content.manage` | Yes | No | No | No |
-| `content.publish` | Yes | No | No | No |
-| `recommendations.view` | Yes | Yes | No | No |
-| `recommendations.manage` | Yes | Yes | No | No |
-| `operations.view` | Yes | No | No | No |
+| Permission | Admin | Catalog Manager | Inventory Manager | Order Manager | Legal Editor |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| `admin.access` | Yes | Yes | Yes | Yes | Yes |
+| `users.view` | Yes | No | No | No | No |
+| `users.status.manage` | Yes | No | No | No | No |
+| `users.roles.manage` | Yes | No | No | No | No |
+| `roles.view` | Yes | No | No | No | No |
+| `roles.manage` | Yes | No | No | No | No |
+| `audit-logs.view` | Yes | No | No | No | No |
+| `catalog.view` | Yes | Yes | Yes | No | No |
+| `catalog.manage` | Yes | Yes | No | No | No |
+| `catalog.publish` | Yes | Yes | No | No | No |
+| `inventory.view` | Yes | Yes | Yes | Yes | No |
+| `inventory.manage` | Yes | No | Yes | No | No |
+| `inventory.adjust` | Yes | No | Yes | No | No |
+| `inventory.transfer` | Yes | No | Yes | No | No |
+| `inventory.reservations.manage` | Yes | No | Yes | Yes | No |
+| `pricing.view` | Yes | Yes | Yes | Yes | No |
+| `pricing.manage` | Yes | Yes | No | No | No |
+| `pricing.publish` | Yes | No | No | No | No |
+| `promotions.view` | Yes | Yes | Yes | Yes | No |
+| `promotions.manage` | Yes | Yes | No | No | No |
+| `promotions.publish` | Yes | No | No | No | No |
+| `orders.view` | Yes | No | No | Yes | No |
+| `orders.manage` | Yes | No | No | Yes | No |
+| `legal-rules.view` | Yes | No | No | No | Yes |
+| `legal-rules.manage` | Yes | No | No | No | Yes |
+| `legal-rules.publish` | Yes | No | No | No | Yes |
+| `content.view` | Yes | Yes | No | No | Yes |
+| `content.manage` | Yes | No | No | No | No |
+| `content.publish` | Yes | No | No | No | No |
+| `recommendations.view` | Yes | Yes | No | No | No |
+| `recommendations.manage` | Yes | Yes | No | No | No |
+| `operations.view` | Yes | No | No | No | No |
 
 ### Matrix differences from the product brief
 
 - No `content-manager` role.
 - `content.view` granted to catalog-manager and legal-editor for future copy/legal pages.
 - `content.manage` / `content.publish` remain admin-only.
-- `inventory.view` and `pricing.view` granted to order-manager for order support.
+- `inventory.view` granted to catalog-manager and order-manager; stock mutations require inventory-manager (or admin).
+- `pricing-manager` role: all `pricing.*` and `promotions.*` permissions (plus catalog view).
+- `catalog-manager` may draft prices/promotions; publish/activate requires `pricing-manager` (or admin).
+- `inventory.reservations.manage` granted to order-manager for checkout support.
 - `roles.manage` is assigned to admin only; Day 5 exposes a **read-only** roles API.
 
 ## Synchronization

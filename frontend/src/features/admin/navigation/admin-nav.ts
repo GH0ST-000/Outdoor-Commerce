@@ -1,7 +1,8 @@
 import { PERMISSIONS } from "@/features/admin/permissions/permissions";
 import { hasPermission } from "@/features/admin/permissions/has-permission";
 
-export type AdminNavSectionId = "overview" | "catalog" | "access";
+export type AdminNavSectionId =
+  "overview" | "catalog" | "inventory" | "pricing" | "access";
 
 export type AdminNavItem = {
   id: string;
@@ -18,6 +19,8 @@ export const ADMIN_NAV_SECTIONS: readonly {
 }[] = [
   { id: "overview", label: "Overview" },
   { id: "catalog", label: "Catalog" },
+  { id: "inventory", label: "Inventory" },
+  { id: "pricing", label: "Pricing" },
   { id: "access", label: "Access & security" },
 ] as const;
 
@@ -45,6 +48,48 @@ export const ADMIN_NAV_ITEMS: readonly AdminNavItem[] = [
     href: "/admin/catalog/attributes",
     permission: PERMISSIONS.CATALOG_VIEW,
     section: "catalog",
+  },
+  {
+    id: "inventory",
+    label: "Stock",
+    href: "/admin/inventory",
+    permission: PERMISSIONS.INVENTORY_VIEW,
+    section: "inventory",
+  },
+  {
+    id: "warehouses",
+    label: "Warehouses",
+    href: "/admin/inventory/warehouses",
+    permission: PERMISSIONS.INVENTORY_VIEW,
+    section: "inventory",
+  },
+  {
+    id: "reservations",
+    label: "Reservations",
+    href: "/admin/inventory/reservations",
+    permission: PERMISSIONS.INVENTORY_VIEW,
+    section: "inventory",
+  },
+  {
+    id: "price-lists",
+    label: "Price lists",
+    href: "/admin/pricing/price-lists",
+    permission: PERMISSIONS.PRICING_VIEW,
+    section: "pricing",
+  },
+  {
+    id: "prices",
+    label: "Prices",
+    href: "/admin/pricing/prices",
+    permission: PERMISSIONS.PRICING_VIEW,
+    section: "pricing",
+  },
+  {
+    id: "promotions",
+    label: "Promotions",
+    href: "/admin/pricing/promotions",
+    permission: PERMISSIONS.PROMOTIONS_VIEW,
+    section: "pricing",
   },
   {
     id: "users",
@@ -89,6 +134,13 @@ export function groupAdminNav(
 export function isAdminNavActive(pathname: string, href: string): boolean {
   if (href === "/admin") {
     return pathname === "/admin";
+  }
+  // Stock list/detail must not mark active for warehouses/reservations sub-routes.
+  if (href === "/admin/inventory") {
+    if (pathname === "/admin/inventory") {
+      return true;
+    }
+    return /^\/admin\/inventory\/\d+\/\d+/.test(pathname);
   }
   return pathname === href || pathname.startsWith(`${href}/`);
 }

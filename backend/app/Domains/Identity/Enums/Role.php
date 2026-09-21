@@ -13,6 +13,10 @@ enum Role: string
 
     case CatalogManager = 'catalog-manager';
 
+    case InventoryManager = 'inventory-manager';
+
+    case PricingManager = 'pricing-manager';
+
     case OrderManager = 'order-manager';
 
     case LegalEditor = 'legal-editor';
@@ -29,7 +33,9 @@ enum Role: string
     {
         return match ($this) {
             self::Admin => 'Full administrative access across the operations console.',
-            self::CatalogManager => 'Manages catalog, inventory, pricing, and recommendation foundations.',
+            self::CatalogManager => 'Manages catalog and recommendation foundations.',
+            self::InventoryManager => 'Manages warehouses, stock movements, and inventory reservations.',
+            self::PricingManager => 'Manages price lists, schedules, and promotions.',
             self::OrderManager => 'Manages orders and related fulfillment support.',
             self::LegalEditor => 'Manages hunting and legal rule content.',
         };

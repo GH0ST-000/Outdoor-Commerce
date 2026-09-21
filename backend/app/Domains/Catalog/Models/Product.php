@@ -14,6 +14,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 
@@ -120,6 +122,35 @@ class Product extends Model
             ->withPivot('sort_order')
             ->withTimestamps()
             ->orderByPivot('sort_order');
+    }
+
+    /**
+     * @return MorphMany<MediaAttachment, $this>
+     */
+    public function mediaAttachments(): MorphMany
+    {
+        return $this->morphMany(MediaAttachment::class, 'mediable')
+            ->orderBy('sort_order')
+            ->orderBy('id');
+    }
+
+    /**
+     * Attachments whose asset finished processing — the only ones safe to render.
+     *
+     * @return MorphMany<MediaAttachment, $this>
+     */
+    public function readyMediaAttachments(): MorphMany
+    {
+        return $this->mediaAttachments()->ready();
+    }
+
+    /**
+     * @return MorphOne<MediaAttachment, $this>
+     */
+    public function primaryMediaAttachment(): MorphOne
+    {
+        return $this->morphOne(MediaAttachment::class, 'mediable')
+            ->where('is_primary', true);
     }
 
     /**

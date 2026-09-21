@@ -21,6 +21,8 @@ it('creates roles and permissions idempotently', function (): void {
     expect($first['roles_created'])->toEqualCanonicalizing([
         Role::Admin->value,
         Role::CatalogManager->value,
+        Role::InventoryManager->value,
+        Role::PricingManager->value,
         Role::OrderManager->value,
         Role::LegalEditor->value,
     ]);
@@ -30,7 +32,7 @@ it('creates roles and permissions idempotently', function (): void {
     expect($second['roles_created'])->toBeEmpty();
 
     expect(SpatiePermission::query()->count())->toBe(count(Permission::cases()));
-    expect(SpatieRole::query()->where('guard_name', 'web')->count())->toBeGreaterThanOrEqual(4);
+    expect(SpatieRole::query()->where('guard_name', 'web')->count())->toBeGreaterThanOrEqual(6);
 
     $admin = SpatieRole::findByName(Role::Admin->value, 'web');
     expect($admin->permissions)->toHaveCount(count(Permission::cases()));

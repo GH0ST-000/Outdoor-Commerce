@@ -31,6 +31,8 @@ it('returns the roles matrix for admins', function (): void {
     expect($names)->toEqualCanonicalizing([
         Role::Admin->value,
         Role::CatalogManager->value,
+        Role::InventoryManager->value,
+        Role::PricingManager->value,
         Role::OrderManager->value,
         Role::LegalEditor->value,
     ]);

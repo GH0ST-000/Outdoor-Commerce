@@ -35,14 +35,14 @@ export function SiteControls({ className, tone = "dark" }: SiteControlsProps) {
   const isDarkSurface = tone === "dark";
 
   return (
-    <div className={cn("flex items-center gap-2", className)}>
+    <div className={cn("flex items-center gap-1 sm:gap-2", className)}>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button
             variant={isDarkSurface ? "secondary" : "outline"}
             size="sm"
             className={cn(
-              "gap-2 backdrop-blur-md",
+              "h-9 gap-1.5 px-2.5 backdrop-blur-md sm:gap-2 sm:px-3",
               isDarkSurface &&
                 "border-white/20 bg-white/10 text-white hover:bg-white/15",
             )}
@@ -50,7 +50,9 @@ export function SiteControls({ className, tone = "dark" }: SiteControlsProps) {
           >
             <Languages className="size-4" />
             <span className="hidden sm:inline">{localeLabels[locale]}</span>
-            <span className="sm:hidden">{locale.toUpperCase()}</span>
+            <span className="text-xs font-semibold sm:hidden">
+              {locale.toUpperCase()}
+            </span>
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
@@ -74,7 +76,7 @@ export function SiteControls({ className, tone = "dark" }: SiteControlsProps) {
             variant={isDarkSurface ? "secondary" : "outline"}
             size="icon"
             className={cn(
-              "backdrop-blur-md",
+              "size-9 backdrop-blur-md sm:size-10",
               isDarkSurface &&
                 "border-white/20 bg-white/10 text-white hover:bg-white/15",
             )}

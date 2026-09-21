@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { LegalDemoBanner } from "@/features/storefront/components/outdoor/LegalDemoBanner";
+import { storefrontMedia } from "@/features/storefront/config/media";
 import { useStorefrontCopy } from "@/features/storefront/hooks/use-storefront-copy";
 
 export default function MapPage() {
@@ -19,7 +20,7 @@ export default function MapPage() {
       <div className="relative grid min-h-[70svh] lg:grid-cols-[1fr_320px]">
         <div className="relative min-h-[50svh] border-y border-border/60 lg:border-r">
           <Image
-            src="/storefront/map-surface.svg"
+            src={storefrontMedia.map}
             alt=""
             fill
             sizes="100vw"

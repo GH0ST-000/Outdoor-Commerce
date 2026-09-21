@@ -43,6 +43,7 @@ function renderTable(
     onSetDefault: vi.fn(),
     onArchive: vi.fn(),
     onRestore: vi.fn(),
+    onManageMedia: vi.fn(),
   };
 
   render(

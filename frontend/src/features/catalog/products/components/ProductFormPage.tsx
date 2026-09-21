@@ -23,6 +23,7 @@ import type {
   ProductWritePayload,
 } from "@/features/catalog/products/types/product-types";
 import { slugFromName } from "@/features/catalog/products/utils/slug";
+import { ProductMediaSection } from "@/features/catalog/media/components/ProductMediaSection";
 import { ProductVariantsSection } from "@/features/catalog/variants/components/ProductVariantsSection";
 import { useAdminContext } from "@/features/admin/hooks/use-admin-context";
 import { hasPermission } from "@/features/admin/permissions/has-permission";
@@ -46,7 +47,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 
 type LocaleTab = "ka" | "en";
-type WizardStep = "basics" | "catalog" | "variants" | "content" | "publish";
+type WizardStep =
+  "basics" | "catalog" | "variants" | "media" | "content" | "publish";
 
 type TranslationDraft = {
   name: string;
@@ -638,6 +640,9 @@ export function ProductFormPage({
           <TabsTrigger value="basics">Basics</TabsTrigger>
           <TabsTrigger value="catalog">Catalog</TabsTrigger>
           <TabsTrigger value="variants">Variants</TabsTrigger>
+          {mode === "edit" && productId ? (
+            <TabsTrigger value="media">Media</TabsTrigger>
+          ) : null}
           <TabsTrigger value="content">Content</TabsTrigger>
           <TabsTrigger value="publish">Publish</TabsTrigger>
         </TabsList>
@@ -1047,6 +1052,15 @@ export function ProductFormPage({
             </div>
           </div>
         </form>
+
+        <TabsContent value="media">
+          {mode === "edit" && productId ? (
+            <ProductMediaSection
+              scope={{ kind: "product", productId }}
+              canManage={canManage}
+            />
+          ) : null}
+        </TabsContent>
 
         <TabsContent value="variants">
           {mode === "edit" && productId ? (

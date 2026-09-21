@@ -59,6 +59,12 @@ vi.mock("@/features/catalog/attributes/api/attributes-api", () => ({
     fetchAdminAttributeValues(...args),
 }));
 
+vi.mock("@/features/catalog/media/components/ProductMediaSection", () => ({
+  ProductMediaSection: () => (
+    <div data-testid="product-media-section">Product media</div>
+  ),
+}));
+
 function renderCreate(permissions: string[]) {
   useAdminContextMock.mockReturnValue({
     permissions,

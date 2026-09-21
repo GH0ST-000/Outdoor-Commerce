@@ -6,7 +6,13 @@ import {
 } from "@/features/admin/permissions/permissions";
 
 export type PermissionGroupId =
-  "access" | "people" | "catalog" | "commerce" | "content" | "operations";
+  | "access"
+  | "people"
+  | "catalog"
+  | "inventory"
+  | "commerce"
+  | "content"
+  | "operations";
 
 export const PERMISSION_GROUPS: readonly {
   id: PermissionGroupId;
@@ -14,7 +20,8 @@ export const PERMISSION_GROUPS: readonly {
 }[] = [
   { id: "access", label: "Admin access" },
   { id: "people", label: "People & security" },
-  { id: "catalog", label: "Catalog & inventory" },
+  { id: "catalog", label: "Catalog" },
+  { id: "inventory", label: "Inventory" },
   { id: "commerce", label: "Orders & pricing" },
   { id: "content", label: "Content & legal" },
   { id: "operations", label: "Operations" },
@@ -76,23 +83,58 @@ const PERMISSION_META: Record<
   },
   "inventory.view": {
     label: "View inventory",
-    group: "catalog",
-    summary: "See stock levels",
+    group: "inventory",
+    summary: "See warehouses, balances, ledger, and reservations",
   },
   "inventory.manage": {
-    label: "Manage inventory",
-    group: "catalog",
-    summary: "Update stock levels",
+    label: "Manage warehouses",
+    group: "inventory",
+    summary: "Create warehouses and update safety stock settings",
+  },
+  "inventory.adjust": {
+    label: "Adjust stock",
+    group: "inventory",
+    summary: "Receive stock, adjust quantities, and reconcile counts",
+  },
+  "inventory.transfer": {
+    label: "Transfer stock",
+    group: "inventory",
+    summary: "Move stock between warehouses",
+  },
+  "inventory.reservations.manage": {
+    label: "Manage reservations",
+    group: "inventory",
+    summary: "Release or cancel active stock reservations",
   },
   "pricing.view": {
     label: "View pricing",
     group: "commerce",
-    summary: "See prices and price rules",
+    summary: "See price lists, schedules, and price history",
   },
   "pricing.manage": {
-    label: "Manage pricing",
+    label: "Manage pricing drafts",
     group: "commerce",
-    summary: "Change prices and price rules",
+    summary: "Create and edit draft price lists and price periods",
+  },
+  "pricing.publish": {
+    label: "Publish prices",
+    group: "commerce",
+    summary: "Publish or cancel prices and change active default lists",
+  },
+  "promotions.view": {
+    label: "View promotions",
+    group: "commerce",
+    summary: "See promotions and price previews",
+  },
+  "promotions.manage": {
+    label: "Manage promotion drafts",
+    group: "commerce",
+    summary: "Create and edit draft promotions and targets",
+  },
+  "promotions.publish": {
+    label: "Publish promotions",
+    group: "commerce",
+    summary: "Activate, pause, or archive promotions",
   },
   "orders.view": {
     label: "View orders",
@@ -154,6 +196,8 @@ const PERMISSION_META: Record<
 const ROLE_LABELS: Record<ApprovedRole, string> = {
   admin: "Administrator",
   "catalog-manager": "Catalog manager",
+  "inventory-manager": "Inventory manager",
+  "pricing-manager": "Pricing manager",
   "order-manager": "Order manager",
   "legal-editor": "Legal editor",
 };

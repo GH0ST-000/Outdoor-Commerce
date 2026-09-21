@@ -1,8 +1,8 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
+import { ProductGallery } from "@/features/storefront/components/commerce/ProductGallery";
 import { VariantSelector } from "@/features/storefront/components/commerce/VariantSelector";
 import { ProductGrid } from "@/features/storefront/components/commerce/ProductCard";
 import { getProductBySlug } from "@/features/storefront/adapters/fixture-catalog";
@@ -13,7 +13,16 @@ import { Button } from "@/components/ui/button";
 export function ProductDetailPage({ slug }: { slug: string }) {
   const product = getProductBySlug(slug);
   const { t, locale } = useStorefrontCopy();
-  const [activeImage, setActiveImage] = useState(0);
+
+  const galleryItems = useMemo(() => {
+    if (product?.galleryMedia?.length) {
+      return product.galleryMedia;
+    }
+    if (product?.gallery.length) {
+      return product.gallery;
+    }
+    return product ? [product.imageMedia ?? product.imageSrc] : [];
+  }, [product]);
 
   const related = useMemo(
     () => featuredProducts.filter((item) => item.slug !== slug).slice(0, 3),
@@ -34,7 +43,7 @@ export function ProductDetailPage({ slug }: { slug: string }) {
   }
 
   return (
-    <div className="sf-section">
+    <div className="sf-section pb-28 md:pb-[var(--space-section)]">
       <div className="sf-container space-y-10">
         <nav aria-label="Breadcrumb" className="text-sm text-muted-foreground">
           <Link href="/catalog" className="no-underline hover:text-foreground">
@@ -44,53 +53,20 @@ export function ProductDetailPage({ slug }: { slug: string }) {
           <span className="text-foreground">{product.name[locale]}</span>
         </nav>
 
-        <div className="grid gap-10 lg:grid-cols-2">
-          <div>
-            <div className="relative aspect-[4/5] overflow-hidden rounded-2xl border border-border/70 bg-muted">
-              <Image
-                src={product.gallery[activeImage] ?? product.imageSrc}
-                alt={product.imageAlt[locale]}
-                fill
-                priority
-                sizes="(max-width:1024px) 100vw, 50vw"
-                className="object-cover"
-              />
-            </div>
-            {product.gallery.length > 1 ? (
-              <ul className="mt-3 flex gap-2" aria-label={t.product.gallery}>
-                {product.gallery.map((src, index) => (
-                  <li key={src}>
-                    <button
-                      type="button"
-                      aria-label={`${t.product.gallery} ${index + 1}`}
-                      aria-pressed={activeImage === index}
-                      onClick={() => setActiveImage(index)}
-                      className={
-                        activeImage === index
-                          ? "relative size-16 overflow-hidden rounded-lg border-2 border-foreground"
-                          : "relative size-16 overflow-hidden rounded-lg border border-border"
-                      }
-                    >
-                      <Image
-                        src={src}
-                        alt=""
-                        fill
-                        className="object-cover"
-                        sizes="64px"
-                      />
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            ) : null}
-          </div>
+        <div className="grid gap-8 lg:grid-cols-2 lg:gap-10">
+          <ProductGallery
+            items={galleryItems}
+            alt={product.imageAlt}
+            locale={locale}
+            ariaLabel={t.product.gallery}
+          />
 
           <div className="space-y-6">
             <div>
               <p className="text-sm font-medium text-muted-foreground">
                 {product.brand}
               </p>
-              <h1 className="sf-display mt-1 text-4xl sm:text-5xl">
+              <h1 className="sf-display mt-1 text-3xl sm:text-4xl md:text-5xl">
                 {product.name[locale]}
               </h1>
               <p className="mt-4 text-muted-foreground">
