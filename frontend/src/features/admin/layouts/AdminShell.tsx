@@ -121,7 +121,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <div className="min-h-screen bg-[radial-gradient(1200px_600px_at_10%_-10%,rgba(47,111,94,0.14),transparent_55%),radial-gradient(900px_500px_at_90%_0%,rgba(212,161,92,0.1),transparent_50%),var(--background)]">
+    <div className="min-h-screen bg-background">
       <a
         href="#admin-main"
         className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-lg focus:bg-card focus:px-3 focus:py-2 focus:text-sm focus:shadow"
@@ -129,9 +129,9 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
         Skip to main content
       </a>
 
-      <div className="mx-auto flex min-h-screen max-w-[1400px]">
+      <div className="flex min-h-screen">
         <aside
-          className="sticky top-0 hidden h-screen w-[272px] shrink-0 flex-col bg-[linear-gradient(180deg,#0c1a16_0%,#10231d_55%,#0d1b17_100%)] px-4 py-5 text-white md:flex"
+          className="sticky top-0 hidden h-svh w-[272px] shrink-0 flex-col border-r border-white/10 bg-[linear-gradient(180deg,#14110f_0%,#1c1814_100%)] px-4 py-5 text-white md:flex"
           aria-label="Admin navigation"
         >
           <div className="mb-8 px-2">
@@ -203,7 +203,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
               <nav
                 id="admin-mobile-nav"
                 aria-label="Mobile"
-                className="mt-3 rounded-2xl border border-border/60 bg-[linear-gradient(180deg,#0c1a16_0%,#10231d_100%)] p-3 md:hidden"
+                className="mt-3 rounded-2xl border border-border/60 bg-[linear-gradient(180deg,#14110f_0%,#1c1814_100%)] p-3 md:hidden"
               >
                 <NavLinks onNavigate={() => setMobileOpen(false)} />
               </nav>

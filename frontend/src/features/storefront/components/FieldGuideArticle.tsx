@@ -21,7 +21,7 @@ export function FieldGuideArticle({ slug }: { slug: string }) {
   }
 
   return (
-    <article className="sf-section">
+    <article className="sf-band-paper sf-section">
       <div className="sf-container max-w-3xl space-y-6">
         <Link
           href="/field-guide"
@@ -29,7 +29,7 @@ export function FieldGuideArticle({ slug }: { slug: string }) {
         >
           ← {t.nav.fieldGuide}
         </Link>
-        <p className="sf-label text-muted-foreground">
+        <p className="sf-label text-[var(--copper)]">
           {guide.category[locale]}
         </p>
         <h1 className="sf-display text-4xl sm:text-5xl">

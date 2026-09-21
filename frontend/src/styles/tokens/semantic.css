@@ -1,0 +1,170 @@
+/**
+ * Semantic tokens — purpose, not pigment.
+ * Warm ivory for commerce, espresso for cinematic bands. Green is status only.
+ */
+
+:root {
+  --background: #f7f3ec;
+  --foreground: var(--ink);
+  --card: #fffcf7;
+  --card-foreground: var(--ink);
+  --popover: #fffcf7;
+  --popover-foreground: var(--ink);
+  --primary: var(--ink);
+  --primary-foreground: var(--warm-bone);
+  --secondary: #efe8dc;
+  --secondary-foreground: var(--ink);
+  --muted: #efe8dc;
+  --muted-foreground: #5c564e;
+  --accent: var(--copper);
+  --accent-foreground: #fff8f2;
+  --destructive: var(--danger-red);
+  --destructive-foreground: #fff7f7;
+  --border: rgba(26, 22, 19, 0.1);
+  --input: rgba(26, 22, 19, 0.14);
+  --ring: var(--copper);
+  --surface-dark: var(--espresso);
+  --surface-light: var(--paper);
+  --surface-muted: #efe8dc;
+  --action-primary: var(--ink);
+  --action-primary-hover: #2c2622;
+  --success: var(--success-green);
+  --warning: var(--copper);
+  --info: var(--river);
+  --spruce-deep: var(--espresso);
+
+  --background-default: var(--background);
+  --background-elevated: var(--card);
+  --background-inverse: var(--espresso);
+  --surface-primary: var(--card);
+  --surface-secondary: var(--secondary);
+  --surface-emphasis: var(--espresso);
+  --text-primary: var(--foreground);
+  --text-secondary: var(--muted-foreground);
+  --text-muted: color-mix(in oklab, var(--ink) 58%, transparent);
+  --text-inverse: var(--warm-bone);
+  --border-default: var(--border);
+  --border-subtle: rgba(26, 22, 19, 0.06);
+  --border-strong: rgba(26, 22, 19, 0.18);
+  --focus-ring: var(--ring);
+  --status-success: var(--success);
+  --status-warning: var(--warning);
+  --status-danger: var(--destructive);
+  --status-info: var(--info);
+}
+
+.dark {
+  --background: #14110f;
+  --foreground: var(--warm-bone);
+  --card: #1f1b17;
+  --card-foreground: var(--warm-bone);
+  --popover: #241f1b;
+  --popover-foreground: var(--warm-bone);
+  --primary: var(--copper);
+  --primary-foreground: #fff8f2;
+  --secondary: #2a241f;
+  --secondary-foreground: var(--warm-bone);
+  --muted: #1a1714;
+  --muted-foreground: #c2b8ac;
+  --accent: var(--ember);
+  --accent-foreground: #1a1008;
+  --destructive: #c45a5a;
+  --destructive-foreground: #1a0808;
+  --border: rgba(243, 236, 227, 0.1);
+  --input: rgba(243, 236, 227, 0.14);
+  --ring: var(--ember);
+  --surface-dark: var(--espresso);
+  --surface-light: #1f1b17;
+  --surface-muted: #1a1714;
+  --action-primary: var(--copper);
+  --action-primary-hover: var(--ember);
+  --success: #4f8f64;
+  --warning: var(--amber);
+  --info: #7a96a0;
+  --spruce-deep: #0e0c0a;
+  --background-default: var(--background);
+  --background-elevated: var(--card);
+  --background-inverse: var(--warm-bone);
+  --surface-primary: var(--card);
+  --surface-secondary: var(--secondary);
+  --surface-emphasis: var(--espresso);
+  --text-primary: var(--foreground);
+  --text-secondary: var(--muted-foreground);
+  --text-muted: color-mix(in oklab, var(--warm-bone) 58%, transparent);
+  --text-inverse: var(--warm-bone);
+  --border-default: var(--border);
+  --border-subtle: rgba(243, 236, 227, 0.06);
+  --border-strong: rgba(243, 236, 227, 0.2);
+  --focus-ring: var(--ring);
+  --header-background: color-mix(in oklab, var(--background) 78%, transparent);
+}
+
+[data-surface="dark"],
+[data-surface="ink"],
+[data-surface="pine"] {
+  --background: var(--espresso);
+  --foreground: var(--warm-bone);
+  --card: #1f1b17;
+  --card-foreground: var(--warm-bone);
+  --muted-foreground: color-mix(in oklab, var(--warm-bone) 64%, transparent);
+  --border: rgba(243, 236, 227, 0.12);
+  --ring: var(--ember);
+  --text-primary: var(--warm-bone);
+  --text-secondary: color-mix(in oklab, var(--warm-bone) 70%, transparent);
+  --text-muted: color-mix(in oklab, var(--warm-bone) 58%, transparent);
+  --text-inverse: var(--ink);
+  --primary: var(--warm-bone);
+  --primary-foreground: var(--espresso);
+  color: var(--warm-bone);
+  background-color: var(--espresso);
+}
+
+[data-surface="light"],
+[data-surface="paper"],
+[data-surface="commerce"] {
+  --background: var(--paper);
+  --foreground: var(--ink);
+  --card: #fffcf7;
+  --card-foreground: var(--ink);
+  --muted: #efe8dc;
+  --muted-foreground: color-mix(in oklab, var(--ink) 58%, transparent);
+  --primary: var(--ink);
+  --primary-foreground: var(--warm-bone);
+  --action-primary: var(--ink);
+  --action-primary-hover: #2c2622;
+  --accent: var(--copper);
+  --accent-foreground: #fff8f2;
+  --border: rgba(26, 22, 19, 0.1);
+  --ring: var(--copper);
+  --header-background: color-mix(in oklab, var(--paper) 82%, transparent);
+  --text-primary: var(--ink);
+  --text-secondary: color-mix(in oklab, var(--ink) 62%, transparent);
+  --text-muted: color-mix(in oklab, var(--ink) 58%, transparent);
+  color: var(--ink);
+  background-color: var(--paper);
+}
+
+.dark [data-surface="light"],
+.dark [data-surface="paper"],
+.dark [data-surface="commerce"] {
+  --background: #14110f;
+  --foreground: var(--warm-bone);
+  --card: #1f1b17;
+  --card-foreground: var(--warm-bone);
+  --muted: #1a1714;
+  --muted-foreground: #c2b8ac;
+  --primary: var(--copper);
+  --primary-foreground: #fff8f2;
+  --action-primary: var(--copper);
+  --action-primary-hover: var(--ember);
+  --accent: var(--ember);
+  --accent-foreground: #1a1008;
+  --border: rgba(243, 236, 227, 0.1);
+  --ring: var(--ember);
+  --header-background: color-mix(in oklab, #14110f 78%, transparent);
+  --text-primary: var(--warm-bone);
+  --text-secondary: color-mix(in oklab, var(--warm-bone) 70%, transparent);
+  --text-muted: color-mix(in oklab, var(--warm-bone) 58%, transparent);
+  color: var(--warm-bone);
+  background-color: #14110f;
+}

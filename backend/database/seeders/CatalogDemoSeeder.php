@@ -146,6 +146,15 @@ final class CatalogDemoSeeder extends Seeder
             ->first();
 
         if ($existing !== null) {
+            CategoryTranslation::query()->updateOrCreate(
+                ['category_id' => $existing->id, 'locale' => 'ka'],
+                ['name' => $ka, 'slug' => $key],
+            );
+            CategoryTranslation::query()->updateOrCreate(
+                ['category_id' => $existing->id, 'locale' => 'en'],
+                ['name' => $en, 'slug' => $key],
+            );
+
             return $existing;
         }
 
@@ -158,7 +167,7 @@ final class CatalogDemoSeeder extends Seeder
             'category_id' => $category->id,
             'locale' => 'ka',
             'name' => $ka,
-            'slug' => $key.'-ka',
+            'slug' => $key,
         ]);
         CategoryTranslation::query()->create([
             'category_id' => $category->id,

@@ -9,7 +9,7 @@ export default function MapPage() {
   const { t } = useStorefrontCopy();
 
   return (
-    <div className="min-h-[calc(100svh-4rem)]">
+    <div className="sf-band-paper min-h-[calc(100svh-4rem)]">
       <div className="sf-container py-6">
         <header className="mb-4 max-w-2xl">
           <h1 className="sf-display text-4xl">{t.map.title}</h1>

@@ -1,0 +1,154 @@
+openapi: 3.0.3
+info:
+  title: Outdoor Commerce Public Catalog API
+  version: '1.0'
+  description: |
+    Unauthenticated storefront reads. Prices are integer GEL minor units.
+    Attribute groups use AND semantics; values inside one group use OR.
+    Default pagination is 10. Default currency is GEL. Search (`q`) is basic MySQL, not Meilisearch.
+servers:
+  - url: /api/v1/catalog
+paths:
+  /categories:
+    get:
+      summary: Public category tree
+      parameters:
+        - $ref: '#/components/parameters/Locale'
+      responses:
+        '200':
+          description: Active categories with inactive ancestry omitted
+        '429':
+          $ref: '#/components/responses/RateLimited'
+  /categories/{slug}:
+    get:
+      summary: Public category detail
+      parameters:
+        - $ref: '#/components/parameters/Slug'
+        - $ref: '#/components/parameters/Locale'
+      responses:
+        '200':
+          description: Category detail with breadcrumbs and children
+        '404':
+          description: CATALOG_CATEGORY_NOT_FOUND
+  /brands:
+    get:
+      summary: Public brand list
+      parameters:
+        - $ref: '#/components/parameters/Locale'
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PerPage'
+      responses:
+        '200':
+          description: Paginated active brands (default per_page 10)
+  /brands/{slug}:
+    get:
+      summary: Public brand detail
+      parameters:
+        - $ref: '#/components/parameters/Slug'
+        - $ref: '#/components/parameters/Locale'
+      responses:
+        '200':
+          description: Brand detail
+        '404':
+          description: CATALOG_BRAND_NOT_FOUND
+  /products:
+    get:
+      summary: Public product list
+      parameters:
+        - $ref: '#/components/parameters/Locale'
+        - name: category
+          in: query
+          schema: { type: string }
+          description: Localized slug or numeric id. Includes active descendants by default.
+        - name: include_descendants
+          in: query
+          schema: { type: boolean, default: true }
+        - name: brand[]
+          in: query
+          schema: { type: array, items: { type: string }, maxItems: 20 }
+        - name: attribute
+          in: query
+          description: attribute[color][]=black. OR within a group, AND across groups, same variant.
+          schema: { type: object, additionalProperties: { type: array, items: { type: string }, maxItems: 20 } }
+        - name: min_price
+          in: query
+          schema: { type: integer, minimum: 0 }
+          description: Final GEL minor units
+        - name: max_price
+          in: query
+          schema: { type: integer, minimum: 0 }
+        - name: in_stock
+          in: query
+          schema: { type: boolean }
+        - name: on_sale
+          in: query
+          schema: { type: boolean }
+        - name: featured
+          in: query
+          schema: { type: boolean }
+        - name: q
+          in: query
+          schema: { type: string, maxLength: 80 }
+          description: Basic MySQL search across name, slug, SKU, barcode, brand name. Not fuzzy.
+        - name: sort
+          in: query
+          schema: { type: string, enum: [default, featured, newest, price_asc, price_desc, name_asc, name_desc] }
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PerPage'
+      responses:
+        '200':
+          description: Product cards
+          headers:
+            ETag: { schema: { type: string } }
+            Content-Language: { schema: { type: string } }
+            Cache-Control: { schema: { type: string } }
+        '304':
+          description: Not modified
+        '422':
+          description: CATALOG_FILTER_INVALID or CATALOG_SORT_INVALID
+        '429':
+          $ref: '#/components/responses/RateLimited'
+  /products/facets:
+    get:
+      summary: Bounded facets for the current filter set
+      parameters:
+        - $ref: '#/components/parameters/Locale'
+      responses:
+        '200':
+          description: Brands, categories, filterable attributes, price range, in-stock and on-sale counts
+  /products/{slug}:
+    get:
+      summary: Public product detail
+      parameters:
+        - $ref: '#/components/parameters/Slug'
+        - $ref: '#/components/parameters/Locale'
+      responses:
+        '200':
+          description: Localized product with variant matrix, live prices, availability, SEO
+        '404':
+          description: CATALOG_PRODUCT_NOT_FOUND (also used for non-public products)
+components:
+  parameters:
+    Locale:
+      name: locale
+      in: query
+      schema: { type: string, enum: [ka, en] }
+    Slug:
+      name: slug
+      in: path
+      required: true
+      schema: { type: string }
+    Page:
+      name: page
+      in: query
+      schema: { type: integer, minimum: 1, default: 1 }
+    PerPage:
+      name: per_page
+      in: query
+      schema: { type: integer, minimum: 1, maximum: 48, default: 10 }
+  responses:
+    RateLimited:
+      description: CATALOG_RATE_LIMITED
+      headers:
+        Retry-After: { schema: { type: string } }
+        X-RateLimit-Limit: { schema: { type: string } }

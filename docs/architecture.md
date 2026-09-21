@@ -10,6 +10,14 @@ See also:
 - [API conventions](api-conventions.md)
 - [Catalog media (Day 9)](catalog-media.md)
 - [Inventory ledger (Day 10)](inventory-ledger.md)
+- [Public catalog API (Day 12)](public-catalog.md)
+- [Storefront design system (Day 13)](design-system.md)
+- [Storefront homepage and listing (Day 14)](storefront.md)
+- [Product detail (Day 15)](product-detail.md)
+- [ADR 0007: Rebuildable public catalog projections](adr/0007-rebuildable-public-catalog-projections.md)
+- [ADR 0008: Semantic design tokens and storefront component boundaries](adr/0008-semantic-design-tokens.md)
+- [ADR 0009: URL-driven storefront filters and server-first category rendering](adr/0009-url-driven-storefront-filters.md)
+- [ADR 0010: Client-side variant resolution from an authoritative public variant matrix](adr/0010-client-side-variant-resolution.md)
 - Per-module notes under `backend/app/Domains/*/README.md`
 
 ## Modular monolith definition

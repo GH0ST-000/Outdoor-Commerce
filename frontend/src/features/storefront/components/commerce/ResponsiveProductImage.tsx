@@ -12,7 +12,7 @@ import type {
 import type { StorefrontLocale } from "@/features/storefront/types/storefront-types";
 import { cn } from "@/lib/utils";
 
-const FORMAT_ORDER: MediaFormat[] = ["webp", "avif", "jpeg", "png"];
+const FORMAT_ORDER: MediaFormat[] = ["webp", "jpeg", "png"];
 
 function presetEntry(
   media: ResponsiveMedia,
@@ -79,12 +79,17 @@ export function ResponsiveProductImage({
         <img
           src={src}
           alt={label}
+          width={fill ? undefined : width}
+          height={fill ? undefined : height}
           className={cn(
             fill && "absolute inset-0 size-full object-cover",
             className,
           )}
           style={position ? { objectPosition: position } : undefined}
           sizes={sizes}
+          fetchPriority={priority ? "high" : "auto"}
+          loading={priority ? "eager" : "lazy"}
+          decoding="async"
           onError={() => setFailed(true)}
         />
       </picture>

@@ -17,6 +17,8 @@ type PriceDisplayProps = {
   maxAmountMinor?: number | null;
   isRange?: boolean;
   missingLabel?: string;
+  wasLabel?: string;
+  nowLabel?: string;
   className?: string;
   loading?: boolean;
 };
@@ -34,6 +36,8 @@ export function PriceDisplay({
   maxAmountMinor,
   isRange = false,
   missingLabel = "Price on request",
+  wasLabel = "Was",
+  nowLabel = "Now",
   className,
   loading = false,
 }: PriceDisplayProps) {
@@ -73,11 +77,11 @@ export function PriceDisplay({
   if (hasDiscount) {
     return (
       <span className={className} data-testid="price-display-discounted">
-        <span className="sr-only">Was </span>
+        <span className="sr-only">{wasLabel} </span>
         <span className="line-through opacity-60">
           {formatMoneyMinor(baseAmountMinor!, currency, locale)}
         </span>{" "}
-        <span className="sr-only">Now </span>
+        <span className="sr-only">{nowLabel} </span>
         <span>{formatMoneyMinor(finalAmountMinor!, currency, locale)}</span>
       </span>
     );

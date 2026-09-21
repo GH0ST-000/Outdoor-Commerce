@@ -9,10 +9,13 @@ export default function FieldGuidePage() {
   const { t, locale } = useStorefrontCopy();
 
   return (
-    <div className="sf-section">
+    <div className="sf-band-paper sf-section">
       <div className="sf-container space-y-8">
         <header className="max-w-2xl">
-          <h1 className="sf-display text-4xl sm:text-5xl">
+          <p className="sf-label text-[var(--copper)]">
+            {locale === "ka" ? "გზამკვლევი" : "Field notes"}
+          </p>
+          <h1 className="sf-display mt-2 text-4xl sm:text-5xl">
             {t.fieldGuide.title}
           </h1>
           <p className="mt-3 text-muted-foreground">{t.fieldGuide.lead}</p>
@@ -21,19 +24,19 @@ export default function FieldGuidePage() {
           {fieldGuides.map((guide) => (
             <article
               key={guide.id}
-              className="overflow-hidden rounded-2xl border border-border/70 bg-card"
+              className="sf-lift group overflow-hidden rounded-2xl border border-border/70 bg-card"
             >
-              <div className="relative aspect-[16/10]">
+              <div className="relative aspect-[16/10] overflow-hidden">
                 <Image
                   src={guide.imageSrc}
                   alt=""
                   fill
                   sizes="(max-width:1024px) 100vw, 33vw"
-                  className="object-cover"
+                  className="object-cover transition-transform duration-700 group-hover:scale-[1.06]"
                 />
               </div>
               <div className="p-5">
-                <p className="sf-label text-muted-foreground">
+                <p className="sf-label text-[var(--copper)]">
                   {guide.category[locale]}
                 </p>
                 <h2 className="mt-2 text-xl font-semibold">
@@ -44,7 +47,7 @@ export default function FieldGuidePage() {
                 </p>
                 <Link
                   href={guide.href}
-                  className="mt-4 inline-flex text-sm font-semibold"
+                  className="mt-4 inline-flex text-sm font-semibold text-[var(--copper)]"
                 >
                   {t.fieldGuide.read}
                 </Link>

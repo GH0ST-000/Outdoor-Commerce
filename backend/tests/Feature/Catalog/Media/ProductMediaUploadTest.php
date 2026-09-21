@@ -187,10 +187,9 @@ it('rejects oversized files, undersized images, and megapixel bombs', function (
 });
 
 it('rejects the whole batch when a single file is invalid', function (): void {
-    Queue::fake();
-
     $manager = $this->createUserWithRole(Role::CatalogManager);
     $product = Product::factory()->create();
+    Queue::fake();
 
     assertMediaRejected(
         uploadMedia($manager, $product, [

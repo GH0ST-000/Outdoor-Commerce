@@ -77,6 +77,29 @@ describe("MediaGallery", () => {
     );
   });
 
+  it("calls onRemove from the card overlay", async () => {
+    const user = userEvent.setup();
+    const onRemove = vi.fn();
+
+    render(
+      <TestProviders>
+        <MediaGallery
+          attachments={[attachment({ id: 8, original_filename: "scope.jpg" })]}
+          canManage
+          pending={false}
+          onSetPrimary={vi.fn()}
+          onEdit={vi.fn()}
+          onRemove={onRemove}
+          onRetry={vi.fn()}
+          onReorder={vi.fn()}
+        />
+      </TestProviders>,
+    );
+
+    await user.click(screen.getByRole("button", { name: "Remove scope.jpg" }));
+    expect(onRemove).toHaveBeenCalledWith(expect.objectContaining({ id: 8 }));
+  });
+
   it("hides manage actions without catalog.manage", () => {
     render(
       <TestProviders>

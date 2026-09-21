@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { PriceDisplay } from "@/features/pricing/components/PriceDisplay";
 import { PromotionBadge } from "@/features/pricing/components/PromotionBadge";
+import { AvailabilityStatus } from "@/components/commerce/availability-status";
 
 export type ProductLayout = "grid" | "comfortable" | "list";
 
@@ -30,13 +31,11 @@ export function ProductCard({
   return (
     <article
       className={cn(
-        "group overflow-hidden transition-[transform,border-color,box-shadow] duration-[var(--duration-control)]",
-        isList
-          ? "flex flex-col sm:flex-row"
-          : "flex h-full flex-col hover:-translate-y-1",
+        "sf-lift group overflow-hidden",
+        isList ? "flex flex-col sm:flex-row" : "flex h-full flex-col",
         onInk
-          ? "rounded-[1.25rem] border border-white/10 bg-[color-mix(in_oklab,var(--warm-bone)_96%,white)] text-[var(--charcoal)] shadow-[0_18px_40px_-28px_rgba(0,0,0,0.65)]"
-          : "rounded-[1.25rem] border border-border/70 bg-card",
+          ? "rounded-[var(--radius-2xl)] border border-white/10 bg-[color-mix(in_oklab,var(--warm-bone)_96%,white)] text-[var(--charcoal)]"
+          : "rounded-[var(--radius-2xl)] border border-border/60 bg-card shadow-[0_1px_0_rgba(255,255,255,0.6)_inset]",
         className,
       )}
     >
@@ -60,7 +59,7 @@ export function ProductCard({
               ? "(max-width:640px) 100vw, 208px"
               : "(max-width: 768px) 50vw, 25vw"
           }
-          className="object-cover transition-transform duration-[700ms] ease-[var(--ease-out)] group-hover:scale-[1.04]"
+          className="object-cover transition-transform duration-[800ms] ease-[var(--ease-emphasized)] group-hover:scale-[1.06]"
         />
         {product.badges?.length ? (
           <div className="absolute top-3 left-3 flex gap-1.5">
@@ -136,7 +135,7 @@ export function ProductCard({
         >
           <p
             className={cn(
-              "text-sm font-medium",
+              "text-sm font-medium type-price",
               onInk ? "text-[var(--charcoal)]" : "text-foreground",
             )}
           >
@@ -152,13 +151,15 @@ export function ProductCard({
                   maxAmountMinor={product.pricing.max_amount_minor}
                   isRange={product.pricing.is_range}
                   missingLabel={t.common.priceOnRequest}
+                  wasLabel={locale === "ka" ? "იყო" : "Was"}
+                  nowLabel={locale === "ka" ? "ახლა" : "Now"}
                 />
                 {product.pricing.discount_percentage_basis_points != null ? (
                   <PromotionBadge
                     percentageBasisPoints={
                       product.pricing.discount_percentage_basis_points
                     }
-                    className="text-xs font-semibold text-[var(--pine)]"
+                    className="text-xs font-semibold text-[var(--status-warning)]"
                   />
                 ) : null}
               </span>
@@ -166,16 +167,15 @@ export function ProductCard({
               (product.priceLabel?.[locale] ?? t.common.priceOnRequest)
             )}
           </p>
-          <p
-            className={cn(
-              "sf-line-clamp-1 text-xs",
+          <AvailabilityStatus
+            status={product.availabilityStatus ?? "unavailable"}
+            label={product.availabilityLabel?.[locale] ?? t.common.comingSoon}
+            className={
               onInk
                 ? "text-[color-mix(in_oklab,var(--charcoal)_52%,transparent)]"
-                : "text-muted-foreground",
-            )}
-          >
-            {product.availabilityLabel?.[locale] ?? t.common.comingSoon}
-          </p>
+                : undefined
+            }
+          />
         </div>
       </div>
     </article>

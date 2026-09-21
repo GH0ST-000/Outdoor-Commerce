@@ -34,6 +34,8 @@ export type ProductCardData = {
     discount_percentage_basis_points?: number | null;
   };
   availabilityLabel?: Record<StorefrontLocale, string>;
+  availabilityStatus?:
+    "in_stock" | "low_stock" | "out_of_stock" | "unavailable";
 };
 
 export type CategoryGatewayItem = {
@@ -158,16 +160,40 @@ export type StorefrontCopy = {
     filterHint: string;
     brand: string;
     status: string;
+    inStock: string;
+    onSale: string;
+    minPrice: string;
+    maxPrice: string;
+    rateLimited: string;
+    loadError: string;
+    nextPage: string;
+    previousPage: string;
     layout: string;
     layoutGrid: string;
     layoutComfortable: string;
     layoutList: string;
     sortFeatured: string;
     sortName: string;
-    sortBrand: string;
+    sortNewest: string;
+    sortPriceAsc: string;
+    sortPriceDesc: string;
     showing: string;
     allCategories: string;
     closeFilters: string;
+    sortDefault: string;
+    sortNameDesc: string;
+    featuredFilter: string;
+    emptyCategory: string;
+    emptyCategoryDescription: string;
+    emptyFiltersDescription: string;
+    removeFilter: string;
+    childCategories: string;
+    productsCount: string;
+    paginationLabel: string;
+    resultsHeading: string;
+    retryProducts: string;
+    parentCategory: string;
+    clearPrice: string;
   };
   product: {
     model: string;
@@ -179,6 +205,35 @@ export type StorefrontCopy = {
     notify: string;
     notifyHint: string;
     gallery: string;
+    notFound: string;
+    invalidCombination: string;
+    home: string;
+    breadcrumbs: string;
+    featured: string;
+    onSale: string;
+    quantity: string;
+    quantityDecrease: string;
+    quantityIncrease: string;
+    addToCart: string;
+    cartSoon: string;
+    unavailableAction: string;
+    purchaseDisabledHint: string;
+    share: string;
+    shareCopied: string;
+    shareFailed: string;
+    description: string;
+    brandHeading: string;
+    moreFromBrand: string;
+    visitBrand: string;
+    categoryLabel: string;
+    galleryPrevious: string;
+    galleryNext: string;
+    galleryOpen: string;
+    galleryClose: string;
+    galleryMissing: string;
+    outOfStockOption: string;
+    priceWas: string;
+    priceNow: string;
   };
   calendar: {
     title: string;

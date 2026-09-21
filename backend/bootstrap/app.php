@@ -1,6 +1,7 @@
 <?php
 
 use App\Domains\Catalog\Exceptions\ProductNotReadyException;
+use App\Domains\Catalog\Exceptions\PublicCatalogNotFoundException;
 use App\Domains\Identity\Exceptions\AuthenticationFailedException;
 use App\Domains\Identity\Exceptions\LastActiveAdminException;
 use App\Domains\Inventory\Exceptions\InventoryStateConflictException;
@@ -33,6 +34,7 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withSchedule(function (Schedule $schedule): void {
         $schedule->command('inventory:expire-reservations')->everyMinute();
+        $schedule->command('catalog:refresh-time-sensitive-projections')->everyMinute();
     })
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->statefulApi();
@@ -55,6 +57,12 @@ return Application::configure(basePath: dirname(__DIR__))
         $exceptions->render(function (AuthenticationFailedException $e, Request $request) {
             if ($request->is('api/*') || $request->expectsJson()) {
                 return ApiErrorResponse::make($request, $e->errorCode(), $e->getMessage(), 401);
+            }
+        });
+
+        $exceptions->render(function (PublicCatalogNotFoundException $e, Request $request) {
+            if ($request->is('api/*') || $request->expectsJson()) {
+                return ApiErrorResponse::make($request, $e->errorCode(), $e->getMessage(), 404);
             }
         });
 
@@ -138,12 +146,20 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $exceptions->render(function (TooManyRequestsHttpException $e, Request $request) {
             if ($request->is('api/*') || $request->expectsJson()) {
-                return ApiErrorResponse::make(
+                $code = $request->is('api/v1/catalog/*') ? 'CATALOG_RATE_LIMITED' : 'TOO_MANY_REQUESTS';
+
+                $response = ApiErrorResponse::make(
                     $request,
-                    'TOO_MANY_REQUESTS',
+                    $code,
                     'Too many attempts. Please wait and try again.',
                     429,
                 );
+
+                foreach ($e->getHeaders() as $key => $value) {
+                    $response->headers->set($key, $value);
+                }
+
+                return $response;
             }
         });
 

@@ -33,12 +33,38 @@ use App\Http\Controllers\Api\V1\Auth\EmailVerificationController;
 use App\Http\Controllers\Api\V1\Auth\NewPasswordController;
 use App\Http\Controllers\Api\V1\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Api\V1\Auth\RegistrationController;
+use App\Http\Controllers\Api\V1\Catalog\PublicBrandController;
+use App\Http\Controllers\Api\V1\Catalog\PublicCategoryController;
+use App\Http\Controllers\Api\V1\Catalog\PublicProductController;
+use App\Http\Controllers\Api\V1\Catalog\PublicProductFacetController;
 use App\Http\Middleware\EnsureAdminAccess;
 use App\Http\Middleware\EnsureHasPermission;
 use App\Http\Middleware\EnsureUserIsActive;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/health', HealthController::class);
+
+Route::prefix('v1/catalog')->group(function (): void {
+    Route::get('/categories', [PublicCategoryController::class, 'index'])
+        ->middleware('throttle:catalog.public');
+    Route::get('/categories/{slug}', [PublicCategoryController::class, 'show'])
+        ->middleware('throttle:catalog.public')
+        ->where('slug', '.*');
+
+    Route::get('/brands', [PublicBrandController::class, 'index'])
+        ->middleware('throttle:catalog.public');
+    Route::get('/brands/{slug}', [PublicBrandController::class, 'show'])
+        ->middleware('throttle:catalog.public')
+        ->where('slug', '.*');
+
+    Route::get('/products/facets', [PublicProductFacetController::class, 'show'])
+        ->middleware('throttle:catalog.public.facets');
+    Route::get('/products', [PublicProductController::class, 'index'])
+        ->middleware('throttle:catalog.public.list');
+    Route::get('/products/{slug}', [PublicProductController::class, 'show'])
+        ->middleware('throttle:catalog.public')
+        ->where('slug', '.*');
+});
 
 Route::prefix('v1/auth')->group(function (): void {
     Route::post('/register', [RegistrationController::class, 'store'])

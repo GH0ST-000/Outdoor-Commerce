@@ -68,6 +68,14 @@ class Category extends Model
             ->withTimestamps();
     }
 
+    /**
+     * @return HasMany<Category, $this>
+     */
+    public function children(): HasMany
+    {
+        return $this->hasMany(self::class, 'parent_id')->orderBy('sort_order')->orderBy('id');
+    }
+
     public function translation(?string $locale = null): ?CategoryTranslation
     {
         $locale ??= CatalogLocales::default();

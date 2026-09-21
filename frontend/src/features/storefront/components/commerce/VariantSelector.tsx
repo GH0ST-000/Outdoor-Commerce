@@ -1,9 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useStorefrontCopy } from "@/features/storefront/hooks/use-storefront-copy";
 import type { ProductDetailFixture } from "@/features/storefront/types/storefront-types";
-import { cn } from "@/lib/utils";
+import {
+  ColorSwatch,
+  SizeOption,
+  VariantGroup,
+} from "@/components/commerce/variant-option";
 
 type Axis = ProductDetailFixture["variants"]["axes"][number];
 
@@ -24,6 +28,12 @@ export function VariantSelector({
     return initial;
   });
 
+  useEffect(() => {
+    onChange?.(selected);
+    // Sync the parent once after the default combination is chosen.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   function choose(axisId: string, valueId: string) {
     const next = { ...selected, [axisId]: valueId };
     setSelected(next);
@@ -36,68 +46,39 @@ export function VariantSelector({
 
   return (
     <div className="space-y-5" aria-label={t.product.selectVariant}>
-      {axes.map((axis) => (
-        <fieldset key={axis.id} className="space-y-2">
-          <legend className="text-sm font-medium">
-            {axis.name[locale]}
-            {selected[axis.id] ? (
-              <span className="ml-2 font-normal text-muted-foreground">
-                {
-                  axis.values.find((value) => value.id === selected[axis.id])
-                    ?.name[locale]
-                }
-              </span>
-            ) : null}
-          </legend>
-          <div className="flex flex-wrap gap-2">
-            {axis.values.map((value) => {
-              const isSelected = selected[axis.id] === value.id;
-              if (axis.type === "color") {
-                return (
-                  <button
-                    key={value.id}
-                    type="button"
-                    disabled={value.disabled}
-                    aria-pressed={isSelected}
-                    aria-label={value.name[locale]}
-                    title={value.name[locale]}
-                    onClick={() => choose(axis.id, value.id)}
-                    className={cn(
-                      "inline-flex size-10 items-center justify-center rounded-full border-2 transition-transform duration-[var(--duration-micro)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-40",
-                      isSelected
-                        ? "border-foreground scale-105"
-                        : "border-transparent",
-                    )}
-                  >
-                    <span
-                      className="size-7 rounded-full border border-black/15"
-                      style={{ backgroundColor: value.colorHex ?? "#888" }}
-                      aria-hidden
-                    />
-                  </button>
-                );
-              }
-              return (
-                <button
+      {axes.map((axis) => {
+        const summary = axis.values.find(
+          (value) => value.id === selected[axis.id],
+        )?.name[locale];
+        return (
+          <VariantGroup
+            key={axis.id}
+            legend={axis.name[locale]}
+            summary={summary}
+          >
+            {axis.values.map((value) =>
+              axis.type === "color" ? (
+                <ColorSwatch
                   key={value.id}
-                  type="button"
+                  label={value.name[locale]}
+                  color={value.colorHex}
+                  selected={selected[axis.id] === value.id}
                   disabled={value.disabled}
-                  aria-pressed={isSelected}
                   onClick={() => choose(axis.id, value.id)}
-                  className={cn(
-                    "min-w-12 rounded-lg border px-3 py-2 text-sm font-medium transition-colors duration-[var(--duration-micro)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-40",
-                    isSelected
-                      ? "border-foreground bg-foreground text-background"
-                      : "border-border bg-card hover:bg-muted",
-                  )}
-                >
-                  {value.name[locale]}
-                </button>
-              );
-            })}
-          </div>
-        </fieldset>
-      ))}
+                />
+              ) : (
+                <SizeOption
+                  key={value.id}
+                  label={value.name[locale]}
+                  selected={selected[axis.id] === value.id}
+                  disabled={value.disabled}
+                  onClick={() => choose(axis.id, value.id)}
+                />
+              ),
+            )}
+          </VariantGroup>
+        );
+      })}
     </div>
   );
 }

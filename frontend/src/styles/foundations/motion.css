@@ -1,0 +1,79 @@
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes sf-rise {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes drift {
+  from {
+    transform: scale(1.04) translate3d(-0.6%, 0, 0);
+  }
+  to {
+    transform: scale(1.1) translate3d(0.8%, -0.8%, 0);
+  }
+}
+
+@keyframes sf-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .sf-lift {
+    transition:
+      transform var(--duration-control) var(--ease-standard),
+      box-shadow var(--duration-control) var(--ease-standard),
+      border-color var(--duration-fast) var(--ease-standard);
+  }
+
+  .sf-lift:hover {
+    transform: translateY(-6px);
+    box-shadow: var(--shadow-raised);
+  }
+
+  .sf-lift:active {
+    transform: translateY(-2px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .sf-reveal,
+  .sf-reveal-delay-1,
+  .sf-reveal-delay-2,
+  .sf-reveal-delay-3,
+  .sf-hero-media,
+  .sf-lift:hover {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
