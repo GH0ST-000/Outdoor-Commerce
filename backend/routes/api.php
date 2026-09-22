@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\HealthController;
 use App\Http\Controllers\Api\V1\Admin\AdminAuditLogController;
 use App\Http\Controllers\Api\V1\Admin\AdminContextController;
 use App\Http\Controllers\Api\V1\Admin\AdminRoleController;
+use App\Http\Controllers\Api\V1\Admin\AdminSearchController;
 use App\Http\Controllers\Api\V1\Admin\AdminUserController;
 use App\Http\Controllers\Api\V1\Admin\Attributes\AdminAttributeController;
 use App\Http\Controllers\Api\V1\Admin\Attributes\AdminAttributeValueController;
@@ -33,10 +34,19 @@ use App\Http\Controllers\Api\V1\Auth\EmailVerificationController;
 use App\Http\Controllers\Api\V1\Auth\NewPasswordController;
 use App\Http\Controllers\Api\V1\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Api\V1\Auth\RegistrationController;
+use App\Http\Controllers\Api\V1\Cart\PublicCartController;
 use App\Http\Controllers\Api\V1\Catalog\PublicBrandController;
 use App\Http\Controllers\Api\V1\Catalog\PublicCategoryController;
 use App\Http\Controllers\Api\V1\Catalog\PublicProductController;
 use App\Http\Controllers\Api\V1\Catalog\PublicProductFacetController;
+use App\Http\Controllers\Api\V1\Checkout\PublicCheckoutController;
+use App\Http\Controllers\Api\V1\Orders\PublicOrderController;
+use App\Http\Controllers\Api\V1\Payments\PaymentWebhookController;
+use App\Http\Controllers\Api\V1\Payments\PublicPaymentAttemptController;
+use App\Http\Controllers\Api\V1\Payments\PublicPaymentMethodController;
+use App\Http\Controllers\Api\V1\Payments\TestPaymentSimulateController;
+use App\Http\Controllers\Api\V1\Search\PublicSearchController;
+use App\Http\Controllers\Api\V1\Search\PublicSearchSuggestionController;
 use App\Http\Middleware\EnsureAdminAccess;
 use App\Http\Middleware\EnsureHasPermission;
 use App\Http\Middleware\EnsureUserIsActive;
@@ -65,6 +75,90 @@ Route::prefix('v1/catalog')->group(function (): void {
         ->middleware('throttle:catalog.public')
         ->where('slug', '.*');
 });
+
+Route::prefix('v1/search')->group(function (): void {
+    Route::get('/', PublicSearchController::class)
+        ->middleware('throttle:search.public');
+    Route::get('/suggestions', PublicSearchSuggestionController::class)
+        ->middleware('throttle:search.suggest');
+});
+
+Route::prefix('v1/cart')->group(function (): void {
+    Route::get('/', [PublicCartController::class, 'show'])
+        ->middleware('throttle:cart.read');
+    Route::post('/items', [PublicCartController::class, 'storeItem'])
+        ->middleware('throttle:cart.mutate');
+    Route::patch('/items/{cartItemPublicId}', [PublicCartController::class, 'updateItem'])
+        ->middleware('throttle:cart.mutate')
+        ->where('cartItemPublicId', '[0-9a-fA-F-]{36}');
+    Route::delete('/items/{cartItemPublicId}', [PublicCartController::class, 'destroyItem'])
+        ->middleware('throttle:cart.mutate')
+        ->where('cartItemPublicId', '[0-9a-fA-F-]{36}');
+    Route::delete('/', [PublicCartController::class, 'destroy'])
+        ->middleware('throttle:cart.mutate');
+    Route::post('/merge', [PublicCartController::class, 'merge'])
+        ->middleware(['auth:sanctum', EnsureUserIsActive::class, 'throttle:cart.mutate']);
+});
+
+Route::prefix('v1/checkout/sessions')->group(function (): void {
+    Route::post('/', [PublicCheckoutController::class, 'store'])
+        ->middleware('throttle:checkout.mutate');
+    Route::get('/{checkoutSessionPublicId}', [PublicCheckoutController::class, 'show'])
+        ->middleware('throttle:checkout.read')
+        ->where('checkoutSessionPublicId', '[0-9a-fA-F-]{36}');
+    Route::patch('/{checkoutSessionPublicId}/contact', [PublicCheckoutController::class, 'updateContact'])
+        ->middleware('throttle:checkout.mutate')
+        ->where('checkoutSessionPublicId', '[0-9a-fA-F-]{36}');
+    Route::patch('/{checkoutSessionPublicId}/address', [PublicCheckoutController::class, 'updateAddress'])
+        ->middleware('throttle:checkout.mutate')
+        ->where('checkoutSessionPublicId', '[0-9a-fA-F-]{36}');
+    Route::patch('/{checkoutSessionPublicId}/fulfillment', [PublicCheckoutController::class, 'updateFulfillment'])
+        ->middleware('throttle:checkout.mutate')
+        ->where('checkoutSessionPublicId', '[0-9a-fA-F-]{36}');
+    Route::post('/{checkoutSessionPublicId}/quote', [PublicCheckoutController::class, 'quote'])
+        ->middleware('throttle:checkout.quote')
+        ->where('checkoutSessionPublicId', '[0-9a-fA-F-]{36}');
+    Route::delete('/{checkoutSessionPublicId}', [PublicCheckoutController::class, 'destroy'])
+        ->middleware('throttle:checkout.mutate')
+        ->where('checkoutSessionPublicId', '[0-9a-fA-F-]{36}');
+});
+
+Route::prefix('v1/orders')->group(function (): void {
+    Route::post('/', [PublicOrderController::class, 'store'])
+        ->middleware('throttle:orders.create');
+    Route::get('/{orderPublicId}', [PublicOrderController::class, 'show'])
+        ->middleware('throttle:orders.read')
+        ->where('orderPublicId', '[0-9a-fA-F-]{36}');
+    Route::post('/{orderPublicId}/cancel', [PublicOrderController::class, 'cancel'])
+        ->middleware('throttle:orders.cancel')
+        ->where('orderPublicId', '[0-9a-fA-F-]{36}');
+    Route::post('/{orderPublicId}/payment-attempts', [PublicPaymentAttemptController::class, 'store'])
+        ->middleware('throttle:payments.mutate')
+        ->where('orderPublicId', '[0-9a-fA-F-]{36}');
+    Route::get('/{orderPublicId}/payment-attempts/current', [PublicPaymentAttemptController::class, 'current'])
+        ->middleware('throttle:payments.read')
+        ->where('orderPublicId', '[0-9a-fA-F-]{36}');
+});
+
+Route::get('/v1/payment-methods', [PublicPaymentMethodController::class, 'index'])
+    ->middleware('throttle:payments.methods');
+
+Route::prefix('v1/payment-attempts')->group(function (): void {
+    Route::get('/{paymentAttemptPublicId}', [PublicPaymentAttemptController::class, 'show'])
+        ->middleware('throttle:payments.read')
+        ->where('paymentAttemptPublicId', '[0-9a-fA-F-]{36}');
+    Route::post('/{paymentAttemptPublicId}/cancel', [PublicPaymentAttemptController::class, 'cancel'])
+        ->middleware('throttle:payments.mutate')
+        ->where('paymentAttemptPublicId', '[0-9a-fA-F-]{36}');
+});
+
+Route::post('/v1/payments/webhooks/{providerCode}', [PaymentWebhookController::class, 'store'])
+    ->middleware('throttle:payments.webhook')
+    ->where('providerCode', '[a-z0-9_]+');
+
+Route::post('/v1/payments/test/attempts/{paymentAttemptPublicId}/simulate', [TestPaymentSimulateController::class, 'store'])
+    ->middleware('throttle:payments.simulate')
+    ->where('paymentAttemptPublicId', '[0-9a-fA-F-]{36}');
 
 Route::prefix('v1/auth')->group(function (): void {
     Route::post('/register', [RegistrationController::class, 'store'])
@@ -112,6 +206,23 @@ Route::prefix('v1/admin')
             ->middleware(EnsureHasPermission::class.':audit-logs.view');
         Route::get('/audit-logs/{auditLog}', [AdminAuditLogController::class, 'show'])
             ->middleware(EnsureHasPermission::class.':audit-logs.view');
+
+        Route::get('/search/status', [AdminSearchController::class, 'status'])
+            ->middleware(EnsureHasPermission::class.':catalog.view');
+        Route::post('/search/configure', [AdminSearchController::class, 'configure'])
+            ->middleware([EnsureHasPermission::class.':catalog.manage', 'throttle:admin.mutations']);
+        Route::post('/search/rebuild', [AdminSearchController::class, 'rebuild'])
+            ->middleware([EnsureHasPermission::class.':catalog.manage', 'throttle:admin.mutations']);
+        Route::post('/search/products/{product}/sync', [AdminSearchController::class, 'syncProduct'])
+            ->middleware([EnsureHasPermission::class.':catalog.manage', 'throttle:admin.mutations'])
+            ->whereNumber('product');
+        Route::delete('/search/products/{product}', [AdminSearchController::class, 'removeProduct'])
+            ->middleware([EnsureHasPermission::class.':catalog.manage', 'throttle:admin.mutations'])
+            ->whereNumber('product');
+        Route::get('/search/verify', [AdminSearchController::class, 'verify'])
+            ->middleware(EnsureHasPermission::class.':catalog.view');
+        Route::post('/search/verify', [AdminSearchController::class, 'verify'])
+            ->middleware([EnsureHasPermission::class.':catalog.manage', 'throttle:admin.mutations']);
 
         Route::get('/catalog/options/categories', [CatalogOptionsController::class, 'categories'])
             ->middleware(EnsureHasPermission::class.':catalog.view');

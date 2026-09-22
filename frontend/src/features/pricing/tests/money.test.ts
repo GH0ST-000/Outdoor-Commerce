@@ -51,11 +51,11 @@ describe("parseMajorToMinor", () => {
 });
 
 describe("formatMoneyMinor", () => {
-  it("formats GEL for ka-GE and en", () => {
-    const ka = formatMoneyMinor(12999, "GEL", "ka-GE");
-    const en = formatMoneyMinor(12999, "GEL", "en");
-    expect(ka).toMatch(/129/);
-    expect(en).toMatch(/129/);
+  it("formats GEL for ka-GE and en without Intl", () => {
+    expect(formatMoneyMinor(12999, "GEL", "ka-GE")).toBe("129,99 ₾");
+    expect(formatMoneyMinor(12999, "GEL", "en")).toBe("GEL 129.99");
+    expect(formatMoneyMinor(1299900, "GEL", "ka-GE")).toBe("12\u00a0999,00 ₾");
+    expect(formatMoneyMinor(1299900, "GEL", "en")).toBe("GEL 12,999.00");
   });
 
   it("formats ranges", () => {

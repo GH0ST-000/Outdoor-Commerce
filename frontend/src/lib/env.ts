@@ -33,18 +33,72 @@ export function getPublicEnv(): PublicEnv {
   });
 }
 
-/** Prefer IPv4 loopback so `localhost` does not resolve to Docker's IPv6 bind. */
+const DEFAULT_API_BASE_URL = "http://localhost:8000/api";
+
+function stripTrailingSlash(url: string): string {
+  return url.replace(/\/$/, "");
+}
+
+function configuredApiBaseUrl(): string {
+  const configured = getPublicEnv().NEXT_PUBLIC_API_URL;
+  return stripTrailingSlash(configured ?? DEFAULT_API_BASE_URL);
+}
+
+/** Prefer IPv4 loopback so Node does not resolve `localhost` to Docker's IPv6 bind. */
 export function toLoopbackIpv4(url: string): string {
   return url.replace(/:\/\/localhost(?=[:/?#]|$)/i, "://127.0.0.1");
 }
 
-/** Public API base including `/api` suffix, e.g. http://127.0.0.1:8000/api */
-export function getApiBaseUrl(): string {
-  const configured = getPublicEnv().NEXT_PUBLIC_API_URL;
-  if (configured) {
-    return toLoopbackIpv4(configured.replace(/\/$/, ""));
+/**
+ * Keep browser calls on the same loopback hostname as the page.
+ * `localhost` and `127.0.0.1` are different cookie hosts; Sanctum CSRF
+ * (`XSRF-TOKEN` via `document.cookie`) only works when they match.
+ */
+export function alignLoopbackHost(url: string, pageHost: string): string {
+  const pageIsLoopback = pageHost === "localhost" || pageHost === "127.0.0.1";
+  if (!pageIsLoopback) {
+    return url;
   }
-  return "http://127.0.0.1:8000/api";
+
+  try {
+    const parsed = new URL(url);
+    const apiIsLoopback =
+      parsed.hostname === "localhost" || parsed.hostname === "127.0.0.1";
+    if (apiIsLoopback) {
+      parsed.hostname = pageHost;
+    }
+    return stripTrailingSlash(parsed.toString());
+  } catch {
+    return url;
+  }
+}
+
+function isLoopbackHost(host: string): boolean {
+  return host === "localhost" || host === "127.0.0.1";
+}
+
+/**
+ * Browser calls stay same-origin (`/api`, `/sanctum`) so Sanctum cookies are
+ * first-party. next.config rewrites those paths to the IPv4 backend, which
+ * avoids the localhost (Docker IPv6 :8000) vs 127.0.0.1 (host artisan) split.
+ */
+export function getApiBaseUrl(): string {
+  const configured = configuredApiBaseUrl();
+
+  if (typeof window === "undefined") {
+    return toLoopbackIpv4(configured);
+  }
+
+  try {
+    const apiHost = new URL(configured).hostname;
+    if (isLoopbackHost(apiHost) && isLoopbackHost(window.location.hostname)) {
+      return "/api";
+    }
+  } catch {
+    return "/api";
+  }
+
+  return alignLoopbackHost(configured, window.location.hostname);
 }
 
 /**
@@ -53,12 +107,12 @@ export function getApiBaseUrl(): string {
  * when the compose hostname cannot be resolved.
  */
 export function resolveServerApiBaseUrls(): string[] {
-  const publicUrl = getApiBaseUrl();
+  const publicUrl = toLoopbackIpv4(configuredApiBaseUrl());
   const internal = getServerEnv().BACKEND_INTERNAL_URL;
   const urls: string[] = [];
 
   if (internal) {
-    const internalApi = toLoopbackIpv4(`${internal.replace(/\/$/, "")}/api`);
+    const internalApi = toLoopbackIpv4(`${stripTrailingSlash(internal)}/api`);
     urls.push(internalApi);
   }
 
@@ -71,11 +125,21 @@ export function resolveServerApiBaseUrls(): string[] {
 
 /** Backend origin for Sanctum CSRF cookie (no `/api` suffix). */
 export function getBackendOrigin(): string {
-  const configured = getPublicEnv().NEXT_PUBLIC_BACKEND_URL;
-  if (configured) {
-    return toLoopbackIpv4(configured.replace(/\/$/, ""));
+  const api = getApiBaseUrl();
+  if (api.startsWith("/")) {
+    return "";
   }
 
-  const api = getApiBaseUrl();
+  const configured = getPublicEnv().NEXT_PUBLIC_BACKEND_URL;
+  if (configured) {
+    if (typeof window === "undefined") {
+      return toLoopbackIpv4(stripTrailingSlash(configured));
+    }
+    return alignLoopbackHost(
+      stripTrailingSlash(configured),
+      window.location.hostname,
+    );
+  }
+
   return api.replace(/\/api$/, "");
 }

@@ -128,6 +128,7 @@ export type PublicProductCard = {
   availability: PublicAvailability;
   is_featured: boolean;
   variant_count: number;
+  default_variant_id: number | null;
   used_fallback: boolean;
 };
 
@@ -282,6 +283,7 @@ export type PublicCatalogMeta = {
   request_id?: string;
   search_mode?: string;
   used_fallback?: boolean;
+  fallback_used?: boolean;
 };
 
 export type PublicCatalogEnvelope<T> = {
@@ -289,3 +291,20 @@ export type PublicCatalogEnvelope<T> = {
   meta?: PublicCatalogMeta;
   links?: { next: string | null; prev: string | null };
 };
+
+export type PublicSearchEntityHit = {
+  id: number | null;
+  name: string | null;
+  slug: string | null;
+  path: string | null;
+  product_count?: number;
+};
+
+export type PublicGroupedSearchData = {
+  query: string;
+  products: PublicProductCard[];
+  categories: PublicSearchEntityHit[];
+  brands: PublicSearchEntityHit[];
+};
+
+export type PublicSearchSuggestionsData = PublicGroupedSearchData;

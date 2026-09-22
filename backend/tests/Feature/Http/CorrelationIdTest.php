@@ -73,6 +73,11 @@ it('keeps the day 1 health payload unchanged', function (): void {
         ->assertExactJson([
             'status' => 'ok',
             'service' => 'backend',
+            'search' => [
+                'status' => 'ok',
+                'enabled' => true,
+                'reachable' => true,
+            ],
         ]);
 });
 

@@ -2,30 +2,28 @@
 
 ## Responsibility
 
-Shopper cart composition before checkout.
+Server-authoritative shopper carts before checkout. Guest and authenticated ownership, line mutations, current-price recalculation, availability checks without reservations, guest-to-user merge, expiry.
 
 ## Data owned
 
-Cart lines tied to a shopper/session.
+`carts`, `cart_items`, `cart_idempotency_records` in MySQL.
 
 ## Public contracts
 
-Cart read/write contracts for storefront orchestration.
-
-Classes under `Contracts/`, and any Action/Query/DTO explicitly listed here as public, are the only approved entry points for other modules.
+HTTP Actions: `GetCartAction`, `AddCartItemAction`, `UpdateCartItemAction`, `RemoveCartItemAction`, `ClearCartAction`, `MergeGuestCartAction`, `ExpireCartsAction`. Other modules should not import Cart services; Identity merge is invoked from HTTP auth controllers.
 
 ## Events this module may publish
 
-CartUpdated (example for later).
+`CartCreated`, `CartItemAdded`, `CartItemQuantityChanged`, `CartItemRemoved`, `CartCleared`, `CartMerged`, `CartExpired`, `CartPriceChanged`, `CartAvailabilityChanged`. Payloads use public IDs only — never guest tokens.
 
 ## May depend on
 
-Shared; Catalog/Pricing/Inventory via public contracts only.
+Shared; Catalog (`Contracts`, `Enums`, `Models`); Pricing `PublicCatalogPricing`; Inventory `PublicInventoryAvailability`.
 
 ## Explicitly outside this module
 
-Final order records, payment intents.
+Orders, payments, shipping quotes, inventory reservations, coupon administration.
 
 ## Structure
 
-Follow the standard module layout documented in `docs/architecture.md` when implementing features. Day 2 ships boundaries only—no business behavior yet.
+See `docs/cart.md` and ADR 0012.

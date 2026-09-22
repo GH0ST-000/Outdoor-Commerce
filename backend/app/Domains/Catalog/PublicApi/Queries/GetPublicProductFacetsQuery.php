@@ -14,6 +14,7 @@ use App\Domains\Catalog\PublicApi\Data\PublicCatalogContextData;
 use App\Domains\Catalog\PublicApi\Data\PublicProductListFilterData;
 use App\Domains\Catalog\PublicApi\Models\PublicCatalogProductProjection;
 use App\Domains\Catalog\PublicApi\Models\PublicCatalogVariantProjection;
+use App\Domains\Catalog\Search\Services\SearchQueryService;
 use Illuminate\Database\Eloquent\Builder;
 
 /**
@@ -24,6 +25,7 @@ final class GetPublicProductFacetsQuery
 {
     public function __construct(
         private readonly GetPublicProductsQuery $products,
+        private readonly SearchQueryService $search,
     ) {}
 
     /**
@@ -89,6 +91,10 @@ final class GetPublicProductFacetsQuery
 
         if ($unfiltered) {
             return null;
+        }
+
+        if ($filters->q !== null) {
+            return $this->search->matchingProductIds($context, $filters);
         }
 
         return $this->products->matchingIds($context, $filters);

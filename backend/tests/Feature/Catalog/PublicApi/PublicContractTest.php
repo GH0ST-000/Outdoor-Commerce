@@ -13,6 +13,7 @@ it('returns the documented public product list contract', function (): void {
     expect($card)->toHaveKeys([
         'id', 'name', 'slug', 'href', 'brand', 'primary_category',
         'primary_media', 'price', 'availability', 'is_featured', 'variant_count',
+        'default_variant_id',
     ]);
     expect($card['price'])->toHaveKeys([
         'currency', 'min_final_amount_minor', 'max_final_amount_minor', 'is_range', 'on_sale',

@@ -49,7 +49,7 @@ return [
             'max_brands' => 20,
             'max_attribute_groups' => 8,
             'max_values_per_attribute' => 20,
-            'max_query_length' => 80,
+            'max_query_length' => 100,
         ],
         'cache' => [
             'ttl_seconds' => (int) env('CATALOG_PUBLIC_CACHE_TTL', 60),

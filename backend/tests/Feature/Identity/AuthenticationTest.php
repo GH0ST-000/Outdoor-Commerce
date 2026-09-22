@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 use App\Domains\Identity\Events\CustomerLoggedIn;
 use App\Domains\Identity\Models\User;
+use Illuminate\Contracts\Debug\ExceptionHandler;
+use Illuminate\Http\Request;
+use Illuminate\Session\TokenMismatchException;
 use Illuminate\Support\Facades\Event;
 
 it('logs in an active customer and updates last_login_at', function (): void {
@@ -79,6 +82,19 @@ it('logs out and rejects subsequent me requests', function (): void {
     $this->getJson('/api/v1/auth/me')
         ->assertUnauthorized()
         ->assertJsonPath('error.code', 'UNAUTHORIZED');
+});
+
+it('returns a csrf envelope for token mismatch', function (): void {
+    $request = Request::create('/api/v1/auth/login', 'POST');
+    $request->headers->set('Accept', 'application/json');
+    $request->headers->set('X-Requested-With', 'XMLHttpRequest');
+
+    $response = app(ExceptionHandler::class)
+        ->render($request, new TokenMismatchException);
+
+    expect($response->getStatusCode())->toBe(419)
+        ->and(json_decode((string) $response->getContent(), true)['error']['code'] ?? null)
+        ->toBe('CSRF_TOKEN_MISMATCH');
 });
 
 it('returns the current user for active sessions and rejects disabled sessions', function (): void {

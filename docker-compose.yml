@@ -106,6 +106,13 @@ services:
       FILESYSTEM_DISK: local
       MEILISEARCH_HOST: http://meilisearch:7700
       MEILISEARCH_KEY: ${MEILI_MASTER_KEY:-masterKey_change_me}
+      MEILISEARCH_MASTER_KEY: ${MEILI_MASTER_KEY:-masterKey_change_me}
+      MEILISEARCH_INDEX_PREFIX: outdoor_local
+      MEILISEARCH_CONNECT_TIMEOUT: "0.4"
+      MEILISEARCH_REQUEST_TIMEOUT: "1.5"
+      SEARCH_ENABLED: "true"
+      SEARCH_FALLBACK_ENABLED: "true"
+      SEARCH_DEFAULT_LOCALE: ka
       MEDIA_AVIF_ENABLED: ${MEDIA_AVIF_ENABLED:-false}
     depends_on:
       mysql:
@@ -169,15 +176,24 @@ services:
       MAIL_HOST: mailpit
       MAIL_PORT: 1025
       FILESYSTEM_DISK: local
+      MEILISEARCH_HOST: http://meilisearch:7700
+      MEILISEARCH_KEY: ${MEILI_MASTER_KEY:-masterKey_change_me}
+      MEILISEARCH_MASTER_KEY: ${MEILI_MASTER_KEY:-masterKey_change_me}
+      MEILISEARCH_INDEX_PREFIX: outdoor_local
+      SEARCH_ENABLED: "true"
+      SEARCH_FALLBACK_ENABLED: "true"
+      SEARCH_DEFAULT_LOCALE: ka
       MEDIA_AVIF_ENABLED: ${MEDIA_AVIF_ENABLED:-false}
     depends_on:
       backend:
+        condition: service_healthy
+      meilisearch:
         condition: service_healthy
     networks:
       - outdoor
     command: >
       sh -c "if [ ! -d vendor ]; then composer install --no-interaction; fi &&
-             php artisan queue:work --queue=media,default --tries=3 --timeout=180"
+             php artisan queue:work --queue=media,catalog,default --tries=3 --timeout=180"
 
   frontend:
     build:
@@ -195,6 +211,7 @@ services:
       NODE_ENV: development
       NEXT_PUBLIC_APP_URL: ${FRONTEND_URL:-http://localhost:3000}
       NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:8000/api}
+      NEXT_PUBLIC_BACKEND_URL: ${NEXT_PUBLIC_BACKEND_URL:-http://localhost:8000}
       BACKEND_INTERNAL_URL: ${BACKEND_INTERNAL_URL:-http://backend:8000}
       WATCHPACK_POLLING: ${WATCHPACK_POLLING:-true}
     depends_on:

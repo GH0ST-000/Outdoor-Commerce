@@ -213,4 +213,31 @@ describe("CatalogPage URL state", () => {
     const results = await axe(container);
     expect(results).toHaveNoViolations();
   });
+
+  it("keeps the search query when filters are cleared", async () => {
+    const user = userEvent.setup();
+    render(
+      <TestProviders>
+        <CatalogPage
+          pathname="/search"
+          query={{
+            ...emptyCatalogQuery(),
+            q: "scope",
+            brand: ["condor"],
+            sort: "default",
+          }}
+          initial={{ ...emptyState, total: 1, products: [pricedProduct] }}
+        />
+      </TestProviders>,
+    );
+
+    await user.click(
+      screen.getAllByRole("button", { name: /clear filters/i })[0]!,
+    );
+    expect(push).toHaveBeenCalled();
+    const href = String(push.mock.calls.at(-1)?.[0]);
+    expect(href).toContain("/search?");
+    expect(href).toContain("q=scope");
+    expect(href).not.toContain("brand=");
+  });
 });

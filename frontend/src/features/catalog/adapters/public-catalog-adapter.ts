@@ -104,6 +104,9 @@ export function toProductCardData(card: PublicProductCard): ProductCardData {
     },
     availabilityLabel: availabilityCopy(card.availability.status),
     availabilityStatus: card.availability.status,
+    defaultVariantId: card.default_variant_id,
+    variantCount: card.variant_count,
+    purchasable: card.availability.purchasable,
   };
 }
 
@@ -134,6 +137,7 @@ export function toProductDetailView(
     availability: detail.availability,
     is_featured: detail.is_featured,
     variant_count: detail.variants.combinations.length,
+    default_variant_id: detail.default_variant_id,
     used_fallback: detail.used_fallback,
   });
 

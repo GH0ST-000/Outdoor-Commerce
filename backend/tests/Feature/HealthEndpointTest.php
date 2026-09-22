@@ -7,8 +7,12 @@ it('returns a healthy backend status payload', function (): void {
 
     $response
         ->assertOk()
-        ->assertExactJson([
-            'status' => 'ok',
-            'service' => 'backend',
+        ->assertJsonPath('status', 'ok')
+        ->assertJsonPath('service', 'backend')
+        ->assertJsonStructure([
+            'search' => ['status', 'enabled', 'reachable'],
         ]);
+
+    expect($response->json('search'))->not->toHaveKey('indexes');
+    expect($response->getContent())->not->toContain('masterKey');
 });

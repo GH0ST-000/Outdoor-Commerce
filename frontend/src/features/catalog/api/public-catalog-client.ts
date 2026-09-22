@@ -11,6 +11,8 @@ import type {
   PublicProductCard,
   PublicProductDetail,
   PublicProductListParams,
+  PublicGroupedSearchData,
+  PublicSearchSuggestionsData,
 } from "@/features/catalog/types/public-catalog";
 
 export type CatalogRequestOptions = {
@@ -307,4 +309,48 @@ export async function getPublicProduct(
     `/v1/catalog/products/${encodeURIComponent(slug)}${locale}`,
     options,
   );
+}
+
+export function buildGroupedSearchPath(params: {
+  q: string;
+  locale?: CatalogLocale;
+  limit?: number;
+}): string {
+  const search = new URLSearchParams();
+  search.set("q", params.q);
+  if (params.locale) search.set("locale", params.locale);
+  if (params.limit) search.set("limit", String(params.limit));
+  return `/v1/search?${search.toString()}`;
+}
+
+export function buildSearchSuggestionsPath(params: {
+  q: string;
+  locale?: CatalogLocale;
+  limit?: number;
+}): string {
+  const search = new URLSearchParams();
+  search.set("q", params.q);
+  if (params.locale) search.set("locale", params.locale);
+  if (params.limit) search.set("limit", String(params.limit));
+  return `/v1/search/suggestions?${search.toString()}`;
+}
+
+export async function getGroupedSearch(
+  params: { q: string; locale?: CatalogLocale; limit?: number },
+  options: CatalogRequestOptions = {},
+): Promise<PublicCatalogEnvelope<PublicGroupedSearchData>> {
+  return catalogRequest(buildGroupedSearchPath(params), {
+    ...options,
+    cache: "no-store",
+  });
+}
+
+export async function getSearchSuggestions(
+  params: { q: string; locale?: CatalogLocale; limit?: number },
+  options: CatalogRequestOptions = {},
+): Promise<PublicCatalogEnvelope<PublicSearchSuggestionsData>> {
+  return catalogRequest(buildSearchSuggestionsPath(params), {
+    ...options,
+    cache: "no-store",
+  });
 }

@@ -14,6 +14,8 @@ export function ProductPurchasePanel({
   quantity,
   onQuantityChange,
   onPurchase,
+  pending = false,
+  error = null,
   labels,
 }: {
   purchasable: boolean;
@@ -21,6 +23,8 @@ export function ProductPurchasePanel({
   quantity: number;
   onQuantityChange: (value: number) => void;
   onPurchase: () => void;
+  pending?: boolean;
+  error?: string | null;
   labels: {
     quantity: string;
     decrease: string;
@@ -30,16 +34,19 @@ export function ProductPurchasePanel({
     unavailable: string;
     hint: string;
     disabledHint: string;
+    adding: string;
   };
 }) {
   const cartReady = isCartEnabled();
-  const canSubmit = cartReady && purchasable && hasPrice;
+  const canSubmit = cartReady && purchasable && hasPrice && !pending;
   const actionLabel =
     !hasPrice || !purchasable
       ? labels.unavailable
-      : cartReady
-        ? labels.addToCart
-        : labels.cartSoon;
+      : !cartReady
+        ? labels.cartSoon
+        : pending
+          ? labels.adding
+          : labels.addToCart;
   const hint = !hasPrice || !purchasable ? labels.disabledHint : labels.hint;
 
   return (
@@ -49,7 +56,7 @@ export function ProductPurchasePanel({
         onChange={(value) => onQuantityChange(clampPurchaseQuantity(value))}
         min={1}
         max={PRODUCT_QUANTITY_UI_MAX}
-        disabled={!purchasable || !hasPrice}
+        disabled={!purchasable || !hasPrice || pending}
         label={labels.quantity}
         decrementLabel={labels.decrease}
         incrementLabel={labels.increase}
@@ -60,15 +67,28 @@ export function ProductPurchasePanel({
         size="lg"
         fullWidth
         disabled={!canSubmit}
+        loading={pending}
         onClick={onPurchase}
-        aria-describedby="product-purchase-hint"
+        aria-describedby={
+          error ? "product-purchase-error" : "product-purchase-hint"
+        }
         data-testid="product-purchase-action"
       >
         {actionLabel}
       </Button>
-      <p id="product-purchase-hint" className="text-sm text-muted-foreground">
-        {hint}
-      </p>
+      {error ? (
+        <p
+          id="product-purchase-error"
+          className="text-sm text-destructive"
+          role="alert"
+        >
+          {error}
+        </p>
+      ) : (
+        <p id="product-purchase-hint" className="text-sm text-muted-foreground">
+          {hint}
+        </p>
+      )}
     </div>
   );
 }

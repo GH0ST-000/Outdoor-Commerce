@@ -72,7 +72,7 @@ export function CatalogListingView({
   return (
     <div className="sf-band-paper min-h-[70svh] pb-[max(4rem,env(safe-area-inset-bottom))]">
       <JsonLd data={breadcrumbJsonLd(jsonCrumbs)} />
-      {list.products.length > 0 ? (
+      {list.products.length > 0 && pathname !== "/search" ? (
         <JsonLd data={productItemListJsonLd(list.products, pathname)} />
       ) : null}
       <CategoryHero
@@ -85,7 +85,7 @@ export function CatalogListingView({
         breadcrumbs={breadcrumbs}
       />
       <div className="sf-container space-y-5 pt-5 sm:pt-6">
-        {childItems.length > 0 ? (
+        {childItems.length > 0 && pathname !== "/search" ? (
           <ChildCategoryNav
             items={childItems}
             activeSlug={categorySlug}

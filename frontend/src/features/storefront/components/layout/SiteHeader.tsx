@@ -1,29 +1,32 @@
 "use client";
 
-import { useEffect, useId, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu, Search, ShoppingBag, Heart, User, X } from "lucide-react";
 import { SiteControls } from "@/components/site-controls";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import {
-  primaryNav,
-  searchSuggestions,
-} from "@/features/storefront/fixtures/demo-catalog";
+import { primaryNav } from "@/features/storefront/fixtures/demo-catalog";
 import { useStorefrontCopy } from "@/features/storefront/hooks/use-storefront-copy";
+import { SearchOverlay } from "@/features/search/components/SearchOverlay";
+import { MiniCartDrawer } from "@/features/cart/components/MiniCartDrawer";
+import { useCartCopy } from "@/features/cart/copy";
+import { useCart } from "@/features/cart/providers/CartProvider";
+import { isCartEnabled } from "@/features/product-detail/cart/cart-gateway";
 import { cn } from "@/lib/utils";
 
 export function SiteHeader() {
   const pathname = usePathname();
-  const { t, brandName, locale } = useStorefrontCopy();
+  const { t, brandName } = useStorefrontCopy();
+  const cartCopy = useCartCopy();
+  const cart = useCart();
+  const cartEnabled = isCartEnabled();
+  const cartTriggerRef = useRef<HTMLButtonElement>(null);
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
-  const [query, setQuery] = useState("");
   const searchInputRef = useRef<HTMLInputElement>(null);
   const searchTriggerRef = useRef<HTMLButtonElement>(null);
-  const searchTitleId = useId();
   const isHome = pathname === "/";
 
   useEffect(() => {
@@ -61,7 +64,6 @@ export function SiteHeader() {
   }
 
   const solid = scrolled || !isHome || mobileOpen;
-  const suggestions = searchSuggestions[locale];
 
   return (
     <>
@@ -169,21 +171,48 @@ export function SiteHeader() {
               <Heart />
               <span className="sr-only">{t.nav.wishlistSoon}</span>
             </Button>
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
-              disabled
-              aria-disabled="true"
-              title={t.nav.cartSoon}
-              className={cn(
-                "hidden size-9 sm:inline-flex sm:size-10",
-                !solid && isHome && "text-[var(--text-inverse)]/50",
-              )}
-            >
-              <ShoppingBag />
-              <span className="sr-only">{t.nav.cartSoon}</span>
-            </Button>
+            {cartEnabled ? (
+              <Button
+                ref={cartTriggerRef}
+                type="button"
+                variant="ghost"
+                size="icon"
+                aria-expanded={cart.drawerOpen}
+                aria-controls="mini-cart-title"
+                aria-label={`${cartCopy.open}, ${cart.cart.item_count} ${cartCopy.items}`}
+                className={cn(
+                  "relative size-9 sm:size-10",
+                  !solid &&
+                    isHome &&
+                    "text-[var(--text-inverse)] hover:bg-white/10",
+                )}
+                onClick={() => cart.openDrawer()}
+              >
+                <ShoppingBag />
+                {cart.cart.item_count > 0 ? (
+                  <span className="absolute -end-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-[var(--button-primary-background)] px-1 text-[0.625rem] font-semibold text-[var(--button-primary-foreground)]">
+                    {cart.cart.item_count > 99 ? "99+" : cart.cart.item_count}
+                    <span className="sr-only">{cartCopy.badge}</span>
+                  </span>
+                ) : null}
+              </Button>
+            ) : (
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                disabled
+                aria-disabled="true"
+                title={t.nav.cartSoon}
+                className={cn(
+                  "hidden size-9 sm:inline-flex sm:size-10",
+                  !solid && isHome && "text-[var(--text-inverse)]/50",
+                )}
+              >
+                <ShoppingBag />
+                <span className="sr-only">{t.nav.cartSoon}</span>
+              </Button>
+            )}
             <Button
               asChild
               variant="ghost"
@@ -232,78 +261,15 @@ export function SiteHeader() {
         ) : null}
       </header>
 
-      {searchOpen ? (
-        <div
-          id="storefront-search"
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby={searchTitleId}
-          className="fixed inset-0 z-[var(--z-modal)] bg-[color-mix(in_oklab,var(--night-forest)_72%,transparent)] p-4 backdrop-blur-sm sm:p-8"
-          onClick={() => {
-            setSearchOpen(false);
-            searchTriggerRef.current?.focus();
-          }}
-        >
-          <div
-            className="mx-auto mt-8 max-w-2xl rounded-2xl border border-border/70 bg-card p-5 shadow-xl sm:mt-16 sm:p-6"
-            onClick={(event) => event.stopPropagation()}
-          >
-            <div className="mb-4 flex items-center justify-between gap-3">
-              <h2 id={searchTitleId} className="text-lg font-semibold">
-                {t.nav.search}
-              </h2>
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                aria-label={t.nav.closeMenu}
-                onClick={() => {
-                  setSearchOpen(false);
-                  searchTriggerRef.current?.focus();
-                }}
-              >
-                <X />
-              </Button>
-            </div>
-            <Input
-              ref={searchInputRef}
-              value={query}
-              onChange={(event) => setQuery(event.target.value)}
-              placeholder={t.nav.search}
-              aria-label={t.nav.search}
-            />
-            <div className="mt-5 grid gap-4 sm:grid-cols-3">
-              <div>
-                <p className="sf-label text-muted-foreground">Products</p>
-                <ul className="mt-2 space-y-1 text-sm">
-                  {suggestions.products.map((item) => (
-                    <li key={item}>{item}</li>
-                  ))}
-                </ul>
-              </div>
-              <div>
-                <p className="sf-label text-muted-foreground">Categories</p>
-                <ul className="mt-2 space-y-1 text-sm">
-                  {suggestions.categories.map((item) => (
-                    <li key={item}>{item}</li>
-                  ))}
-                </ul>
-              </div>
-              <div>
-                <p className="sf-label text-muted-foreground">Guides</p>
-                <ul className="mt-2 space-y-1 text-sm">
-                  {suggestions.guides.map((item) => (
-                    <li key={item}>{item}</li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-            <p className="mt-4 text-xs text-muted-foreground">
-              Search prototype — Meilisearch connects later.
-            </p>
-          </div>
-        </div>
-      ) : null}
+      <SearchOverlay
+        open={searchOpen}
+        onClose={() => {
+          setSearchOpen(false);
+          searchTriggerRef.current?.focus();
+        }}
+        inputRef={searchInputRef}
+      />
+      {cartEnabled ? <MiniCartDrawer triggerRef={cartTriggerRef} /> : null}
     </>
   );
 }

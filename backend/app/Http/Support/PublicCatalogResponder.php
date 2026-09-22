@@ -41,7 +41,12 @@ final class PublicCatalogResponder
         $ttl = $this->cache->ttlSeconds($context);
         $swr = (int) config('catalog.public.http.stale_while_revalidate_seconds', 300);
 
-        $response = response()->json($payload)
+        $response = response()->json(
+            $payload,
+            200,
+            [],
+            JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_INVALID_UTF8_SUBSTITUTE,
+        )
             ->setEtag($etag)
             ->header('Content-Language', $context->locale)
             ->header('Vary', 'Accept-Language, Accept-Encoding, X-Locale')

@@ -90,4 +90,14 @@ enum AuditEvent: string
     case PromotionPaused = 'promotion.paused';
     case PromotionArchived = 'promotion.archived';
     case PromotionRestored = 'promotion.restored';
+
+    case SearchConfigured = 'search.configured';
+    case SearchRebuilt = 'search.rebuilt';
+    case SearchProductSynced = 'search.product_synced';
+    case SearchProductRemoved = 'search.product_removed';
+    case SearchVerified = 'search.verified';
+
+    case OrderCreated = 'order.created';
+    case OrderCancelled = 'order.cancelled';
+    case OrderExpired = 'order.expired';
 }

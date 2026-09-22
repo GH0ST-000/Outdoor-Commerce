@@ -17,4 +17,11 @@ interface CheckoutInventoryService
     public function release(InventoryReservation $reservation, string $idempotencyKey, ?string $reason = null): InventoryReservation;
 
     public function commit(InventoryReservation $reservation, string $idempotencyKey): InventoryReservation;
+
+    public function reassignReference(
+        InventoryReservation $reservation,
+        string $referenceType,
+        string $referenceId,
+        \DateTimeInterface $expiresAt,
+    ): InventoryReservation;
 }

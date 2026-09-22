@@ -36,6 +36,9 @@ export type ProductCardData = {
   availabilityLabel?: Record<StorefrontLocale, string>;
   availabilityStatus?:
     "in_stock" | "low_stock" | "out_of_stock" | "unavailable";
+  defaultVariantId?: number | null;
+  variantCount?: number;
+  purchasable?: boolean;
 };
 
 export type CategoryGatewayItem = {
@@ -266,5 +269,22 @@ export type StorefrontCopy = {
     priceOnRequest: string;
     comingSoon: string;
     demoLegal: string;
+  };
+  search: {
+    title: string;
+    placeholder: string;
+    viewAll: string;
+    products: string;
+    categories: string;
+    brands: string;
+    noResults: string;
+    noResultsHint: string;
+    minQuery: string;
+    loading: string;
+    unavailable: string;
+    fallback: string;
+    networkError: string;
+    close: string;
+    resultsFor: string;
   };
 };

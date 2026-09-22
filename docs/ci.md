@@ -29,7 +29,7 @@ No package write, PR write, deployment, or admin permissions are granted.
 | --- | --- |
 | `repository-validation` | Lockfiles, env examples, Compose syntax, Composer validate, lock consistency, conflict markers |
 | `backend-quality` | Pint, PHPStan/Larastan, architecture tests |
-| `backend-tests` | Pest on real MySQL 8.4 + Redis 7; migrations; health/correlation/architecture coverage |
+| `backend-tests` | Pest on real MySQL 8.4 + Redis 7 + Meilisearch 1.11; migrations; health/correlation/architecture coverage |
 | `frontend-quality` | Prettier, ESLint (`--max-warnings=0`), TypeScript |
 | `frontend-tests` | Vitest |
 | `frontend-build` | Next.js production build |

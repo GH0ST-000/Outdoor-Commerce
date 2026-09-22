@@ -55,6 +55,10 @@ Local defaults (see `backend/.env.example`):
 - `CORS_ALLOWED_ORIGINS=http://localhost:3000,http://127.0.0.1:3000`
 - `supports_credentials=true` (no `*` origin)
 
+The storefront browser talks same-origin (`/sanctum/csrf-cookie`, `/api/v1/*`). Next.js rewrites those paths to `http://127.0.0.1:8000` (or `BACKEND_INTERNAL_URL` in Compose) so Sanctum cookies are first-party. That avoids `localhost` vs `127.0.0.1` cookie splits and the Docker IPv6 `:8000` vs host artisan IPv4 split. Node-side catalog fetches still call the backend directly and rewrite `localhost` to `127.0.0.1`.
+
+Guest cart identity uses a separate HttpOnly cookie (`outdoor_guest_cart`). Login and register merge that guest cart into the authenticated cart. See [cart.md](cart.md).
+
 Production expectations (configure via env, do not hardcode domains in code):
 
 - `SESSION_SECURE_COOKIE=true`

@@ -1,7 +1,9 @@
 import { describe, expect, it } from "vitest";
 import {
+  buildGroupedSearchPath,
   buildProductFacetsPath,
   buildProductListPath,
+  buildSearchSuggestionsPath,
 } from "@/features/catalog/api/public-catalog-client";
 
 describe("public catalog query builder", () => {
@@ -33,6 +35,15 @@ describe("public catalog query builder", () => {
   it("builds a facets path with the same query contract", () => {
     expect(buildProductFacetsPath({ category: "optics", locale: "en" })).toBe(
       "/v1/catalog/products/facets?locale=en&category=optics",
+    );
+  });
+
+  it("builds grouped search and suggestion paths", () => {
+    expect(buildGroupedSearchPath({ q: "scope", locale: "ka", limit: 8 })).toBe(
+      "/v1/search?q=scope&locale=ka&limit=8",
+    );
+    expect(buildSearchSuggestionsPath({ q: "sc", locale: "en" })).toBe(
+      "/v1/search/suggestions?q=sc&locale=en",
     );
   });
 });

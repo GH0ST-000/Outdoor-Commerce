@@ -70,12 +70,15 @@ function asFlag(value: string | string[] | undefined): boolean | undefined {
   return undefined;
 }
 
-function asSort(value: string | string[] | undefined): CatalogSort {
+function asSort(
+  value: string | string[] | undefined,
+  fallback: CatalogSort = "featured",
+): CatalogSort {
   const raw = Array.isArray(value) ? value[0] : value;
   if (raw && (CATALOG_SORTS as string[]).includes(raw)) {
     return raw as CatalogSort;
   }
-  return "featured";
+  return fallback;
 }
 
 export function emptyCatalogQuery(): CatalogQuery {
@@ -89,6 +92,7 @@ export function emptyCatalogQuery(): CatalogQuery {
 
 export function parseCatalogSearchParams(
   params: SearchParamsInput,
+  options: { defaultSort?: CatalogSort } = {},
 ): CatalogQuery {
   const brand = [...asList(params.brand), ...asList(params["brand[]"])].filter(
     (item, index, all) => all.indexOf(item) === index,
@@ -137,7 +141,7 @@ export function parseCatalogSearchParams(
     on_sale: asFlag(params.on_sale) || undefined,
     featured: asFlag(params.featured) || undefined,
     q: asList(params.q)[0],
-    sort: asSort(params.sort),
+    sort: asSort(params.sort, options.defaultSort ?? "featured"),
     page: page < 1 ? 1 : page,
   };
 }
@@ -157,10 +161,11 @@ export function catalogQueryHasFilters(query: CatalogQuery): boolean {
 
 export function serializeCatalogSearchParams(
   query: CatalogQuery,
-  options: { omitDefaults?: boolean } = {},
+  options: { omitDefaults?: boolean; defaultSort?: CatalogSort } = {},
 ): string {
   const search = new URLSearchParams();
   const omitDefaults = options.omitDefaults !== false;
+  const defaultSort = options.defaultSort ?? "featured";
 
   const brands = [...query.brand].sort();
   for (const brand of brands) {
@@ -193,7 +198,7 @@ export function serializeCatalogSearchParams(
   if (query.q) {
     search.set("q", query.q);
   }
-  if (!omitDefaults || query.sort !== "featured") {
+  if (!omitDefaults || query.sort !== defaultSort) {
     search.set("sort", query.sort);
   }
   if (!omitDefaults || query.page > 1) {
@@ -227,7 +232,23 @@ export function catalogQueryToListParams(
   };
 }
 
-export function catalogHref(pathname: string, query: CatalogQuery): string {
-  const serialized = serializeCatalogSearchParams(query);
+export function catalogHref(
+  pathname: string,
+  query: CatalogQuery,
+  options: { defaultSort?: CatalogSort } = {},
+): string {
+  const serialized = serializeCatalogSearchParams(query, options);
   return serialized === "" ? pathname : `${pathname}?${serialized}`;
+}
+
+export function parseSearchPageParams(params: SearchParamsInput): CatalogQuery {
+  return parseCatalogSearchParams(params, { defaultSort: "default" });
+}
+
+export function emptySearchQuery(q?: string): CatalogQuery {
+  return {
+    ...emptyCatalogQuery(),
+    q,
+    sort: "default",
+  };
 }

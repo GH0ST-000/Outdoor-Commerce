@@ -115,7 +115,7 @@ export const storefrontCopy = {
       related: "More from this category",
       notify: "Notify when available",
       notifyHint:
-        "Cart is not connected yet. Prices and availability come from the public catalog and will be revalidated at checkout.",
+        "Quantity is a request. Laravel confirms price, stock, and totals when the item is added. Shipping is calculated at checkout.",
       gallery: "Product images",
       notFound: "This product is not available.",
       invalidCombination: "This combination is not available.",
@@ -179,6 +179,24 @@ export const storefrontCopy = {
       priceOnRequest: "Price on request",
       comingSoon: "Availability coming soon",
       demoLegal: "Demonstration data only — not official Georgian hunting law.",
+    },
+    search: {
+      title: "Search the catalog",
+      placeholder: "Search products, brands, or categories",
+      viewAll: "View all results",
+      products: "Products",
+      categories: "Categories",
+      brands: "Brands",
+      noResults: "No matching products",
+      noResultsHint:
+        "Check the spelling or remove some filters. Search does not invent alternatives.",
+      minQuery: "Type at least two characters to see suggestions.",
+      loading: "Searching",
+      unavailable: "Search is temporarily unavailable.",
+      fallback: "Showing a basic catalog match while search recovers.",
+      networkError: "Search could not be reached. Try again.",
+      close: "Close search",
+      resultsFor: "Results for",
     },
   } satisfies StorefrontCopy,
   ka: {
@@ -287,7 +305,7 @@ export const storefrontCopy = {
       related: "ამ კატეგორიიდან",
       notify: "შემატყობინე ხელმისაწვდომობისას",
       notifyHint:
-        "კალათა ჯერ არ არის დაკავშირებული. ფასი და ხელმისაწვდომობა საჯარო კატალოგიდანაა და შეკვეთისას თავიდან დადასტურდება.",
+        "რაოდენობა მოთხოვნაა. ფასს, მარაგს და ჯამს Laravel ადასტურებს დამატებისას. მიწოდება ითვლება შეკვეთისას.",
       gallery: "პროდუქტის სურათები",
       notFound: "ეს პროდუქტი ხელმისაწვდომი არ არის.",
       invalidCombination: "ეს კომბინაცია ხელმისაწვდომი არ არის.",
@@ -352,6 +370,24 @@ export const storefrontCopy = {
       comingSoon: "ხელმისაწვდომობა მალე",
       demoLegal:
         "სადემონსტრაციო მონაცემები — არ არის ოფიციალური სანადირო კანონი.",
+    },
+    search: {
+      title: "კატალოგის ძიება",
+      placeholder: "მოძებნე პროდუქტი, ბრენდი ან კატეგორია",
+      viewAll: "ყველა შედეგის ნახვა",
+      products: "პროდუქტები",
+      categories: "კატეგორიები",
+      brands: "ბრენდები",
+      noResults: "შესაბამისი პროდუქტი არ არის",
+      noResultsHint:
+        "შეამოწმე მართლწერა ან მოხსენი ფილტრები. ძიება ალტერნატივებს არ იგონებს.",
+      minQuery: "შემოთავაზებისთვის სულ მცირე ორი სიმბოლო დაწერე.",
+      loading: "იძებნება",
+      unavailable: "ძიება დროებით მიუწვდომელია.",
+      fallback: "ნაჩვენებია ძირითადი კატალოგის დამთხვევა, სანამ ძიება აღდგება.",
+      networkError: "ძიებას ვერ დავუკავშირდით. სცადე თავიდან.",
+      close: "ძიების დახურვა",
+      resultsFor: "შედეგები",
     },
   } satisfies StorefrontCopy,
 } as const;

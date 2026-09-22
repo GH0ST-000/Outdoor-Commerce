@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Domains\Cart\Contracts\CartOwnerResolver;
+use App\Domains\Cart\Services\CartResolver;
 use App\Domains\Catalog\Contracts\CatalogProductLookup;
 use App\Domains\Catalog\Events\CatalogAttributeChanged;
 use App\Domains\Catalog\Events\CatalogBrandChanged;
@@ -25,7 +27,12 @@ use App\Domains\Catalog\Policies\ProductPolicy;
 use App\Domains\Catalog\Policies\ProductVariantPolicy;
 use App\Domains\Catalog\PublicApi\Listeners\CatalogProjectionObserver;
 use App\Domains\Catalog\PublicApi\Listeners\RefreshPublicCatalogProjections;
+use App\Domains\Catalog\Search\Contracts\SearchGateway;
+use App\Domains\Catalog\Search\Listeners\RefreshSearchIndex;
+use App\Domains\Catalog\Search\Services\MeilisearchGateway;
 use App\Domains\Catalog\Services\EloquentCatalogProductLookup;
+use App\Domains\Checkout\Contracts\FulfillmentQuoteProvider;
+use App\Domains\Checkout\Services\ConfiguredRateFulfillmentQuoteProvider;
 use App\Domains\Identity\Models\User;
 use App\Domains\Identity\Policies\UserPolicy;
 use App\Domains\Identity\Support\EmailNormalizer;
@@ -51,6 +58,9 @@ use App\Domains\Inventory\Policies\WarehousePolicy;
 use App\Domains\Inventory\Services\DefaultCheckoutInventoryService;
 use App\Domains\Inventory\Services\DefaultWarehouseAllocationStrategy;
 use App\Domains\Inventory\Services\EloquentPublicInventoryAvailability;
+use App\Domains\Orders\Events\OrderCancelled;
+use App\Domains\Orders\Events\OrderExpired;
+use App\Domains\Payments\Listeners\ClosePaymentAttemptsOnOrderClosed;
 use App\Domains\Pricing\Contracts\CheckoutPriceResolver;
 use App\Domains\Pricing\Contracts\ProductPricingReadiness;
 use App\Domains\Pricing\Contracts\PublicCatalogPricing;
@@ -72,6 +82,7 @@ use App\Domains\Pricing\Services\PricingReadinessService;
 use App\Domains\Shared\Support\Clock;
 use App\Domains\Shared\Support\SystemClock;
 use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Event;
@@ -84,6 +95,8 @@ class AppServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
+        $this->app->bind(CartOwnerResolver::class, CartResolver::class);
+        $this->app->bind(FulfillmentQuoteProvider::class, ConfiguredRateFulfillmentQuoteProvider::class);
         $this->app->bind(InventoryAllocationStrategy::class, DefaultWarehouseAllocationStrategy::class);
         $this->app->bind(CheckoutInventoryService::class, DefaultCheckoutInventoryService::class);
         $this->app->singleton(Clock::class, SystemClock::class);
@@ -92,13 +105,28 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(ProductPricingReadiness::class, PricingReadinessService::class);
         $this->app->bind(PublicCatalogPricing::class, DefaultPublicCatalogPricing::class);
         $this->app->bind(PublicInventoryAvailability::class, EloquentPublicInventoryAvailability::class);
+        $this->app->singleton(SearchGateway::class, MeilisearchGateway::class);
     }
 
     public function boot(): void
     {
+        if (
+            $this->app->environment('production')
+            && ((bool) config('payments.test.enabled', false) || (bool) config('payments.providers.test.enabled', false))
+        ) {
+            throw new \RuntimeException('The test payment provider cannot be enabled in production.');
+        }
+
         $this->enforceMorphMap();
         $this->registerPublicCatalogObservers();
         $this->registerPublicCatalogListeners();
+        $this->registerSearchListeners();
+        $this->registerPaymentListeners();
+
+        $cartCookie = config('cart.cookie.name');
+        if (is_string($cartCookie) && $cartCookie !== '') {
+            EncryptCookies::except([$cartCookie]);
+        }
 
         Gate::policy(User::class, UserPolicy::class);
         Gate::policy(\App\Models\User::class, UserPolicy::class);
@@ -195,6 +223,105 @@ class AppServiceProvider extends ServiceProvider
             return Limit::perMinute((int) config('catalog.public.rate_limits.facets_per_minute', 30))
                 ->by((string) $request->ip());
         });
+
+        RateLimiter::for('search.public', function (Request $request) {
+            return Limit::perMinute((int) config('search.rate_limits.grouped_per_minute', 30))
+                ->by((string) $request->ip());
+        });
+
+        RateLimiter::for('search.suggest', function (Request $request) {
+            return Limit::perMinute((int) config('search.rate_limits.suggest_per_minute', 60))
+                ->by((string) $request->ip());
+        });
+
+        RateLimiter::for('cart.read', function (Request $request) {
+            $userId = $request->user()?->getAuthIdentifier();
+
+            return Limit::perMinute((int) config('cart.rate_limits.read_per_minute', 60))
+                ->by(($userId !== null ? 'u'.$userId : 'g'.$request->ip()));
+        });
+
+        RateLimiter::for('cart.mutate', function (Request $request) {
+            $userId = $request->user()?->getAuthIdentifier();
+
+            return Limit::perMinute((int) config('cart.rate_limits.mutate_per_minute', 30))
+                ->by(($userId !== null ? 'u'.$userId : 'g'.$request->ip()));
+        });
+
+        RateLimiter::for('checkout.read', function (Request $request) {
+            $userId = $request->user()?->getAuthIdentifier();
+
+            return Limit::perMinute((int) config('checkout.rate_limits.read_per_minute', 30))
+                ->by(($userId !== null ? 'u'.$userId : 'g'.$request->ip()));
+        });
+
+        RateLimiter::for('checkout.mutate', function (Request $request) {
+            $userId = $request->user()?->getAuthIdentifier();
+
+            return Limit::perMinute((int) config('checkout.rate_limits.mutate_per_minute', 20))
+                ->by(($userId !== null ? 'u'.$userId : 'g'.$request->ip()));
+        });
+
+        RateLimiter::for('checkout.quote', function (Request $request) {
+            $userId = $request->user()?->getAuthIdentifier();
+
+            return Limit::perMinute((int) config('checkout.rate_limits.quote_per_minute', 8))
+                ->by(($userId !== null ? 'u'.$userId : 'g'.$request->ip()));
+        });
+
+        RateLimiter::for('orders.read', function (Request $request) {
+            $userId = $request->user()?->getAuthIdentifier();
+
+            return Limit::perMinute((int) config('order.rate_limits.read_per_minute', 30))
+                ->by(($userId !== null ? 'u'.$userId : 'g'.$request->ip()));
+        });
+
+        RateLimiter::for('orders.create', function (Request $request) {
+            $userId = $request->user()?->getAuthIdentifier();
+
+            return Limit::perMinute((int) config('order.rate_limits.create_per_minute', 8))
+                ->by(($userId !== null ? 'u'.$userId : 'g'.$request->ip()));
+        });
+
+        RateLimiter::for('orders.cancel', function (Request $request) {
+            $userId = $request->user()?->getAuthIdentifier();
+
+            return Limit::perMinute((int) config('order.rate_limits.cancel_per_minute', 8))
+                ->by(($userId !== null ? 'u'.$userId : 'g'.$request->ip()));
+        });
+
+        RateLimiter::for('payments.methods', function (Request $request) {
+            $userId = $request->user()?->getAuthIdentifier();
+
+            return Limit::perMinute((int) config('payments.rate_limits.methods_per_minute', 30))
+                ->by(($userId !== null ? 'u'.$userId : 'g'.$request->ip()));
+        });
+
+        RateLimiter::for('payments.read', function (Request $request) {
+            $userId = $request->user()?->getAuthIdentifier();
+
+            return Limit::perMinute((int) config('payments.rate_limits.read_per_minute', 30))
+                ->by(($userId !== null ? 'u'.$userId : 'g'.$request->ip()));
+        });
+
+        RateLimiter::for('payments.mutate', function (Request $request) {
+            $userId = $request->user()?->getAuthIdentifier();
+
+            return Limit::perMinute((int) config('payments.rate_limits.mutate_per_minute', 10))
+                ->by(($userId !== null ? 'u'.$userId : 'g'.$request->ip()));
+        });
+
+        RateLimiter::for('payments.webhook', function (Request $request) {
+            return Limit::perMinute((int) config('payments.rate_limits.webhook_per_minute', 120))
+                ->by('wh'.$request->ip());
+        });
+
+        RateLimiter::for('payments.simulate', function (Request $request) {
+            $userId = $request->user()?->getAuthIdentifier();
+
+            return Limit::perMinute((int) config('payments.rate_limits.simulate_per_minute', 20))
+                ->by(($userId !== null ? 'u'.$userId : 'g'.$request->ip()));
+        });
     }
 
     private function registerPublicCatalogObservers(): void
@@ -244,6 +371,44 @@ class AppServiceProvider extends ServiceProvider
         foreach ($listen as $event => $method) {
             Event::listen($event, [RefreshPublicCatalogProjections::class, $method]);
         }
+    }
+
+    private function registerSearchListeners(): void
+    {
+        $listen = [
+            CatalogProductChanged::class => 'productChanged',
+            CatalogVariantChanged::class => 'variantChanged',
+            CatalogBrandChanged::class => 'brandChanged',
+            CatalogCategoryChanged::class => 'categoryChanged',
+            CatalogAttributeChanged::class => 'attributeChanged',
+            CatalogMediaChanged::class => 'mediaChanged',
+            InventoryReserved::class => 'inventoryReserved',
+            InventoryReservationReleased::class => 'inventoryReservationReleased',
+            InventoryReservationCancelled::class => 'inventoryReservationCancelled',
+            InventoryReservationExpired::class => 'inventoryReservationExpired',
+            InventoryReservationCommitted::class => 'inventoryReservationCommitted',
+            InventoryAdjusted::class => 'inventoryAdjusted',
+            InventoryCountReconciled::class => 'inventoryReconciled',
+            InventoryTransferred::class => 'inventoryTransferred',
+            InventoryReceived::class => 'inventoryReceived',
+            InventoryOutOfStock::class => 'inventoryOutOfStock',
+            PriceChanged::class => 'priceChanged',
+            PricePublished::class => 'pricePublished',
+            PriceCancelled::class => 'priceCancelled',
+            PromotionActivated::class => 'promotionChanged',
+            PromotionPaused::class => 'promotionChanged',
+            PromotionTargetsChanged::class => 'promotionChanged',
+        ];
+
+        foreach ($listen as $event => $method) {
+            Event::listen($event, [RefreshSearchIndex::class, $method]);
+        }
+    }
+
+    private function registerPaymentListeners(): void
+    {
+        Event::listen(OrderExpired::class, [ClosePaymentAttemptsOnOrderClosed::class, 'handleExpired']);
+        Event::listen(OrderCancelled::class, [ClosePaymentAttemptsOnOrderClosed::class, 'handleCancelled']);
     }
 
     /**

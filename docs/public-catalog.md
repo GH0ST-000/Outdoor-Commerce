@@ -86,4 +86,4 @@ Typed client: `frontend/src/features/catalog/api/public-catalog-client.ts`. Adap
 
 ## Day 16
 
-Replace MySQL `q` and facet counts with Meilisearch. Keep the same query parameters, pagination envelope, and resource shapes.
+Catalog search uses Meilisearch as a derived variant-aware index. The `q` parameter still uses the same public URL contract. Final cards are hydrated from Public Catalog projections. See [search.md](search.md) and [ADR 0011](adr/0011-meilisearch-derived-search.md).

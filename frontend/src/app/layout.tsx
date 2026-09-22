@@ -6,6 +6,7 @@ import {
   Noto_Serif_Georgian,
 } from "next/font/google";
 import { AppProviders } from "@/components/app-providers";
+import { getRequestCatalogLocale } from "@/features/catalog/lib/request-locale";
 import { brandConfig } from "@/features/storefront/config/brand";
 import "./globals.css";
 
@@ -45,19 +46,21 @@ export const metadata: Metadata = {
   description: brandConfig.support.ka,
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const locale = await getRequestCatalogLocale();
+
   return (
     <html
-      lang="ka"
+      lang={locale}
       suppressHydrationWarning
       className={`${fraunces.variable} ${manrope.variable} ${notoGeorgian.variable} ${notoSerifGeorgian.variable}`}
     >
       <body className="font-[family-name:var(--font-manrope),var(--font-noto-georgian),sans-serif]">
-        <AppProviders>{children}</AppProviders>
+        <AppProviders initialLocale={locale}>{children}</AppProviders>
       </body>
     </html>
   );

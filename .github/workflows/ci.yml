@@ -121,6 +121,19 @@ jobs:
           --health-interval=5s
           --health-timeout=3s
           --health-retries=20
+      meilisearch:
+        image: getmeili/meilisearch:v1.11
+        env:
+          MEILI_ENV: development
+          MEILI_MASTER_KEY: masterKey_change_me
+          MEILI_NO_ANALYTICS: "true"
+        ports:
+          - 7700:7700
+        options: >-
+          --health-cmd="wget --no-verbose --spider http://127.0.0.1:7700/health"
+          --health-interval=5s
+          --health-timeout=5s
+          --health-retries=20
     env:
       APP_ENV: testing
       APP_DEBUG: "false"
@@ -141,6 +154,15 @@ jobs:
       FILESYSTEM_DISK: local
       FRONTEND_URL: http://localhost:3000
       SANCTUM_STATEFUL_DOMAINS: localhost,localhost:3000,127.0.0.1,127.0.0.1:3000
+      SEARCH_ENABLED: "true"
+      SEARCH_FALLBACK_ENABLED: "true"
+      MEILISEARCH_HOST: http://127.0.0.1:7700
+      MEILISEARCH_MASTER_KEY: masterKey_change_me
+      MEILISEARCH_INDEX_PREFIX: outdoor_test
+      PAYMENT_TEST_PROVIDER_ENABLED: "true"
+      PAYMENT_TEST_WEBHOOK_SECRET: test-payment-webhook-secret-change-me
+      PAYMENT_HTTPS_REQUIRED: "false"
+      PAYMENT_ALLOWED_REDIRECT_HOSTS: localhost,127.0.0.1,payments.test
     steps:
       - name: Checkout
         uses: actions/checkout@v5

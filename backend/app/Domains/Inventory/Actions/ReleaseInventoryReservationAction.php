@@ -34,7 +34,7 @@ final class ReleaseInventoryReservationAction
         InventoryReservation $reservation,
         string $idempotencyKey,
         ?string $releaseReason,
-        Authenticatable $actor,
+        ?Authenticatable $actor = null,
         ?string $requestId = null,
         ?string $ipAddress = null,
         ?string $userAgent = null,
@@ -45,7 +45,7 @@ final class ReleaseInventoryReservationAction
             'release_reason' => $releaseReason,
         ]);
 
-        $actorId = (int) $actor->getAuthIdentifier();
+        $actorId = $actor !== null ? (int) $actor->getAuthIdentifier() : null;
 
         return $this->deadlockRetry->run(function () use ($reservation, $idempotencyKey, $payloadHash, $releaseReason, $actorId, $requestId, $ipAddress, $userAgent): InventoryReservation {
             return DB::transaction(function () use ($reservation, $idempotencyKey, $payloadHash, $releaseReason, $actorId, $requestId, $ipAddress, $userAgent): InventoryReservation {

@@ -20,6 +20,8 @@ import {
   getCartGateway,
   isCartEnabled,
 } from "@/features/product-detail/cart/cart-gateway";
+import { useCartCopy } from "@/features/cart/copy";
+import { ApiClientError } from "@/lib/api-client";
 import {
   buildPurchaseIntent,
   clampPurchaseQuantity,
@@ -108,6 +110,7 @@ function ProductDetailExperience({
   initialVariantId: number | null;
 }) {
   const { locale, t } = useStorefrontCopy();
+  const cartCopy = useCartCopy();
   const router = useRouter();
   const pathname = usePathname();
   const localeRef = useRef(locale);
@@ -115,6 +118,8 @@ function ProductDetailExperience({
     useProductVariantSelection(detail, initialVariantId);
   const [quantity, setQuantity] = useState(1);
   const [shareFeedback, setShareFeedback] = useState<string | null>(null);
+  const [purchasePending, setPurchasePending] = useState(false);
+  const [purchaseError, setPurchaseError] = useState<string | null>(null);
 
   const gallery = mediaForSelectedVariant(detail.gallery, selectedVariant);
   const availability = selectedVariant?.availability ?? detail.availability;
@@ -125,6 +130,31 @@ function ProductDetailExperience({
   const purchasable = Boolean(availability.purchasable && hasPrice);
   const numberLocale = locale === "ka" ? "ka-GE" : "en-GE";
   const displayedQuantity = purchasable ? clampPurchaseQuantity(quantity) : 1;
+
+  function handlePurchase(): void {
+    if (!selectedVariant || !isCartEnabled() || purchasePending) {
+      return;
+    }
+    setPurchaseError(null);
+    setPurchasePending(true);
+    void getCartGateway()
+      .addToCart(
+        buildPurchaseIntent(
+          detail,
+          selectedVariant.id,
+          displayedQuantity,
+          selectedVariant.price.signature,
+        ),
+      )
+      .catch((error: unknown) => {
+        setPurchaseError(
+          error instanceof ApiClientError ? error.message : t.common.error,
+        );
+      })
+      .finally(() => {
+        setPurchasePending(false);
+      });
+  }
 
   useEffect(() => {
     if (localeRef.current === locale) {
@@ -263,19 +293,9 @@ function ProductDetailExperience({
             hasPrice={hasPrice}
             quantity={displayedQuantity}
             onQuantityChange={setQuantity}
-            onPurchase={() => {
-              if (!selectedVariant || !isCartEnabled()) {
-                return;
-              }
-              void getCartGateway().addToCart(
-                buildPurchaseIntent(
-                  detail,
-                  selectedVariant.id,
-                  displayedQuantity,
-                  selectedVariant.price.signature,
-                ),
-              );
-            }}
+            pending={purchasePending}
+            error={purchaseError}
+            onPurchase={handlePurchase}
             labels={{
               quantity: t.product.quantity,
               decrease: t.product.quantityDecrease,
@@ -285,6 +305,7 @@ function ProductDetailExperience({
               unavailable: t.product.unavailableAction,
               hint: t.product.notifyHint,
               disabledHint: t.product.purchaseDisabledHint,
+              adding: cartCopy.adding,
             }}
           />
 
@@ -351,10 +372,10 @@ function ProductDetailExperience({
         purchasable={purchasable}
         hasPrice={hasPrice}
         missingLabel={t.common.priceOnRequest}
-        actionLabel={t.product.addToCart}
+        actionLabel={purchasePending ? cartCopy.adding : t.product.addToCart}
         cartSoonLabel={t.product.cartSoon}
         unavailableLabel={t.product.unavailableAction}
-        onPurchase={() => undefined}
+        onPurchase={handlePurchase}
       />
     </div>
   );
