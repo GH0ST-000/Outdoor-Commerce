@@ -65,13 +65,17 @@ async function catalogFetch(
   const bases = catalogBaseUrls();
 
   for (const [index, base] of bases.entries()) {
+    const hasFallback = index < bases.length - 1;
     try {
-      return await fetch(`${base}${path}`, init);
+      const response = await fetch(`${base}${path}`, init);
+      if (!response.ok && response.status >= 500 && hasFallback) {
+        continue;
+      }
+      return response;
     } catch (error) {
       if (isAbortError(error)) {
         throw error;
       }
-      const hasFallback = index < bases.length - 1;
       if (hasFallback && isUnreachableHost(error)) {
         continue;
       }

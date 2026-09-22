@@ -20,8 +20,6 @@ import {
 } from "@/features/product-detail/seo/product-json-ld";
 import { storefrontCopy } from "@/features/storefront/fixtures/demo-catalog";
 
-export const revalidate = 60;
-
 type PageProps = {
   params: Promise<{ productSlug: string }>;
   searchParams: Promise<{ variant?: string | string[] }>;
