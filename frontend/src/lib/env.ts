@@ -33,13 +33,18 @@ export function getPublicEnv(): PublicEnv {
   });
 }
 
-/** Public API base including `/api` suffix, e.g. http://localhost:8000/api */
+/** Prefer IPv4 loopback so `localhost` does not resolve to Docker's IPv6 bind. */
+export function toLoopbackIpv4(url: string): string {
+  return url.replace(/:\/\/localhost(?=[:/?#]|$)/i, "://127.0.0.1");
+}
+
+/** Public API base including `/api` suffix, e.g. http://127.0.0.1:8000/api */
 export function getApiBaseUrl(): string {
   const configured = getPublicEnv().NEXT_PUBLIC_API_URL;
   if (configured) {
-    return configured.replace(/\/$/, "");
+    return toLoopbackIpv4(configured.replace(/\/$/, ""));
   }
-  return "http://localhost:8000/api";
+  return "http://127.0.0.1:8000/api";
 }
 
 /**
@@ -53,7 +58,7 @@ export function resolveServerApiBaseUrls(): string[] {
   const urls: string[] = [];
 
   if (internal) {
-    const internalApi = `${internal.replace(/\/$/, "")}/api`;
+    const internalApi = toLoopbackIpv4(`${internal.replace(/\/$/, "")}/api`);
     urls.push(internalApi);
   }
 
@@ -68,7 +73,7 @@ export function resolveServerApiBaseUrls(): string[] {
 export function getBackendOrigin(): string {
   const configured = getPublicEnv().NEXT_PUBLIC_BACKEND_URL;
   if (configured) {
-    return configured.replace(/\/$/, "");
+    return toLoopbackIpv4(configured.replace(/\/$/, ""));
   }
 
   const api = getApiBaseUrl();

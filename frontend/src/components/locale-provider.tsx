@@ -26,13 +26,29 @@ function isLocale(value: string | null): value is Locale {
   return value !== null && (locales as string[]).includes(value);
 }
 
+function readStoredLocale(): string | null {
+  try {
+    return window.localStorage.getItem(STORAGE_KEY);
+  } catch {
+    return null;
+  }
+}
+
+function writeStoredLocale(next: Locale): void {
+  try {
+    window.localStorage.setItem(STORAGE_KEY, next);
+  } catch {
+    // Private mode / sandboxed contexts can deny storage.
+  }
+}
+
 function readLocale(): Locale {
   const match = document.cookie.match(/(?:^|; )outdoor-locale=([^;]*)/);
   const cookie = match ? decodeURIComponent(match[1]) : null;
   if (isLocale(cookie)) {
     return cookie;
   }
-  const stored = window.localStorage.getItem(STORAGE_KEY);
+  const stored = readStoredLocale();
   if (isLocale(stored)) {
     return stored;
   }
@@ -62,7 +78,7 @@ export function LocaleProvider({ children }: { children: ReactNode }) {
 
   const setLocale = useCallback(
     (next: Locale) => {
-      window.localStorage.setItem(STORAGE_KEY, next);
+      writeStoredLocale(next);
       document.cookie = `outdoor-locale=${next}; path=/; max-age=31536000; samesite=lax`;
       document.documentElement.lang = next;
       window.dispatchEvent(new Event(LOCALE_EVENT));

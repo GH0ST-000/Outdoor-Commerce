@@ -6,8 +6,6 @@ import { getRequestCatalogLocale } from "@/features/catalog/lib/request-locale";
 import { metadataFromPublicSeo } from "@/features/catalog/seo/catalog-seo";
 import { storefrontMedia } from "@/features/storefront/config/media";
 
-export const revalidate = 60;
-
 export async function generateMetadata(): Promise<Metadata> {
   const locale = await getRequestCatalogLocale();
   const content = getHomePageContent(locale);

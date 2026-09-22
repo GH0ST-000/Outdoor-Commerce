@@ -17,8 +17,6 @@ import {
 } from "@/features/catalog/seo/catalog-seo";
 import { storefrontCopy } from "@/features/storefront/fixtures/demo-catalog";
 
-export const revalidate = 60;
-
 type PageProps = {
   params: Promise<{ categorySlug: string }>;
   searchParams: Promise<SearchParamsInput>;

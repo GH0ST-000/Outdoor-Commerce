@@ -1,8 +1,10 @@
 import { describe, expect, it, vi } from "vitest";
 import {
+  getApiBaseUrl,
   getPublicEnv,
   getServerEnv,
   resolveServerApiBaseUrls,
+  toLoopbackIpv4,
 } from "@/lib/env";
 
 describe("environment separation", () => {
@@ -29,8 +31,17 @@ describe("environment separation", () => {
     vi.stubEnv("NEXT_PUBLIC_API_URL", "http://localhost:8000/api");
     expect(resolveServerApiBaseUrls()).toEqual([
       "http://backend:8000/api",
-      "http://localhost:8000/api",
+      "http://127.0.0.1:8000/api",
     ]);
+    vi.unstubAllEnvs();
+  });
+
+  it("rewrites localhost API URLs to IPv4 loopback", () => {
+    expect(toLoopbackIpv4("http://localhost:8000/api")).toBe(
+      "http://127.0.0.1:8000/api",
+    );
+    vi.stubEnv("NEXT_PUBLIC_API_URL", "http://localhost:8000/api");
+    expect(getApiBaseUrl()).toBe("http://127.0.0.1:8000/api");
     vi.unstubAllEnvs();
   });
 });

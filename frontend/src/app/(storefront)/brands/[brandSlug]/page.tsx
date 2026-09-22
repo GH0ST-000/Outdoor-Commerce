@@ -10,8 +10,6 @@ import {
   type SearchParamsInput,
 } from "@/features/catalog/query-state/catalog-search-params";
 
-export const revalidate = 60;
-
 export default async function Page({
   params,
   searchParams,
