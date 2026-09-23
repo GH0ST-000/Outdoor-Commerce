@@ -52,7 +52,7 @@ it('prevents concurrent quotes from overselling the last unit', function (): voi
 
     expect($ok)->toBe(1)
         ->and($failed)->toBe(1)
-        ->and(InventoryReservation::query()->where('status', InventoryReservationStatus::Active)->sum('quantity'))->toBe(1);
+        ->and((int) InventoryReservation::query()->where('status', InventoryReservationStatus::Active)->sum('quantity'))->toBe(1);
 });
 
 it('does not let a second checkout reserve the last remaining unit', function (): void {
@@ -88,7 +88,7 @@ it('does not let a second checkout reserve the last remaining unit', function ()
         ->assertStatus(422)
         ->assertJsonPath('error.code', 'CHECKOUT_INSUFFICIENT_STOCK');
 
-    expect(InventoryReservation::query()->where('status', InventoryReservationStatus::Active)->sum('quantity'))->toBe(1);
+    expect((int) InventoryReservation::query()->where('status', InventoryReservationStatus::Active)->sum('quantity'))->toBe(1);
 });
 
 /**

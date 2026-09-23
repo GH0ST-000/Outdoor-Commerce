@@ -48,5 +48,5 @@ it('holds the last unit after the quoted guest confirms the order', function ():
         ])->assertCreated();
 
     expect(Order::query()->count())->toBe(1)
-        ->and(InventoryReservation::query()->where('reference_id', $created->json('data.id'))->where('status', InventoryReservationStatus::Active)->sum('quantity'))->toBe(1);
+        ->and((int) InventoryReservation::query()->where('reference_id', $created->json('data.id'))->where('status', InventoryReservationStatus::Active)->sum('quantity'))->toBe(1);
 });
