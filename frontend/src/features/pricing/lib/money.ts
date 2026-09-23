@@ -92,27 +92,54 @@ export function parseMajorToMinor(
   return { ok: true, amount_minor: amountMinor };
 }
 
+function isGeorgianLocale(locale: string): boolean {
+  return locale.toLowerCase().startsWith("ka");
+}
+
+function groupThousands(whole: number, separator: string): string {
+  const digits = String(Math.trunc(Math.abs(whole)));
+  const parts: string[] = [];
+  for (let i = digits.length; i > 0; i -= 3) {
+    parts.unshift(digits.slice(Math.max(0, i - 3), i));
+  }
+  return parts.join(separator);
+}
+
 /**
- * Format minor units for a locale using Intl — never concatenate symbols manually.
+ * Format minor units with a stable ka/en pattern.
+ * Intl is not used here: Node and Chromium ship different ICU data, which
+ * hydrates `GEL 129.99` on the server and `129,99 ₾` in the browser.
  */
 export function formatMoneyMinor(
   amountMinor: number,
   currencyCode: string,
   locale: string = "ka-GE",
 ): string {
+  if (!Number.isFinite(amountMinor) || !Number.isInteger(amountMinor)) {
+    return "";
+  }
+
   const currency = CURRENCIES[currencyCode] ?? {
     code: currencyCode,
     minor_units: 2,
     symbol: currencyCode,
   };
-  const major = amountMinor / 10 ** currency.minor_units;
+  const georgian = isGeorgianLocale(locale);
+  const scale = 10 ** currency.minor_units;
+  const negative = amountMinor < 0;
+  const absolute = Math.abs(amountMinor);
+  const whole = Math.trunc(absolute / scale);
+  const fraction = String(absolute % scale).padStart(currency.minor_units, "0");
+  const grouped = groupThousands(whole, georgian ? "\u00a0" : ",");
+  const number = `${negative ? "-" : ""}${grouped}${georgian ? "," : "."}${fraction}`;
 
-  return new Intl.NumberFormat(locale, {
-    style: "currency",
-    currency: currency.code,
-    minimumFractionDigits: currency.minor_units,
-    maximumFractionDigits: currency.minor_units,
-  }).format(major);
+  if (currency.code === "GEL") {
+    return georgian ? `${number} ₾` : `GEL ${number}`;
+  }
+
+  return georgian
+    ? `${number} ${currency.symbol}`
+    : `${currency.symbol}${number}`;
 }
 
 export function formatMoneyRange(

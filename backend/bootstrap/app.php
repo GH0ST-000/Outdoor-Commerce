@@ -1,10 +1,21 @@
 <?php
 
+use App\Domains\Cart\Exceptions\CartException;
+use App\Domains\Cart\Exceptions\CartIdempotencyConflictException;
+use App\Domains\Cart\Exceptions\CartVersionConflictException;
 use App\Domains\Catalog\Exceptions\ProductNotReadyException;
 use App\Domains\Catalog\Exceptions\PublicCatalogNotFoundException;
+use App\Domains\Catalog\PublicApi\Services\PublicCatalogContextFactory;
+use App\Domains\Catalog\Search\Exceptions\SearchUnavailableException;
+use App\Domains\Checkout\Exceptions\CheckoutException;
+use App\Domains\Checkout\Exceptions\CheckoutIdempotencyConflictException;
 use App\Domains\Identity\Exceptions\AuthenticationFailedException;
 use App\Domains\Identity\Exceptions\LastActiveAdminException;
 use App\Domains\Inventory\Exceptions\InventoryStateConflictException;
+use App\Domains\Orders\Exceptions\OrderException;
+use App\Domains\Orders\Exceptions\OrderIdempotencyConflictException;
+use App\Domains\Payments\Exceptions\PaymentException;
+use App\Domains\Payments\Exceptions\PaymentIdempotencyConflictException;
 use App\Domains\Pricing\Exceptions\PricingStateConflictException;
 use App\Domains\Shared\Exceptions\DomainException;
 use App\Domains\Shared\Exceptions\ProvidesErrorDetails;
@@ -14,6 +25,7 @@ use App\Http\Middleware\EnsureCorrelationId;
 use App\Http\Middleware\EnsureHasPermission;
 use App\Http\Middleware\EnsureUserIsActive;
 use App\Http\Support\ApiErrorResponse;
+use App\Http\Support\CartCatalogHydrator;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Console\Scheduling\Schedule;
@@ -21,8 +33,10 @@ use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Request;
+use Illuminate\Session\TokenMismatchException;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\TooManyRequestsHttpException;
 
 return Application::configure(basePath: dirname(__DIR__))
@@ -34,10 +48,19 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withSchedule(function (Schedule $schedule): void {
         $schedule->command('inventory:expire-reservations')->everyMinute();
+        $schedule->command('checkout:expire-quotes')->everyMinute();
+        $schedule->command('checkout:expire-sessions')->everyFiveMinutes();
+        $schedule->command('orders:expire-unpaid')->everyMinute();
+        $schedule->command('payments:reconcile')->everyMinute();
         $schedule->command('catalog:refresh-time-sensitive-projections')->everyMinute();
+        $schedule->command('carts:expire')->daily();
     })
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->statefulApi();
+
+        $middleware->validateCsrfTokens(except: [
+            'api/v1/payments/webhooks/*',
+        ]);
 
         $middleware->api(prepend: [
             EnsureCorrelationId::class,
@@ -108,6 +131,129 @@ return Application::configure(basePath: dirname(__DIR__))
             }
         });
 
+        $exceptions->render(function (CartVersionConflictException $e, Request $request) {
+            if ($request->is('api/*') || $request->expectsJson()) {
+                $locale = app(PublicCatalogContextFactory::class)->fromRequest($request)->locale;
+                $cart = app(CartCatalogHydrator::class)->present($e->cart(), $locale);
+
+                return ApiErrorResponse::make(
+                    $request,
+                    $e->errorCode(),
+                    $e->getMessage(),
+                    409,
+                    ['cart' => $cart],
+                );
+            }
+        });
+
+        $exceptions->render(function (CartIdempotencyConflictException $e, Request $request) {
+            if ($request->is('api/*') || $request->expectsJson()) {
+                return ApiErrorResponse::make($request, $e->errorCode(), $e->getMessage(), 409);
+            }
+        });
+
+        $exceptions->render(function (CheckoutIdempotencyConflictException $e, Request $request) {
+            if ($request->is('api/*') || $request->expectsJson()) {
+                return ApiErrorResponse::make($request, $e->errorCode(), $e->getMessage(), 409);
+            }
+        });
+
+        $exceptions->render(function (OrderIdempotencyConflictException $e, Request $request) {
+            if ($request->is('api/*') || $request->expectsJson()) {
+                return ApiErrorResponse::make($request, $e->errorCode(), $e->getMessage(), 409);
+            }
+        });
+
+        $exceptions->render(function (PaymentIdempotencyConflictException $e, Request $request) {
+            if ($request->is('api/*') || $request->expectsJson()) {
+                return ApiErrorResponse::make($request, $e->errorCode(), $e->getMessage(), 409);
+            }
+        });
+
+        $exceptions->render(function (PaymentException $e, Request $request) {
+            if ($request->is('api/*') || $request->expectsJson()) {
+                $status = match ($e->errorCode()) {
+                    'PAYMENT_NOT_FOUND',
+                    'PAYMENT_ORDER_NOT_FOUND',
+                    'PAYMENT_PROVIDER_UNKNOWN' => 404,
+                    'PAYMENT_IDEMPOTENCY_CONFLICT',
+                    'PAYMENT_ACTIVE_ATTEMPT_EXISTS',
+                    'PAYMENT_ALREADY_PAID',
+                    'PAYMENT_VERSION_CONFLICT' => 409,
+                    'PAYMENT_SIGNATURE_INVALID' => 400,
+                    'PAYMENT_PAYLOAD_TOO_LARGE' => 413,
+                    'PAYMENT_TEST_PROVIDER_FORBIDDEN',
+                    'PAYMENT_SIMULATE_FORBIDDEN' => 403,
+                    default => 422,
+                };
+
+                return ApiErrorResponse::make(
+                    $request,
+                    $e->errorCode(),
+                    $e->getMessage(),
+                    $status,
+                    $e->errorDetails() !== [] ? $e->errorDetails() : null,
+                );
+            }
+        });
+
+        $exceptions->render(function (OrderException $e, Request $request) {
+            if ($request->is('api/*') || $request->expectsJson()) {
+                $status = match ($e->errorCode()) {
+                    'ORDER_NOT_FOUND',
+                    'ORDER_CHECKOUT_NOT_FOUND',
+                    'ORDER_QUOTE_NOT_FOUND' => 404,
+                    'ORDER_VERSION_CONFLICT',
+                    'ORDER_IDEMPOTENCY_CONFLICT',
+                    'ORDER_QUOTE_ALREADY_CONSUMED',
+                    'ORDER_CHECKOUT_ALREADY_CONVERTED',
+                    'ORDER_QUOTE_SUPERSEDED' => 409,
+                    default => 422,
+                };
+
+                return ApiErrorResponse::make(
+                    $request,
+                    $e->errorCode(),
+                    $e->getMessage(),
+                    $status,
+                    $e->errorDetails() !== [] ? $e->errorDetails() : null,
+                );
+            }
+        });
+
+        $exceptions->render(function (CheckoutException $e, Request $request) {
+            if ($request->is('api/*') || $request->expectsJson()) {
+                $status = match ($e->errorCode()) {
+                    'CHECKOUT_SESSION_NOT_FOUND' => 404,
+                    'CHECKOUT_VERSION_CONFLICT',
+                    'CHECKOUT_CART_CHANGED',
+                    'CHECKOUT_QUOTE_SUPERSEDED',
+                    'CHECKOUT_IDEMPOTENCY_CONFLICT' => 409,
+                    default => 422,
+                };
+
+                return ApiErrorResponse::make(
+                    $request,
+                    $e->errorCode(),
+                    $e->getMessage(),
+                    $status,
+                    $e->errorDetails() !== [] ? $e->errorDetails() : null,
+                );
+            }
+        });
+
+        $exceptions->render(function (CartException $e, Request $request) {
+            if ($request->is('api/*') || $request->expectsJson()) {
+                $status = match ($e->errorCode()) {
+                    'CART_ITEM_NOT_FOUND' => 404,
+                    'CART_NOT_MUTABLE' => 409,
+                    default => 422,
+                };
+
+                return ApiErrorResponse::make($request, $e->errorCode(), $e->getMessage(), $status);
+            }
+        });
+
         $exceptions->render(function (DomainException $e, Request $request) {
             if ($request->is('api/*') || $request->expectsJson()) {
                 return ApiErrorResponse::make(
@@ -123,6 +269,32 @@ return Application::configure(basePath: dirname(__DIR__))
         $exceptions->render(function (AuthenticationException $e, Request $request) {
             if ($request->is('api/*') || $request->expectsJson()) {
                 return ApiErrorResponse::make($request, 'UNAUTHORIZED', 'Authentication is required.', 401);
+            }
+        });
+
+        $exceptions->render(function (TokenMismatchException $e, Request $request) {
+            if ($request->is('api/*') || $request->expectsJson()) {
+                return ApiErrorResponse::make(
+                    $request,
+                    'CSRF_TOKEN_MISMATCH',
+                    'Your session expired. Please try again.',
+                    419,
+                );
+            }
+        });
+
+        $exceptions->render(function (HttpException $e, Request $request) {
+            if ($e->getStatusCode() !== 419) {
+                return null;
+            }
+
+            if ($request->is('api/*') || $request->expectsJson()) {
+                return ApiErrorResponse::make(
+                    $request,
+                    'CSRF_TOKEN_MISMATCH',
+                    'Your session expired. Please try again.',
+                    419,
+                );
             }
         });
 
@@ -144,9 +316,26 @@ return Application::configure(basePath: dirname(__DIR__))
             }
         });
 
+        $exceptions->render(function (SearchUnavailableException $e, Request $request) {
+            if ($request->is('api/*') || $request->expectsJson()) {
+                return ApiErrorResponse::make(
+                    $request,
+                    $e->errorCode(),
+                    'Search is temporarily unavailable.',
+                    503,
+                );
+            }
+        });
+
         $exceptions->render(function (TooManyRequestsHttpException $e, Request $request) {
             if ($request->is('api/*') || $request->expectsJson()) {
-                $code = $request->is('api/v1/catalog/*') ? 'CATALOG_RATE_LIMITED' : 'TOO_MANY_REQUESTS';
+                $code = match (true) {
+                    $request->is('api/v1/search*') => 'SEARCH_RATE_LIMITED',
+                    $request->is('api/v1/catalog/*') => 'CATALOG_RATE_LIMITED',
+                    $request->is('api/v1/cart*') => 'CART_RATE_LIMITED',
+                    $request->is('api/v1/checkout*') => 'CHECKOUT_RATE_LIMITED',
+                    default => 'TOO_MANY_REQUESTS',
+                };
 
                 $response = ApiErrorResponse::make(
                     $request,

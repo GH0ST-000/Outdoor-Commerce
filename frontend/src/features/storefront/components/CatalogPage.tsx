@@ -46,6 +46,7 @@ import {
   CATALOG_SORTS,
   catalogQueryHasFilters,
   emptyCatalogQuery,
+  emptySearchQuery,
   catalogHref,
   type CatalogQuery,
 } from "@/features/catalog/query-state/catalog-search-params";
@@ -115,6 +116,8 @@ export function CatalogPage({
       : brandSlug
         ? `/brands/${brandSlug}`
         : "/catalog");
+  const isSearchPage = pathname === "/search";
+  const defaultSort = isSearchPage ? "default" : "featured";
   const [layout, setLayout] = useState<ProductLayout>("grid");
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [draft, setDraft] = useState<CatalogQuery>(() => cloneQuery(query));
@@ -161,7 +164,9 @@ export function CatalogPage({
       | "pagination_changed",
   ) {
     startTransition(() => {
-      router.push(catalogHref(pathname, next), { scroll: false });
+      router.push(catalogHref(pathname, next, { defaultSort }), {
+        scroll: false,
+      });
     });
     if (event) {
       trackStorefrontEvent(
@@ -175,6 +180,13 @@ export function CatalogPage({
         { sort: next.sort, page: next.page },
       );
     }
+  }
+
+  function resetFilters(): CatalogQuery {
+    if (isSearchPage) {
+      return emptySearchQuery(query.q);
+    }
+    return emptyCatalogQuery();
   }
 
   const products = initial?.products ?? [];
@@ -470,10 +482,16 @@ export function CatalogPage({
     </div>
   );
 
-  const emptyTitle = hasFilters ? t.catalog.empty : t.catalog.emptyCategory;
-  const emptyDescription = hasFilters
-    ? t.catalog.emptyFiltersDescription
-    : t.catalog.emptyCategoryDescription;
+  const emptyTitle = isSearchPage
+    ? t.search.noResults
+    : hasFilters
+      ? t.catalog.empty
+      : t.catalog.emptyCategory;
+  const emptyDescription = isSearchPage
+    ? t.search.noResultsHint
+    : hasFilters
+      ? t.catalog.emptyFiltersDescription
+      : t.catalog.emptyCategoryDescription;
 
   return (
     <div className="min-w-0 space-y-4">
@@ -495,7 +513,7 @@ export function CatalogPage({
             size="sm"
             onClick={() => {
               clearPriceDraft();
-              navigate(emptyCatalogQuery(), "filter_cleared");
+              navigate(resetFilters(), "filter_cleared");
             }}
           >
             {t.catalog.clearFilters}
@@ -611,6 +629,11 @@ export function CatalogPage({
             aria-busy={isPending}
             aria-labelledby={resultsId}
           >
+            {initial?.fallbackUsed ? (
+              <p className="rounded-xl border border-border/70 bg-muted/40 px-3 py-2 text-sm text-muted-foreground">
+                {t.search.fallback}
+              </p>
+            ) : null}
             {displayError ? (
               <ErrorState
                 title={
@@ -630,7 +653,7 @@ export function CatalogPage({
                 actionLabel={hasFilters ? t.catalog.clearFilters : undefined}
                 onAction={
                   hasFilters
-                    ? () => navigate(emptyCatalogQuery(), "filter_cleared")
+                    ? () => navigate(resetFilters(), "filter_cleared")
                     : undefined
                 }
               />

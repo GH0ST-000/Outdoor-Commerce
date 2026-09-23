@@ -5,6 +5,7 @@ import {
   catalogQueryToListParams,
   emptyCatalogQuery,
   parseCatalogSearchParams,
+  parseSearchPageParams,
   serializeCatalogSearchParams,
 } from "@/features/catalog/query-state/catalog-search-params";
 import {
@@ -119,5 +120,19 @@ describe("catalog SEO policy", () => {
 
   it("escapes JSON-LD", () => {
     expect(escapeJsonLd({ a: "</script>" })).toContain("\\u003c");
+  });
+});
+
+describe("search page params", () => {
+  it("defaults search sort to relevance and keeps q in the URL", () => {
+    const query = parseSearchPageParams({ q: "scope", brand: "ridge" });
+    expect(query.sort).toBe("default");
+    expect(query.q).toBe("scope");
+    expect(catalogHref("/search", query, { defaultSort: "default" })).toContain(
+      "q=scope",
+    );
+    expect(
+      catalogHref("/search", query, { defaultSort: "default" }),
+    ).not.toContain("sort=");
   });
 });

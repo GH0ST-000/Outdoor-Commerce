@@ -4,10 +4,13 @@ declare(strict_types=1);
 
 namespace Tests;
 
+use App\Domains\Catalog\Search\Contracts\SearchGateway;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\RateLimiter;
 use RuntimeException;
 use Spatie\Permission\PermissionRegistrar;
+use Tests\Support\FakeSearchGateway;
 
 abstract class TestCase extends BaseTestCase
 {
@@ -17,6 +20,7 @@ abstract class TestCase extends BaseTestCase
 
         $this->assertSafeTestingDatabase();
         $this->isolateSharedTestState();
+        $this->app->instance(SearchGateway::class, new FakeSearchGateway);
     }
 
     /**
@@ -30,6 +34,7 @@ abstract class TestCase extends BaseTestCase
         $registrar = $this->app->make(PermissionRegistrar::class);
         $registrar->initializeCache();
         $registrar->forgetCachedPermissions();
+        Cache::flush();
 
         foreach (['127.0.0.1', '::1'] as $ip) {
             RateLimiter::clear(md5('auth.register'.$ip));
@@ -38,6 +43,14 @@ abstract class TestCase extends BaseTestCase
             RateLimiter::clear(md5('catalog.public.list'.$ip.'|list'));
             RateLimiter::clear(md5('catalog.public.list'.$ip.'|search'));
             RateLimiter::clear(md5('catalog.public.facets'.$ip));
+            RateLimiter::clear(md5('search.public'.$ip));
+            RateLimiter::clear(md5('search.suggest'.$ip));
+            RateLimiter::clear('g'.$ip);
+            RateLimiter::clear(md5('cart.read'.$ip));
+            RateLimiter::clear(md5('cart.mutate'.$ip));
+            RateLimiter::clear(md5('checkout.read'.$ip));
+            RateLimiter::clear(md5('checkout.mutate'.$ip));
+            RateLimiter::clear(md5('checkout.quote'.$ip));
         }
     }
 

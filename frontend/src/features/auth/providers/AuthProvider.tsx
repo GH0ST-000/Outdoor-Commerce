@@ -16,6 +16,7 @@ import {
   logoutCustomer,
   registerCustomer,
 } from "@/features/auth/api/auth-api";
+import { syncCartAfterAuthentication } from "@/features/cart/state/cart-actions";
 import type {
   AuthenticatedUser,
   LoginPayload,
@@ -84,6 +85,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     async (payload: LoginPayload) => {
       const next = await loginCustomer(payload);
       applyUser(next);
+      void syncCartAfterAuthentication(true);
       return next;
     },
     [applyUser],
@@ -93,6 +95,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     async (payload: RegisterPayload) => {
       const next = await registerCustomer(payload);
       applyUser(next);
+      void syncCartAfterAuthentication(true);
       return next;
     },
     [applyUser],
@@ -101,6 +104,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const logout = useCallback(async () => {
     await logoutCustomer();
     applyUser(null);
+    void syncCartAfterAuthentication(false);
   }, [applyUser]);
 
   const value = useMemo(

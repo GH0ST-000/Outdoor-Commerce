@@ -14,10 +14,20 @@ See also:
 - [Storefront design system (Day 13)](design-system.md)
 - [Storefront homepage and listing (Day 14)](storefront.md)
 - [Product detail (Day 15)](product-detail.md)
+- [Catalog search (Day 16)](search.md)
+- [Cart (Day 17)](cart.md)
 - [ADR 0007: Rebuildable public catalog projections](adr/0007-rebuildable-public-catalog-projections.md)
 - [ADR 0008: Semantic design tokens and storefront component boundaries](adr/0008-semantic-design-tokens.md)
 - [ADR 0009: URL-driven storefront filters and server-first category rendering](adr/0009-url-driven-storefront-filters.md)
 - [ADR 0010: Client-side variant resolution from an authoritative public variant matrix](adr/0010-client-side-variant-resolution.md)
+- [ADR 0011: Meilisearch as a derived variant-aware catalog search model](adr/0011-meilisearch-derived-search.md)
+- [ADR 0012: Persistent server-authoritative cart with secure guest identity](adr/0012-persistent-server-authoritative-cart.md)
+- [Checkout (Day 18)](checkout.md)
+- [Orders (Day 19)](orders.md)
+- [Payments (Day 20)](payments.md)
+- [ADR 0013: Immutable checkout quotes with short-lived inventory reservations](adr/0013-immutable-checkout-quotes.md)
+- [ADR 0014: Atomic order creation from immutable checkout quotes](adr/0014-atomic-order-creation.md)
+- [ADR 0015: Provider-agnostic payment core with verified webhook authority](adr/0015-provider-agnostic-payment-core.md)
 - Per-module notes under `backend/app/Domains/*/README.md`
 
 ## Modular monolith definition
@@ -35,7 +45,7 @@ See also:
 | --- | --- | --- |
 | Shared | Cross-cutting technical primitives (correlation ID, future money/clock/pagination types) | Business workflows, product/order rules |
 | Identity | Accounts, credentials, sessions, roles/permissions | Catalog content, payments |
-| Catalog | Products, variants, categories, attributes, media (Day 9 local pipeline + manifests) | Stock reservations, final payable prices |
+| Catalog | Products, variants, categories, attributes, media (Day 9 local pipeline + manifests), derived Meilisearch search (Day 16) | Stock reservations, final payable prices, Meilisearch as source of truth |
 | Inventory | Stock ledger, availability, reservations | Product descriptions, payments |
 | Pricing | List/sale prices, promotions, coupon eligibility | Inventory quantities |
 | Cart | Cart composition for a shopper session | Final order persistence, payment capture |

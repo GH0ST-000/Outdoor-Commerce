@@ -125,6 +125,63 @@ final class GetPublicProductsQuery
     }
 
     /**
+     * @param  list<int>  $ids
+     * @return list<array<string, mixed>>
+     */
+    public function cardsByOrderedIds(PublicCatalogContextData $context, array $ids): array
+    {
+        if ($ids === []) {
+            return [];
+        }
+
+        $currency = $context->currency;
+        $products = Product::query()
+            ->select([
+                'products.id',
+                'products.brand_id',
+                'products.primary_category_id',
+                'products.is_featured',
+                'products.sort_order',
+                'products.published_at',
+                'products.created_at',
+                'products.updated_at',
+            ])
+            ->join('public_catalog_product_projections as pcpp', function ($join) use ($currency): void {
+                $join->on('pcpp.product_id', '=', 'products.id')
+                    ->where('pcpp.currency_code', '=', $currency)
+                    ->where('pcpp.is_public', '=', true);
+            })
+            ->whereIn('products.id', $ids)
+            ->whereNull('products.deleted_at')
+            ->with([
+                'translations' => fn ($q) => $q->select(['id', 'product_id', 'locale', 'name', 'slug']),
+                'brand.translations' => fn ($q) => $q->select(['id', 'brand_id', 'locale', 'name', 'slug']),
+                'primaryCategory.translations' => fn ($q) => $q->select(['id', 'category_id', 'locale', 'name', 'slug']),
+                'readyMediaAttachments.asset.derivatives',
+                'readyMediaAttachments.translations',
+            ])
+            ->get()
+            ->keyBy('id');
+
+        $projections = PublicCatalogProductProjection::query()
+            ->whereIn('product_id', $ids)
+            ->where('currency_code', $currency)
+            ->get()
+            ->keyBy('product_id');
+
+        $cards = [];
+        foreach ($ids as $id) {
+            $product = $products->get($id);
+            if ($product === null) {
+                continue;
+            }
+            $cards[] = $this->card($product, $context, $projections->get($id));
+        }
+
+        return $cards;
+    }
+
+    /**
      * @param  Builder<Product>  $query
      */
     private function applyFilters(Builder $query, PublicCatalogContextData $context, PublicProductListFilterData $filters): void
@@ -420,6 +477,9 @@ final class GetPublicProductsQuery
             ),
             'is_featured' => $product->is_featured,
             'variant_count' => $projection !== null ? (int) $projection->public_variant_count : 0,
+            'default_variant_id' => $projection?->default_variant_id !== null
+                ? (int) $projection->default_variant_id
+                : null,
             'used_fallback' => $translation !== null && $translation->locale !== $context->locale,
         ];
     }

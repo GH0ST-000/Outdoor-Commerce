@@ -1,6 +1,8 @@
 import { describe, expect, it, vi } from "vitest";
 import {
+  alignLoopbackHost,
   getApiBaseUrl,
+  getBackendOrigin,
   getPublicEnv,
   getServerEnv,
   resolveServerApiBaseUrls,
@@ -36,12 +38,26 @@ describe("environment separation", () => {
     vi.unstubAllEnvs();
   });
 
-  it("rewrites localhost API URLs to IPv4 loopback", () => {
+  it("rewrites localhost API URLs to IPv4 loopback for Node", () => {
     expect(toLoopbackIpv4("http://localhost:8000/api")).toBe(
       "http://127.0.0.1:8000/api",
     );
-    vi.stubEnv("NEXT_PUBLIC_API_URL", "http://localhost:8000/api");
-    expect(getApiBaseUrl()).toBe("http://127.0.0.1:8000/api");
+  });
+
+  it("aligns loopback hosts when the API is on a different origin", () => {
+    expect(alignLoopbackHost("http://127.0.0.1:8000/api", "localhost")).toBe(
+      "http://localhost:8000/api",
+    );
+    expect(alignLoopbackHost("http://localhost:8000/api", "127.0.0.1")).toBe(
+      "http://127.0.0.1:8000/api",
+    );
+  });
+
+  it("uses same-origin API and CSRF paths in the browser on loopback", () => {
+    vi.stubEnv("NEXT_PUBLIC_API_URL", "http://127.0.0.1:8000/api");
+    vi.stubEnv("NEXT_PUBLIC_BACKEND_URL", "http://127.0.0.1:8000");
+    expect(getApiBaseUrl()).toBe("/api");
+    expect(getBackendOrigin()).toBe("");
     vi.unstubAllEnvs();
   });
 });

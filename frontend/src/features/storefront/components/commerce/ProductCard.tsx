@@ -5,10 +5,16 @@ import { ResponsiveProductImage } from "@/features/storefront/components/commerc
 import type { ProductCardData } from "@/features/storefront/types/storefront-types";
 import { useStorefrontCopy } from "@/features/storefront/hooks/use-storefront-copy";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { PriceDisplay } from "@/features/pricing/components/PriceDisplay";
 import { PromotionBadge } from "@/features/pricing/components/PromotionBadge";
 import { AvailabilityStatus } from "@/components/commerce/availability-status";
+import { canDirectAddToCart } from "@/features/cart/lib/direct-add";
+import { useCartCopy } from "@/features/cart/copy";
+import { addItemToCart } from "@/features/cart/state/cart-actions";
+import { isCartEnabled } from "@/features/product-detail/cart/cart-gateway";
+import { useState } from "react";
 
 export type ProductLayout = "grid" | "comfortable" | "list";
 
@@ -24,9 +30,12 @@ export function ProductCard({
   layout?: ProductLayout;
 }) {
   const { locale, t } = useStorefrontCopy();
+  const cartCopy = useCartCopy();
   const name = product.name[locale];
   const onInk = tone === "on-ink";
   const isList = layout === "list";
+  const [adding, setAdding] = useState(false);
+  const directAdd = isCartEnabled() && canDirectAddToCart(product);
 
   return (
     <article
@@ -176,6 +185,39 @@ export function ProductCard({
                 : undefined
             }
           />
+          {isCartEnabled() ? (
+            directAdd ? (
+              <Button
+                type="button"
+                variant="secondary"
+                size="sm"
+                className="mt-3"
+                loading={adding}
+                aria-label={`${cartCopy.addToCart}: ${name}`}
+                onClick={() => {
+                  if (product.defaultVariantId == null || adding) {
+                    return;
+                  }
+                  setAdding(true);
+                  void addItemToCart({
+                    variant_id: product.defaultVariantId,
+                    quantity: 1,
+                  }).finally(() => setAdding(false));
+                }}
+              >
+                {adding ? cartCopy.adding : cartCopy.addToCart}
+              </Button>
+            ) : (
+              <Button asChild variant="ghost" size="sm" className="mt-3">
+                <Link
+                  href={product.href}
+                  aria-label={`${cartCopy.chooseOptions}: ${name}`}
+                >
+                  {cartCopy.chooseOptions}
+                </Link>
+              </Button>
+            )
+          ) : null}
         </div>
       </div>
     </article>

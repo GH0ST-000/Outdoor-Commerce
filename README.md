@@ -2,7 +2,7 @@
 
 Local development foundation for an outdoor commerce platform covering hunting, fishing, and outdoor equipment.
 
-Day 1 provides reproducible project structure, API and storefront skeletons, Docker Compose services, quality tooling, and documentation. Day 2 adds modular monolith boundaries, architecture tests, and API correlation IDs. Day 3 adds GitHub Actions CI as the required quality gate. Day 4 adds Laravel Sanctum cookie authentication for customers. Day 5 adds RBAC, admin APIs, a protected Next.js admin shell, and audit logging. Catalog, orders, payments, seasons, maps, and recommendations remain later phases.
+Day 1 provides reproducible project structure, API and storefront skeletons, Docker Compose services, quality tooling, and documentation. Day 2 adds modular monolith boundaries, architecture tests, and API correlation IDs. Day 3 adds GitHub Actions CI as the required quality gate. Day 4 adds Laravel Sanctum cookie authentication for customers. Day 5 adds RBAC, admin APIs, a protected Next.js admin shell, and audit logging. Order creation, payments, seasons, maps, and recommendations remain later phases.
 
 **This Day 1 configuration is for local development only. It is not production-ready.** Replace every local credential before any shared or production deployment. Never commit real secrets.
 
@@ -48,6 +48,13 @@ Architecture docs:
 - [docs/catalog-product-core.md](docs/catalog-product-core.md)
 - [docs/catalog-variants.md](docs/catalog-variants.md)
 - [docs/ci.md](docs/ci.md)
+- [docs/cart.md](docs/cart.md)
+- [docs/adr/0012-persistent-server-authoritative-cart.md](docs/adr/0012-persistent-server-authoritative-cart.md)
+- [docs/checkout.md](docs/checkout.md)
+- [docs/orders.md](docs/orders.md)
+- [docs/payments.md](docs/payments.md)
+- [docs/adr/0014-atomic-order-creation.md](docs/adr/0014-atomic-order-creation.md)
+- [docs/adr/0015-provider-agnostic-payment-core.md](docs/adr/0015-provider-agnostic-payment-core.md)
 
 Backend and frontend dependencies stay isolated (`backend/vendor`, `frontend/node_modules`).
 

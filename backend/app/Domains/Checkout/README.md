@@ -2,30 +2,31 @@
 
 ## Responsibility
 
-Orchestration from cart toward a placed order.
+Server-authoritative checkout sessions, immutable quote revisions, configured fulfillment, and short-lived inventory reservations. A quote is not an order and is not a payment.
 
 ## Data owned
 
-Checkout session state only (not long-term orders).
+Checkout sessions, checkout-lifecycle addresses, quotes, quote lines, quote adjustments, fulfillment methods, pickup locations, delivery zones, delivery rate rules, checkout restriction rules, checkout idempotency records.
 
 ## Public contracts
 
-Start/complete checkout orchestration actions.
-
-Classes under `Contracts/`, and any Action/Query/DTO explicitly listed here as public, are the only approved entry points for other modules.
+- HTTP: `App\Http\Controllers\Api\V1\Checkout\PublicCheckoutController`
+- Actions under `Actions/`
+- `Contracts\FulfillmentQuoteProvider`
+- Day 19 consumes a stored **active** `CheckoutQuote` (status `active`, `expires_at` in the future, matching session/fingerprint). Reservations transfer to the pending-payment order; they are not committed. Do not trust browser-copied totals.
 
 ## Events this module may publish
 
-CheckoutStarted, CheckoutCompleted (examples for later).
+`CheckoutSessionCreated`, `CheckoutContactUpdated`, `CheckoutAddressUpdated`, `CheckoutFulfillmentSelected`, `CheckoutQuoteCreated`, `CheckoutQuoteSuperseded`, `CheckoutQuoteExpired`, `CheckoutSessionCancelled`, `CheckoutSessionExpired`, `InventoryReservedForQuote`, `QuoteReservationReleased`.
 
 ## May depend on
 
-Shared; Cart, Pricing, Inventory, Orders, Shipping via contracts/actions.
+Shared; Cart (`CartOwnerResolver`, models, DTOs); Pricing (`PublicCatalogPricing`); Inventory (`CheckoutInventoryService`, reservation models/DTOs); Catalog models; Identity address book only when the shopper opts in. Public media URLs are hydrated in the HTTP layer.
 
 ## Explicitly outside this module
 
-Payment-provider SDKs and reconciliation details.
+Order creation, payments, carrier APIs, geocoding, legal hunting claims, admin fulfillment UI (seed/config in Day 18).
 
 ## Structure
 
-Follow the standard module layout documented in `docs/architecture.md` when implementing features. Day 2 ships boundaries only—no business behavior yet.
+See `docs/checkout.md` and `docs/adr/0013-immutable-checkout-quotes.md`.

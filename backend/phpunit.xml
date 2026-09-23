@@ -47,5 +47,14 @@
         <env name="PULSE_ENABLED" value="false"/>
         <env name="TELESCOPE_ENABLED" value="false"/>
         <env name="NIGHTWATCH_ENABLED" value="false"/>
+        <env name="SEARCH_ENABLED" value="true" force="true"/>
+        <env name="SEARCH_FALLBACK_ENABLED" value="true" force="true"/>
+        <env name="MEILISEARCH_HOST" value="http://127.0.0.1:7700" force="false"/>
+        <env name="MEILISEARCH_MASTER_KEY" value="masterKey_change_me" force="true"/>
+        <env name="MEILISEARCH_INDEX_PREFIX" value="outdoor_test" force="true"/>
+        <env name="PAYMENT_TEST_PROVIDER_ENABLED" value="true" force="true"/>
+        <env name="PAYMENT_TEST_WEBHOOK_SECRET" value="test-payment-webhook-secret-change-me" force="true"/>
+        <env name="PAYMENT_ALLOWED_REDIRECT_HOSTS" value="localhost,127.0.0.1,payments.test" force="true"/>
+        <env name="PAYMENT_HTTPS_REQUIRED" value="false" force="true"/>
     </php>
 </phpunit>

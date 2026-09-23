@@ -46,6 +46,8 @@ export type CatalogListState = {
   title: string;
   lead: string;
   error: { code: string; message: string } | null;
+  fallbackUsed?: boolean;
+  searchMode?: string;
 };
 
 function asError(error: unknown): { code: string; message: string } {
@@ -126,6 +128,10 @@ export async function loadCatalogList(
       productsResult.status === "rejected"
         ? asError(productsResult.reason)
         : null,
+    fallbackUsed: Boolean(
+      products?.meta?.fallback_used ?? products?.meta?.used_fallback,
+    ),
+    searchMode: products?.meta?.search_mode,
   };
 }
 

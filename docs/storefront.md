@@ -36,6 +36,9 @@ Cookie locale, not `/[locale]` prefixes:
 /catalog
 /catalog/[categorySlug]
 /brands/[brandSlug]
+/search?q=
+/cart
+/checkout
 ```
 
 Invalid or non-public categories return `notFound()` (404). Category canonical paths come from the API when present.
@@ -54,7 +57,7 @@ Authoritative query string, normalized by `features/catalog/query-state/catalog-
 | `attribute[code]` | Repeatable values; OR within an attribute, AND across attributes |
 | `min_price` / `max_price` | Integer GEL tetri |
 | `in_stock` / `on_sale` / `featured` | `1` when true |
-| `q` | Bounded catalog search |
+| `q` | Bounded catalog search; `/search` keeps it while other filters change |
 | `sort` | `default` `featured` `newest` `price_asc` `price_desc` `name_asc` `name_desc` |
 | `page` | 1-based; omitted when 1 |
 | `per_page` | Always 10 from the storefront |
@@ -68,6 +71,7 @@ Desktop checkboxes update the URL immediately. The mobile bottom sheet keeps dra
 - Base category: index, follow; canonical is the clean path.
 - Unfiltered `?page=N`: self-canonical, indexable.
 - Any filter or search combination: `noindex, follow`; canonical strips filters.
+- `/search` URLs: always `noindex, follow`.
 - Empty results: `noindex, follow`.
 - Homepage: Organization + WebSite JSON-LD.
 - Category: BreadcrumbList + ItemList (name, url, position). No fake ratings. No Product offers here (Day 15).
@@ -98,3 +102,15 @@ There is no Playwright, visual, or Storybook job in this repository yet.
 ## Day 15
 
 Product detail is documented in [product-detail.md](product-detail.md). Listing cards keep consuming public `href`, GEL price range, promotion flags, availability, and ready media. The PDP adds `?variant=` selection from the public matrix without inventing ratings or stock numbers.
+
+## Day 16
+
+Global search uses the header overlay (`SearchOverlay`) and `/search?q=`. Both call Laravel only. Autocomplete is debounced (~250ms), cancels in-flight requests, and highlights matches as plain text. See [search.md](search.md).
+
+## Day 17
+
+Server-authoritative cart: header badge, mini-cart drawer, `/cart` page, PDP add-to-cart, and ProductCard add when a single default variant is purchasable. Flag: `NEXT_PUBLIC_CART_ENABLED=true`. See [cart.md](cart.md).
+
+## Day 18
+
+`/checkout` is a three-step Contact → Delivery → Review flow. Laravel owns session, quote, delivery rates, and reservations. The storefront never submits totals. Review’s **Confirm order** creates a pending-payment order and navigates to `/order-confirmation/{orderPublicId}`. That page is not a payment-success screen. See [checkout.md](checkout.md) and [orders.md](orders.md).

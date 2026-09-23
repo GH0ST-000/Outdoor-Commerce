@@ -5,11 +5,14 @@ declare(strict_types=1);
 namespace App\Domains\Inventory\Services;
 
 use App\Domains\Inventory\Actions\CommitInventoryReservationAction;
+use App\Domains\Inventory\Actions\ReassignInventoryReservationAction;
 use App\Domains\Inventory\Actions\ReleaseInventoryReservationAction;
 use App\Domains\Inventory\Actions\ReserveInventoryAction;
 use App\Domains\Inventory\Contracts\CheckoutInventoryService;
 use App\Domains\Inventory\DTOs\ReserveInventoryData;
 use App\Domains\Inventory\Models\InventoryReservation;
+use Carbon\Carbon;
+use Carbon\CarbonInterface;
 
 final class DefaultCheckoutInventoryService implements CheckoutInventoryService
 {
@@ -17,6 +20,7 @@ final class DefaultCheckoutInventoryService implements CheckoutInventoryService
         private readonly ReserveInventoryAction $reserveInventory,
         private readonly ReleaseInventoryReservationAction $releaseAction,
         private readonly CommitInventoryReservationAction $commitAction,
+        private readonly ReassignInventoryReservationAction $reassignAction,
     ) {}
 
     public function reserve(ReserveInventoryData $data): InventoryReservation
@@ -26,12 +30,7 @@ final class DefaultCheckoutInventoryService implements CheckoutInventoryService
 
     public function release(InventoryReservation $reservation, string $idempotencyKey, ?string $reason = null): InventoryReservation
     {
-        $actor = auth()->user();
-        if ($actor === null) {
-            throw new \RuntimeException('Authenticated actor is required to release inventory.');
-        }
-
-        return $this->releaseAction->execute($reservation, $idempotencyKey, $reason, $actor);
+        return $this->releaseAction->execute($reservation, $idempotencyKey, $reason, auth()->user());
     }
 
     public function commit(InventoryReservation $reservation, string $idempotencyKey): InventoryReservation
@@ -39,5 +38,18 @@ final class DefaultCheckoutInventoryService implements CheckoutInventoryService
         $actor = auth()->user();
 
         return $this->commitAction->execute($reservation, $idempotencyKey, $actor);
+    }
+
+    public function reassignReference(
+        InventoryReservation $reservation,
+        string $referenceType,
+        string $referenceId,
+        \DateTimeInterface $expiresAt,
+    ): InventoryReservation {
+        $expires = $expiresAt instanceof CarbonInterface
+            ? $expiresAt
+            : Carbon::parse($expiresAt);
+
+        return $this->reassignAction->execute($reservation, $referenceType, $referenceId, $expires);
     }
 }

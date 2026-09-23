@@ -21,9 +21,18 @@ type LocaleContextValue = {
 const LocaleContext = createContext<LocaleContextValue | null>(null);
 const STORAGE_KEY = "outdoor-locale";
 const LOCALE_EVENT = "outdoor-locale";
+const COOKIE_MAX_AGE = 31536000;
 
-function isLocale(value: string | null): value is Locale {
-  return value !== null && (locales as string[]).includes(value);
+function emptySubscribe(): () => void {
+  return () => undefined;
+}
+
+function isLocale(value: string | null | undefined): value is Locale {
+  return (
+    value !== null &&
+    value !== undefined &&
+    (locales as string[]).includes(value)
+  );
 }
 
 function readStoredLocale(): string | null {
@@ -42,9 +51,17 @@ function writeStoredLocale(next: Locale): void {
   }
 }
 
-function readLocale(): Locale {
+function writeLocaleCookie(next: Locale): void {
+  document.cookie = `${STORAGE_KEY}=${next}; path=/; max-age=${COOKIE_MAX_AGE}; samesite=lax`;
+}
+
+function readCookieLocale(): string | null {
   const match = document.cookie.match(/(?:^|; )outdoor-locale=([^;]*)/);
-  const cookie = match ? decodeURIComponent(match[1]) : null;
+  return match ? decodeURIComponent(match[1]) : null;
+}
+
+function readLocale(): Locale {
+  const cookie = readCookieLocale();
   if (isLocale(cookie)) {
     return cookie;
   }
@@ -52,10 +69,6 @@ function readLocale(): Locale {
   if (isLocale(stored)) {
     return stored;
   }
-  return "ka";
-}
-
-function getServerLocale(): Locale {
   return "ka";
 }
 
@@ -68,18 +81,44 @@ function subscribe(callback: () => void) {
   };
 }
 
-export function LocaleProvider({ children }: { children: ReactNode }) {
+export function LocaleProvider({
+  children,
+  initialLocale = "ka",
+}: {
+  children: ReactNode;
+  initialLocale?: Locale;
+}) {
   const router = useRouter();
-  const locale = useSyncExternalStore(subscribe, readLocale, getServerLocale);
+  const serverLocale = isLocale(initialLocale) ? initialLocale : "ka";
+  const hydrated = useSyncExternalStore(
+    emptySubscribe,
+    () => true,
+    () => false,
+  );
+  const stored = useSyncExternalStore(
+    subscribe,
+    readLocale,
+    () => serverLocale,
+  );
+  const locale = hydrated ? stored : serverLocale;
 
   useEffect(() => {
     document.documentElement.lang = locale;
   }, [locale]);
 
+  useEffect(() => {
+    if (!isLocale(readCookieLocale())) {
+      const storedLocale = readStoredLocale();
+      if (isLocale(storedLocale)) {
+        writeLocaleCookie(storedLocale);
+      }
+    }
+  }, []);
+
   const setLocale = useCallback(
     (next: Locale) => {
       writeStoredLocale(next);
-      document.cookie = `outdoor-locale=${next}; path=/; max-age=31536000; samesite=lax`;
+      writeLocaleCookie(next);
       document.documentElement.lang = next;
       window.dispatchEvent(new Event(LOCALE_EVENT));
       router.refresh();

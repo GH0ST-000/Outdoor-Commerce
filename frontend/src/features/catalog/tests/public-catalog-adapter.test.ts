@@ -27,6 +27,7 @@ const card: PublicProductCard = {
   availability: { status: "in_stock", purchasable: true, low_stock: false },
   is_featured: true,
   variant_count: 2,
+  default_variant_id: 501,
   used_fallback: false,
 };
 
@@ -38,6 +39,9 @@ describe("public catalog adapter", () => {
     expect(mapped.imageSrc).toContain("placeholder");
     expect(mapped.badges).toEqual(["featured"]);
     expect(mapped.availabilityLabel?.en).toBe("In stock");
+    expect(mapped.defaultVariantId).toBe(501);
+    expect(mapped.variantCount).toBe(2);
+    expect(mapped.purchasable).toBe(true);
   });
 
   it("maps product detail variant axes", () => {

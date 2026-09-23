@@ -60,22 +60,9 @@ Quantity is an integer UI control, min `1`, max `PRODUCT_QUANTITY_UI_MAX` (12). 
 
 Purchasable when the selected variant has a final price and `availability.purchasable`. Otherwise the action is disabled with an explanation.
 
-## Cart integration (Day 17)
+## Day 17
 
-Flag: `NEXT_PUBLIC_CART_ENABLED` (default unset/false).
-
-Intent:
-
-```ts
-{
-  product_id: number;
-  product_variant_id: number;
-  quantity: number;
-  pricing_signature: string | null;
-}
-```
-
-`CartGateway.addToCart` currently throws `CART_NOT_IMPLEMENTED`. Do not persist localStorage carts. Do not trust the browser price. Day 17 must re-quote and re-check inventory when adding to cart.
+Implemented. See [cart.md](cart.md). `NEXT_PUBLIC_CART_ENABLED=true`. The product page sends an idempotent add against Laravel; quantity on the page is a hint. Do not show success until the server confirms.
 
 ## SEO and structured data
 
@@ -106,10 +93,6 @@ npm run build
 
 There is no Playwright, visual, or Storybook job in this repository yet.
 
-## Day 17 instructions
+## Day 17
 
-1. Implement `CartGateway.addToCart` against the Cart API.
-2. Set `NEXT_PUBLIC_CART_ENABLED=true` only when that endpoint exists.
-3. Revalidate price (`pricing_signature`) and inventory on the server before mutating the cart.
-4. Keep the product-page quantity as a hint, not an authority.
-5. Do not add a fake success toast from this page if the cart call fails.
+Implemented. See [cart.md](cart.md). The product page sends an idempotent add; quantity is a hint. Success is not shown until Laravel confirms.
