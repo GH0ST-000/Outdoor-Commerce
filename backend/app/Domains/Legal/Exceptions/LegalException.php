@@ -120,4 +120,29 @@ class LegalException extends DomainException implements ProvidesErrorDetails
     {
         return new self('This legal record was updated in another request.', 'LEGAL_VERSION_CONFLICT', [], 409);
     }
+
+    /**
+     * @param  array<string, mixed>  $details
+     */
+    public static function seasonInvalid(string $reason, array $details = []): self
+    {
+        return new self($reason, 'LEGAL_SEASON_INVALID', $details);
+    }
+
+    public static function seasonRangeExceeded(int $maxDays): self
+    {
+        return new self(
+            'The requested period exceeds the maximum of '.$maxDays.' days.',
+            'LEGAL_SEASON_RANGE_EXCEEDED',
+            ['max_days' => $maxDays],
+        );
+    }
+
+    public static function seasonOccurrenceReadOnly(): self
+    {
+        return new self(
+            'Generated season occurrences cannot be edited directly. Revise the definition or publish a source-backed override.',
+            'LEGAL_SEASON_OCCURRENCE_READONLY',
+        );
+    }
 }

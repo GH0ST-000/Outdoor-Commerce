@@ -19,6 +19,7 @@ use App\Http\Controllers\Api\V1\Admin\Inventory\AdminInventoryStockCountControll
 use App\Http\Controllers\Api\V1\Admin\Inventory\AdminInventoryTransferController;
 use App\Http\Controllers\Api\V1\Admin\Inventory\AdminWarehouseController;
 use App\Http\Controllers\Api\V1\Admin\Legal\AdminLegalController;
+use App\Http\Controllers\Api\V1\Admin\Legal\AdminLegalSeasonController;
 use App\Http\Controllers\Api\V1\Admin\Media\AdminMediaStatusController;
 use App\Http\Controllers\Api\V1\Admin\Media\AdminProductMediaController;
 use App\Http\Controllers\Api\V1\Admin\Media\AdminProductVariantMediaController;
@@ -46,6 +47,7 @@ use App\Http\Controllers\Api\V1\Checkout\PublicCheckoutController;
 use App\Http\Controllers\Api\V1\Legal\PublicLegalController;
 use App\Http\Controllers\Api\V1\Orders\PublicOrderController;
 use App\Http\Controllers\Api\V1\Orders\PublicOrderFulfillmentController;
+use App\Http\Controllers\Api\V1\Outdoor\PublicOutdoorController;
 use App\Http\Controllers\Api\V1\Payments\PaymentWebhookController;
 use App\Http\Controllers\Api\V1\Payments\PublicPaymentAttemptController;
 use App\Http\Controllers\Api\V1\Payments\PublicPaymentMethodController;
@@ -94,6 +96,9 @@ Route::prefix('v1/species')->group(function (): void {
     Route::get('/{slug}/legal-overview', [PublicLegalController::class, 'speciesOverview'])
         ->middleware('throttle:legal.public')
         ->where('slug', '.*');
+    Route::get('/{slug}/seasons', [PublicOutdoorController::class, 'speciesSeasons'])
+        ->middleware('throttle:legal.calendar')
+        ->where('slug', '.*');
     Route::get('/{slug}', [PublicSpeciesController::class, 'show'])
         ->middleware('throttle:species.public')
         ->where('slug', '.*');
@@ -106,6 +111,15 @@ Route::prefix('v1/legal')->group(function (): void {
         ->middleware('throttle:legal.public');
     Route::post('/evaluate', [PublicLegalController::class, 'evaluate'])
         ->middleware('throttle:legal.evaluate');
+});
+
+Route::prefix('v1/outdoor')->group(function (): void {
+    Route::get('/availability', [PublicOutdoorController::class, 'availability'])
+        ->middleware('throttle:legal.calendar');
+    Route::get('/calendar', [PublicOutdoorController::class, 'calendar'])
+        ->middleware('throttle:legal.calendar');
+    Route::get('/season-transitions', [PublicOutdoorController::class, 'transitions'])
+        ->middleware('throttle:legal.calendar');
 });
 
 Route::prefix('v1/search')->group(function (): void {
@@ -690,4 +704,77 @@ Route::prefix('v1/admin')
         Route::post('/legal/change-detections/{detection}/dismiss', [AdminLegalController::class, 'dismissDetection'])
             ->middleware([EnsureHasPermission::class.':legal.sources.manage', 'throttle:admin.mutations'])
             ->where('detection', '[0-9a-fA-F-]{36}');
+
+        Route::get('/legal/seasons/dashboard', [AdminLegalSeasonController::class, 'dashboard'])
+            ->middleware(EnsureHasPermission::class.':legal.seasons.view');
+        Route::get('/legal/seasons', [AdminLegalSeasonController::class, 'index'])
+            ->middleware(EnsureHasPermission::class.':legal.seasons.view');
+        Route::post('/legal/seasons', [AdminLegalSeasonController::class, 'store'])
+            ->middleware([EnsureHasPermission::class.':legal.seasons.create', 'throttle:admin.mutations']);
+        Route::get('/legal/seasons/{season}', [AdminLegalSeasonController::class, 'show'])
+            ->middleware(EnsureHasPermission::class.':legal.seasons.view')
+            ->where('season', '[0-9a-fA-F-]{36}');
+        Route::patch('/legal/seasons/{season}', [AdminLegalSeasonController::class, 'update'])
+            ->middleware([EnsureHasPermission::class.':legal.seasons.update', 'throttle:admin.mutations'])
+            ->where('season', '[0-9a-fA-F-]{36}');
+        Route::post('/legal/seasons/{season}/submit-review', [AdminLegalSeasonController::class, 'submitReview'])
+            ->middleware([EnsureHasPermission::class.':legal.seasons.review', 'throttle:admin.mutations'])
+            ->where('season', '[0-9a-fA-F-]{36}');
+        Route::post('/legal/seasons/{season}/approve', [AdminLegalSeasonController::class, 'approve'])
+            ->middleware([EnsureHasPermission::class.':legal.seasons.review', 'throttle:admin.mutations'])
+            ->where('season', '[0-9a-fA-F-]{36}');
+        Route::post('/legal/seasons/{season}/publish', [AdminLegalSeasonController::class, 'publish'])
+            ->middleware([EnsureHasPermission::class.':legal.seasons.publish', 'throttle:admin.mutations'])
+            ->where('season', '[0-9a-fA-F-]{36}');
+        Route::post('/legal/seasons/{season}/reject', [AdminLegalSeasonController::class, 'reject'])
+            ->middleware([EnsureHasPermission::class.':legal.seasons.review', 'throttle:admin.mutations'])
+            ->where('season', '[0-9a-fA-F-]{36}');
+        Route::post('/legal/seasons/{season}/supersede', [AdminLegalSeasonController::class, 'supersede'])
+            ->middleware([EnsureHasPermission::class.':legal.seasons.supersede', 'throttle:admin.mutations'])
+            ->where('season', '[0-9a-fA-F-]{36}');
+        Route::post('/legal/seasons/{season}/generate-occurrences', [AdminLegalSeasonController::class, 'generate'])
+            ->middleware([EnsureHasPermission::class.':legal.seasons.generate', 'throttle:admin.mutations'])
+            ->where('season', '[0-9a-fA-F-]{36}');
+        Route::post('/legal/seasons/{season}/preview', [AdminLegalSeasonController::class, 'preview'])
+            ->middleware([EnsureHasPermission::class.':legal.calendar.preview', 'throttle:admin.mutations'])
+            ->where('season', '[0-9a-fA-F-]{36}');
+
+        Route::get('/legal/season-occurrences', [AdminLegalSeasonController::class, 'occurrences'])
+            ->middleware(EnsureHasPermission::class.':legal.seasons.view');
+        Route::get('/legal/season-occurrences/{occurrence}', [AdminLegalSeasonController::class, 'showOccurrence'])
+            ->middleware(EnsureHasPermission::class.':legal.seasons.view');
+        Route::post('/legal/season-occurrences/regenerate', [AdminLegalSeasonController::class, 'regenerate'])
+            ->middleware([EnsureHasPermission::class.':legal.seasons.generate', 'throttle:admin.mutations']);
+
+        Route::get('/legal/season-overrides', [AdminLegalSeasonController::class, 'overrides'])
+            ->middleware(EnsureHasPermission::class.':legal.season_overrides.view');
+        Route::post('/legal/season-overrides', [AdminLegalSeasonController::class, 'storeOverride'])
+            ->middleware([EnsureHasPermission::class.':legal.season_overrides.create', 'throttle:admin.mutations']);
+        Route::get('/legal/season-overrides/{override}', [AdminLegalSeasonController::class, 'showOverride'])
+            ->middleware(EnsureHasPermission::class.':legal.season_overrides.view')
+            ->where('override', '[0-9a-fA-F-]{36}');
+        Route::patch('/legal/season-overrides/{override}', [AdminLegalSeasonController::class, 'updateOverride'])
+            ->middleware([EnsureHasPermission::class.':legal.season_overrides.create', 'throttle:admin.mutations'])
+            ->where('override', '[0-9a-fA-F-]{36}');
+        Route::post('/legal/season-overrides/{override}/submit-review', [AdminLegalSeasonController::class, 'submitOverride'])
+            ->middleware([EnsureHasPermission::class.':legal.season_overrides.review', 'throttle:admin.mutations'])
+            ->where('override', '[0-9a-fA-F-]{36}');
+        Route::post('/legal/season-overrides/{override}/approve', [AdminLegalSeasonController::class, 'approveOverride'])
+            ->middleware([EnsureHasPermission::class.':legal.season_overrides.review', 'throttle:admin.mutations'])
+            ->where('override', '[0-9a-fA-F-]{36}');
+        Route::post('/legal/season-overrides/{override}/publish', [AdminLegalSeasonController::class, 'publishOverride'])
+            ->middleware([EnsureHasPermission::class.':legal.season_overrides.publish', 'throttle:admin.mutations'])
+            ->where('override', '[0-9a-fA-F-]{36}');
+        Route::post('/legal/season-overrides/{override}/reject', [AdminLegalSeasonController::class, 'rejectOverride'])
+            ->middleware([EnsureHasPermission::class.':legal.season_overrides.review', 'throttle:admin.mutations'])
+            ->where('override', '[0-9a-fA-F-]{36}');
+
+        Route::get('/legal/calendar-generation-runs', [AdminLegalSeasonController::class, 'generationRuns'])
+            ->middleware(EnsureHasPermission::class.':legal.calendar.generation_runs.view');
+        Route::get('/legal/calendar-generation-runs/{run}', [AdminLegalSeasonController::class, 'showGenerationRun'])
+            ->middleware(EnsureHasPermission::class.':legal.calendar.generation_runs.view');
+        Route::post('/legal/calendar/evaluate-preview', [AdminLegalSeasonController::class, 'evaluatePreview'])
+            ->middleware([EnsureHasPermission::class.':legal.calendar.preview', 'throttle:admin.mutations']);
+        Route::get('/legal/calendar/coverage', [AdminLegalSeasonController::class, 'coverage'])
+            ->middleware(EnsureHasPermission::class.':legal.calendar.coverage');
     });

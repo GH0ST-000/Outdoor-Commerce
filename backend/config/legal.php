@@ -69,5 +69,35 @@ return [
         'public_per_minute' => (int) env('LEGAL_PUBLIC_PER_MINUTE', 60),
         'evaluate_per_minute' => (int) env('LEGAL_EVALUATE_PER_MINUTE', 20),
         'admin_download_per_minute' => (int) env('LEGAL_ADMIN_DOWNLOAD_PER_MINUTE', 30),
+        'calendar_per_minute' => (int) env('LEGAL_CALENDAR_PER_MINUTE', 30),
+    ],
+
+    /*
+    | Date-only seasons open at local 00:00 and close inclusively through the
+    | end of the stated local day, stored internally as half-open [start, endExclusive).
+    | Cross-year occurrences belong to the opening year. Recurring 29 February
+    | generates only on leap years with no invented fallback date.
+    */
+    'calendar' => [
+        'max_public_days' => (int) env('LEGAL_CALENDAR_MAX_PUBLIC_DAYS', 366),
+        'max_admin_days' => (int) env('LEGAL_CALENDAR_MAX_ADMIN_DAYS', 1096),
+        'horizon_past_years' => (int) env('LEGAL_CALENDAR_HORIZON_PAST', 1),
+        'horizon_future_years' => (int) env('LEGAL_CALENDAR_HORIZON_FUTURE', 3),
+        'queue' => env('LEGAL_CALENDAR_QUEUE', 'default'),
+        'lock_seconds' => 120,
+        'regions' => [
+            'GE-AB',
+            'GE-AJ',
+            'GE-GU',
+            'GE-IM',
+            'GE-KA',
+            'GE-KK',
+            'GE-MM',
+            'GE-RL',
+            'GE-SZ',
+            'GE-SJ',
+            'GE-SK',
+            'GE-TB',
+        ],
     ],
 ];

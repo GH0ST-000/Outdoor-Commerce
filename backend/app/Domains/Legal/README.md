@@ -2,7 +2,7 @@
 
 Day 25 owns official legal sources, immutable document versions, provisions, structured rules, conflict detection, and point-in-time evaluation.
 
-This module does **not** own species biology, calendars, maps, or product recommendations. See [ADR 0019](../../../../docs/adr/0019-versioned-legal-rules.md) and [docs/legal.md](../../../../docs/legal.md).
+Day 26 extends this module with season definitions, derived occurrences, overrides, and period availability. Biological species facts remain in Hunting. Maps remain later. See [ADR 0019](../../../../docs/adr/0019-versioned-legal-rules.md), [ADR 0020](../../../../docs/adr/0020-season-calendar-projections.md), [docs/legal.md](../../../../docs/legal.md), and [docs/legal-calendar.md](../../../../docs/legal-calendar.md).
 
 ## Rules
 

@@ -109,6 +109,8 @@ Design-system documentation is development-only (`/dev/design-system` returns 40
 
 Tests refuse non-test database names (must contain `test`, or sqlite `:memory:`).
 
+Pest `--parallel` shares one Redis. `Tests\TestCase` isolates each test with a unique cache prefix and rate-limit key suffix so workers do not steal unique job locks, exhaust IP throttles, or `FLUSHDB` each other. Do not call `Cache::flush()` against Redis in feature tests; use `$this->flushApplicationCacheSafely()`.
+
 Meilisearch, Mailpit, and MinIO are not started in CI unless a future test requires them.
 
 ## Caching

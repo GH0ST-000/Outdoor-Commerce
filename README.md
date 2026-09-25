@@ -62,7 +62,9 @@ Architecture docs:
 - [docs/species.md](docs/species.md)
 - [docs/adr/0018-species-facts-vs-legal-rules.md](docs/adr/0018-species-facts-vs-legal-rules.md)
 - [docs/legal.md](docs/legal.md)
+- [docs/legal-calendar.md](docs/legal-calendar.md)
 - [docs/adr/0019-versioned-legal-rules.md](docs/adr/0019-versioned-legal-rules.md)
+- [docs/adr/0020-season-calendar-projections.md](docs/adr/0020-season-calendar-projections.md)
 
 Backend and frontend dependencies stay isolated (`backend/vendor`, `frontend/node_modules`).
 

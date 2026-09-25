@@ -196,9 +196,7 @@ export function HomeView({
             </p>
             <div className="mt-6 flex flex-wrap gap-3">
               <Button asChild variant="primary">
-                <Link href="/hunting-calendar">
-                  {content.season.calendarCta}
-                </Link>
+                <Link href="/seasons">{content.season.calendarCta}</Link>
               </Button>
               <Button
                 type="button"

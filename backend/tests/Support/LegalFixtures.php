@@ -17,8 +17,10 @@ use App\Domains\Legal\Models\LegalDocumentVersion;
 use App\Domains\Legal\Models\LegalProvision;
 use App\Domains\Legal\Models\LegalRule;
 use App\Domains\Legal\Models\LegalRuleCitation;
+use App\Domains\Legal\Models\LegalSeasonDefinition;
 use App\Domains\Legal\Models\LegalSource;
 use App\Domains\Legal\Services\LegalPublicCache;
+use App\Domains\Legal\Services\SeasonProjectionService;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
@@ -99,5 +101,38 @@ final class LegalFixtures
         app(LegalPublicCache::class)->bump();
 
         return $rule->refresh();
+    }
+
+    public static function publishedSeason(
+        LegalProvision $provision,
+        User $actor,
+        int $speciesId,
+        LegalActivityType $activity = LegalActivityType::Hunting,
+        array $schedule = [],
+    ): LegalSeasonDefinition {
+        $rule = self::publishedRule(
+            $provision,
+            $actor,
+            LegalRuleEffect::Allow,
+            $activity,
+            $speciesId,
+            'FICTIONAL season permission',
+        );
+        $rule->rule_type = LegalRuleType::SeasonalRestriction;
+        $rule->save();
+
+        $definition = LegalSeasonDefinition::factory()->published()->create(array_merge([
+            'legal_rule_id' => $rule->id,
+            'species_id' => $speciesId,
+            'activity_type' => $activity,
+            'created_by' => $actor->id,
+            'reviewed_by' => $actor->id,
+            'published_by' => $actor->id,
+            'jurisdiction_code' => 'GE',
+        ], $schedule));
+
+        app(SeasonProjectionService::class)->generateDefinition($definition);
+
+        return $definition->refresh();
     }
 }

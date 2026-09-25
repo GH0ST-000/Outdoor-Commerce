@@ -5,6 +5,7 @@ import type {
   SpeciesLocale,
 } from "@/features/species/types/species-types";
 import { SpeciesLegalOverview } from "@/features/legal/components/SpeciesLegalOverview";
+import { SpeciesSeasonSection } from "@/features/seasons/components/SpeciesSeasonSection";
 
 const copy = {
   ka: {
@@ -319,7 +320,11 @@ export function SpeciesDetailView({
             </ul>
           </section>
 
-          <SpeciesLegalOverview locale={locale} legal={species.legal_information} />
+          <SpeciesSeasonSection slug={species.slug} />
+          <SpeciesLegalOverview
+            locale={locale}
+            legal={species.legal_information}
+          />
         </div>
       </div>
     </article>

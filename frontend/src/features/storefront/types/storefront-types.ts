@@ -51,7 +51,8 @@ export type CategoryGatewayItem = {
   span?: "wide" | "tall" | "standard";
 };
 
-export type SeasonStatus = "open" | "closed" | "conditional" | "unknown";
+export type SeasonStatus =
+  "open" | "partially_open" | "closed" | "conditional" | "unknown" | "conflict";
 
 export type SeasonDemoRow = {
   id: string;
@@ -247,12 +248,46 @@ export type StorefrontCopy = {
     closed: string;
     conditional: string;
     unknown: string;
+    partiallyOpen: string;
+    conflict: string;
+    hunting: string;
+    fishing: string;
+    from: string;
+    to: string;
+    region: string;
+    species: string;
+    searchAction: string;
+    modeAny: string;
+    modeEntire: string;
+    modeTimeline: string;
+    modeHelp: string;
+    thisWeek: string;
+    next7: string;
+    thisMonth: string;
+    nextMonth: string;
+    custom: string;
     eyebrow: string;
     regulationsTitle: string;
     regulationsLead: string;
     checklist: string[];
     fieldKitTitle: string;
     fieldKit: string[];
+    disclaimer: string;
+    emptyTitle: string;
+    emptyLead: string;
+    errorTitle: string;
+    loading: string;
+    viewDetails: string;
+    lastVerified: string;
+    officialSource: string;
+    openWindow: string;
+    nextOpen: string;
+    nextClose: string;
+    resultsCount: string;
+    timelineLabel: string;
+    regionHint: string;
+    seasonsHeading: string;
+    noRegion: string;
   };
   map: {
     title: string;

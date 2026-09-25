@@ -150,4 +150,17 @@ enum AuditEvent: string
     case LegalChangeConfirmed = 'legal.change.confirmed';
     case LegalChangeDismissed = 'legal.change.dismissed';
     case LegalConflictResolved = 'legal.conflict.resolved';
+    case LegalSeasonCreated = 'legal.season.created';
+    case LegalSeasonUpdated = 'legal.season.updated';
+    case LegalSeasonSubmittedReview = 'legal.season.submitted_review';
+    case LegalSeasonApproved = 'legal.season.approved';
+    case LegalSeasonPublished = 'legal.season.published';
+    case LegalSeasonRejected = 'legal.season.rejected';
+    case LegalSeasonSuperseded = 'legal.season.superseded';
+    case LegalSeasonOverrideCreated = 'legal.season_override.created';
+    case LegalSeasonOverrideUpdated = 'legal.season_override.updated';
+    case LegalSeasonOverrideSubmittedReview = 'legal.season_override.submitted_review';
+    case LegalSeasonOverrideApproved = 'legal.season_override.approved';
+    case LegalSeasonOverridePublished = 'legal.season_override.published';
+    case LegalSeasonOverrideRejected = 'legal.season_override.rejected';
 }

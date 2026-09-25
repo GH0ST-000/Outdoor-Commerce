@@ -251,6 +251,76 @@ const PERMISSION_META: Record<
     group: "content",
     summary: "Read legal workflow history",
   },
+  "legal.seasons.view": {
+    label: "View hunting and fishing seasons",
+    group: "content",
+    summary: "Read season definitions and occurrences",
+  },
+  "legal.seasons.create": {
+    label: "Create season definitions",
+    group: "content",
+    summary: "Draft source-backed seasons",
+  },
+  "legal.seasons.update": {
+    label: "Update season definitions",
+    group: "content",
+    summary: "Edit unpublished seasons",
+  },
+  "legal.seasons.review": {
+    label: "Review season definitions",
+    group: "content",
+    summary: "Submit, approve, or reject seasons",
+  },
+  "legal.seasons.publish": {
+    label: "Publish season definitions",
+    group: "content",
+    summary: "Publish reviewed seasons",
+  },
+  "legal.seasons.supersede": {
+    label: "Supersede season definitions",
+    group: "content",
+    summary: "Replace published seasons without deleting history",
+  },
+  "legal.seasons.generate": {
+    label: "Generate season occurrences",
+    group: "content",
+    summary: "Rebuild calendar projections",
+  },
+  "legal.season_overrides.view": {
+    label: "View season overrides",
+    group: "content",
+    summary: "Read closures and special openings",
+  },
+  "legal.season_overrides.create": {
+    label: "Create season overrides",
+    group: "content",
+    summary: "Draft source-backed overrides",
+  },
+  "legal.season_overrides.review": {
+    label: "Review season overrides",
+    group: "content",
+    summary: "Submit, approve, or reject overrides",
+  },
+  "legal.season_overrides.publish": {
+    label: "Publish season overrides",
+    group: "content",
+    summary: "Publish reviewed closures and openings",
+  },
+  "legal.calendar.preview": {
+    label: "Preview calendar evaluation",
+    group: "content",
+    summary: "Run privileged period evaluation",
+  },
+  "legal.calendar.coverage": {
+    label: "View calendar coverage",
+    group: "content",
+    summary: "See species and regions missing seasons",
+  },
+  "legal.calendar.generation_runs.view": {
+    label: "View calendar generation runs",
+    group: "content",
+    summary: "Inspect projection job history",
+  },
   "content.view": {
     label: "View content",
     group: "content",

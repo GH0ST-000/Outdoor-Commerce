@@ -9,6 +9,10 @@ const LINKS = [
   { href: "/admin/legal/rules", label: "Rules" },
   { href: "/admin/legal/conflicts", label: "Conflicts" },
   { href: "/admin/legal/evaluate", label: "Evaluation preview" },
+  { href: "/admin/legal/seasons", label: "Seasons" },
+  { href: "/admin/legal/seasons/definitions", label: "Season editor" },
+  { href: "/admin/legal/coverage", label: "Coverage" },
+  { href: "/admin/legal/overrides", label: "Overrides" },
 ] as const;
 
 export function LegalWorkspaceNav() {

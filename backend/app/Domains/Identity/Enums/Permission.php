@@ -63,6 +63,21 @@ enum Permission: string
     case LegalConflictsResolve = 'legal.conflicts.resolve';
     case LegalAuditView = 'legal.audit.view';
 
+    case LegalSeasonsView = 'legal.seasons.view';
+    case LegalSeasonsCreate = 'legal.seasons.create';
+    case LegalSeasonsUpdate = 'legal.seasons.update';
+    case LegalSeasonsReview = 'legal.seasons.review';
+    case LegalSeasonsPublish = 'legal.seasons.publish';
+    case LegalSeasonsSupersede = 'legal.seasons.supersede';
+    case LegalSeasonsGenerate = 'legal.seasons.generate';
+    case LegalSeasonOverridesView = 'legal.season_overrides.view';
+    case LegalSeasonOverridesCreate = 'legal.season_overrides.create';
+    case LegalSeasonOverridesReview = 'legal.season_overrides.review';
+    case LegalSeasonOverridesPublish = 'legal.season_overrides.publish';
+    case LegalCalendarPreview = 'legal.calendar.preview';
+    case LegalCalendarCoverage = 'legal.calendar.coverage';
+    case LegalCalendarGenerationRunsView = 'legal.calendar.generation_runs.view';
+
     case ContentView = 'content.view';
     case ContentManage = 'content.manage';
     case ContentPublish = 'content.publish';

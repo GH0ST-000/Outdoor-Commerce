@@ -96,6 +96,7 @@ final class LegalRuleTransitionService
         $rule->save();
         $this->audit->record(AuditEvent::LegalRuleSuperseded, $actor, 'legal_rule', $rule->public_id, null, ['reason' => $reason]);
         $this->cache->bump();
+        app(SeasonProjectionService::class)->invalidateForRule($rule);
 
         return $rule;
     }

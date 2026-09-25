@@ -77,12 +77,12 @@ export default function MapPage() {
             <p className="sf-label text-[var(--sand)]">{t.map.legend}</p>
             <div className="mt-2">
               <MapLegend
-              items={[
-                { label: t.map.legendOpen, swatch: "#556B2F" },
-                { label: t.map.legendPark, swatch: "#C4A484" },
-                { label: t.map.legendUnverified, swatch: "#E5E5E5" },
-              ]}
-            />
+                items={[
+                  { label: t.map.legendOpen, swatch: "#556B2F" },
+                  { label: t.map.legendPark, swatch: "#C4A484" },
+                  { label: t.map.legendUnverified, swatch: "#E5E5E5" },
+                ]}
+              />
             </div>
           </div>
         </aside>

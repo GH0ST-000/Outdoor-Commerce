@@ -36,12 +36,11 @@ See [ADR 0019](adr/0019-versioned-legal-rules.md) and `backend/app/Domains/Legal
 - Optional Meilisearch legal discovery is **not** used for evaluation. `search:rebuild-legal` is a recovery no-op until a verified public source set exists.
 - Development authorities created through admin default to `is_fictional=true`.
 
-## Intentionally deferred (Day 26+)
+## Intentionally deferred (Day 27+)
 
-- Full hunting/fishing calendars and recurring seasons.
-- Interactive maps, polygons, GPS.
-- Product recommendations from legal outcomes.
-- Email/legal notifications.
+- Interactive maps, polygons, GPS, and spatial zone matching (`zone_reference` is stored only).
+- Product recommendations from legal or season outcomes.
+- Email/calendar notifications.
 - Automatic publication after source changes (will never happen without human review).
 
 ## Data model (MySQL is authoritative)

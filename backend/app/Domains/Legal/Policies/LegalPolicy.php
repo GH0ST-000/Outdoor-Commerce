@@ -97,4 +97,84 @@ final class LegalPolicy
         return $actor->can(Permission::LegalConflictsResolve->value)
             || $actor->can(Permission::LegalRulesPublish->value);
     }
+
+    public function viewSeasons(User $actor): bool
+    {
+        return $actor->can(Permission::LegalSeasonsView->value) || $this->viewAny($actor);
+    }
+
+    public function createSeasons(User $actor): bool
+    {
+        return $actor->can(Permission::LegalSeasonsCreate->value)
+            || $actor->can(Permission::LegalRulesManage->value);
+    }
+
+    public function updateSeasons(User $actor): bool
+    {
+        return $actor->can(Permission::LegalSeasonsUpdate->value)
+            || $actor->can(Permission::LegalRulesManage->value);
+    }
+
+    public function reviewSeasons(User $actor): bool
+    {
+        return $actor->can(Permission::LegalSeasonsReview->value)
+            || $actor->can(Permission::LegalRulesManage->value);
+    }
+
+    public function publishSeasons(User $actor): bool
+    {
+        return $actor->can(Permission::LegalSeasonsPublish->value)
+            || $actor->can(Permission::LegalRulesPublish->value);
+    }
+
+    public function supersedeSeasons(User $actor): bool
+    {
+        return $actor->can(Permission::LegalSeasonsSupersede->value)
+            || $actor->can(Permission::LegalRulesSupersede->value)
+            || $actor->can(Permission::LegalRulesPublish->value);
+    }
+
+    public function generateSeasons(User $actor): bool
+    {
+        return $actor->can(Permission::LegalSeasonsGenerate->value)
+            || $actor->can(Permission::LegalRulesPublish->value);
+    }
+
+    public function viewOverrides(User $actor): bool
+    {
+        return $actor->can(Permission::LegalSeasonOverridesView->value) || $this->viewSeasons($actor);
+    }
+
+    public function createOverrides(User $actor): bool
+    {
+        return $actor->can(Permission::LegalSeasonOverridesCreate->value)
+            || $actor->can(Permission::LegalSeasonsCreate->value);
+    }
+
+    public function reviewOverrides(User $actor): bool
+    {
+        return $actor->can(Permission::LegalSeasonOverridesReview->value)
+            || $this->reviewSeasons($actor);
+    }
+
+    public function publishOverrides(User $actor): bool
+    {
+        return $actor->can(Permission::LegalSeasonOverridesPublish->value)
+            || $this->publishSeasons($actor);
+    }
+
+    public function previewCalendar(User $actor): bool
+    {
+        return $actor->can(Permission::LegalCalendarPreview->value) || $this->viewSeasons($actor);
+    }
+
+    public function viewCoverage(User $actor): bool
+    {
+        return $actor->can(Permission::LegalCalendarCoverage->value) || $this->viewSeasons($actor);
+    }
+
+    public function viewGenerationRuns(User $actor): bool
+    {
+        return $actor->can(Permission::LegalCalendarGenerationRunsView->value) || $this->viewSeasons($actor);
+    }
 }

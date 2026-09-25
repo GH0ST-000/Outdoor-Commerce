@@ -61,6 +61,8 @@ return Application::configure(basePath: dirname(__DIR__))
         $schedule->command('catalog:refresh-time-sensitive-projections')->everyMinute();
         $schedule->command('carts:expire')->daily();
         $schedule->command('legal:check-sources')->daily();
+        $schedule->command('legal-calendar:extend-horizon')->daily()->withoutOverlapping();
+        $schedule->command('legal-calendar:verify-projections')->daily()->withoutOverlapping();
     })
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->statefulApi();
