@@ -9,12 +9,21 @@ import type {
   SpeciesCard,
   SpeciesDetail,
 } from "@/features/species/types/species-types";
+import { TestProviders } from "@/test/providers";
 
 const { push } = vi.hoisted(() => ({ push: vi.fn() }));
+const seasonsApi = vi.hoisted(() => ({
+  fetchSpeciesSeasons: vi.fn(async () => ({
+    availability: null,
+    disclaimer: "legal.informational_not_advice",
+  })),
+}));
 
 vi.mock("next/navigation", () => ({
   useRouter: () => ({ push, replace: vi.fn(), refresh: vi.fn() }),
 }));
+
+vi.mock("@/features/seasons/api/public-seasons-api", () => seasonsApi);
 
 vi.mock("next/image", () => ({
   default: (props: { alt: string; src: string }) => (
@@ -175,12 +184,17 @@ describe("species directory", () => {
 describe("species detail", () => {
   it("renders taxonomy, sources, fallback, and the legal overview without hunting claims", async () => {
     const { container } = render(
-      <SpeciesDetailView locale="en" species={detail} />,
+      <TestProviders locale="en">
+        <SpeciesDetailView locale="en" species={detail} />
+      </TestProviders>,
     );
     expect(
       screen.getByRole("heading", { name: /Regulations & Official Sources/ }),
     ).toBeInTheDocument();
-    expect(screen.getByText(/not legal advice/i)).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: /Season and availability/i }),
+    ).toBeInTheDocument();
+    expect(screen.getAllByText(/not legal advice/i).length).toBeGreaterThan(0);
     expect(screen.getByText(/Unknown/)).toBeInTheDocument();
     expect(screen.queryByText(/hunt now/i)).not.toBeInTheDocument();
     expect(screen.getByText("Test source")).toBeInTheDocument();
