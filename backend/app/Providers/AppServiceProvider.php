@@ -5,6 +5,7 @@ namespace App\Providers;
 use App\Domains\Cart\Contracts\CartOwnerResolver;
 use App\Domains\Cart\Services\CartResolver;
 use App\Domains\Catalog\Contracts\CatalogProductLookup;
+use App\Domains\Catalog\Contracts\SearchGateway as CatalogSearchGateway;
 use App\Domains\Catalog\Events\CatalogAttributeChanged;
 use App\Domains\Catalog\Events\CatalogBrandChanged;
 use App\Domains\Catalog\Events\CatalogCategoryChanged;
@@ -33,6 +34,13 @@ use App\Domains\Catalog\Search\Services\MeilisearchGateway;
 use App\Domains\Catalog\Services\EloquentCatalogProductLookup;
 use App\Domains\Checkout\Contracts\FulfillmentQuoteProvider;
 use App\Domains\Checkout\Services\ConfiguredRateFulfillmentQuoteProvider;
+use App\Domains\Hunting\Events\SpeciesArchived;
+use App\Domains\Hunting\Events\SpeciesChanged;
+use App\Domains\Hunting\Events\SpeciesPublished;
+use App\Domains\Hunting\Events\SpeciesUnpublished;
+use App\Domains\Hunting\Listeners\RefreshSpeciesProjections;
+use App\Domains\Hunting\Models\Species;
+use App\Domains\Hunting\Policies\SpeciesPolicy;
 use App\Domains\Identity\Models\User;
 use App\Domains\Identity\Policies\UserPolicy;
 use App\Domains\Identity\Support\EmailNormalizer;
@@ -58,6 +66,16 @@ use App\Domains\Inventory\Policies\WarehousePolicy;
 use App\Domains\Inventory\Services\DefaultCheckoutInventoryService;
 use App\Domains\Inventory\Services\DefaultWarehouseAllocationStrategy;
 use App\Domains\Inventory\Services\EloquentPublicInventoryAvailability;
+use App\Domains\Legal\Models\LegalCalendarGenerationRun;
+use App\Domains\Legal\Models\LegalConflict;
+use App\Domains\Legal\Models\LegalDocument;
+use App\Domains\Legal\Models\LegalDocumentVersion;
+use App\Domains\Legal\Models\LegalProvision;
+use App\Domains\Legal\Models\LegalRule;
+use App\Domains\Legal\Models\LegalSeasonDefinition;
+use App\Domains\Legal\Models\LegalSeasonOverride;
+use App\Domains\Legal\Models\LegalSource;
+use App\Domains\Legal\Policies\LegalPolicy;
 use App\Domains\Orders\Events\OrderCancelled;
 use App\Domains\Orders\Events\OrderExpired;
 use App\Domains\Payments\Listeners\ClosePaymentAttemptsOnOrderClosed;
@@ -81,6 +99,8 @@ use App\Domains\Pricing\Services\DefaultPublicCatalogPricing;
 use App\Domains\Pricing\Services\PricingReadinessService;
 use App\Domains\Shared\Support\Clock;
 use App\Domains\Shared\Support\SystemClock;
+use App\Domains\Shipping\Models\Shipment;
+use App\Domains\Shipping\Policies\ShipmentPolicy;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Database\Eloquent\Relations\Relation;
@@ -106,6 +126,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(PublicCatalogPricing::class, DefaultPublicCatalogPricing::class);
         $this->app->bind(PublicInventoryAvailability::class, EloquentPublicInventoryAvailability::class);
         $this->app->singleton(SearchGateway::class, MeilisearchGateway::class);
+        $this->app->alias(SearchGateway::class, CatalogSearchGateway::class);
     }
 
     public function boot(): void
@@ -122,6 +143,7 @@ class AppServiceProvider extends ServiceProvider
         $this->registerPublicCatalogListeners();
         $this->registerSearchListeners();
         $this->registerPaymentListeners();
+        $this->registerSpeciesListeners();
 
         $cartCookie = config('cart.cookie.name');
         if (is_string($cartCookie) && $cartCookie !== '') {
@@ -141,6 +163,17 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(PriceList::class, PriceListPolicy::class);
         Gate::policy(PricePeriod::class, PricePeriodPolicy::class);
         Gate::policy(Promotion::class, PromotionPolicy::class);
+        Gate::policy(Shipment::class, ShipmentPolicy::class);
+        Gate::policy(Species::class, SpeciesPolicy::class);
+        Gate::policy(LegalSource::class, LegalPolicy::class);
+        Gate::policy(LegalDocument::class, LegalPolicy::class);
+        Gate::policy(LegalDocumentVersion::class, LegalPolicy::class);
+        Gate::policy(LegalProvision::class, LegalPolicy::class);
+        Gate::policy(LegalRule::class, LegalPolicy::class);
+        Gate::policy(LegalConflict::class, LegalPolicy::class);
+        Gate::policy(LegalSeasonDefinition::class, LegalPolicy::class);
+        Gate::policy(LegalSeasonOverride::class, LegalPolicy::class);
+        Gate::policy(LegalCalendarGenerationRun::class, LegalPolicy::class);
 
         // Password policy: min 12, mixed case, numbers.
         // Compromised-password checks run only in production (HIBP).
@@ -155,33 +188,33 @@ class AppServiceProvider extends ServiceProvider
         RateLimiter::for('auth.login', function (Request $request) {
             $email = EmailNormalizer::normalize((string) $request->input('email', ''));
 
-            return Limit::perMinute(5)->by($email.'|'.$request->ip());
+            return Limit::perMinute(5)->by($this->throttleBy($email.'|'.$request->ip()));
         });
 
         RateLimiter::for('auth.register', function (Request $request) {
-            return Limit::perMinute(5)->by((string) $request->ip());
+            return Limit::perMinute(5)->by($this->throttleBy((string) $request->ip()));
         });
 
         RateLimiter::for('auth.forgot-password', function (Request $request) {
             $email = EmailNormalizer::normalize((string) $request->input('email', ''));
 
-            return Limit::perMinute(3)->by($email.'|'.$request->ip());
+            return Limit::perMinute(3)->by($this->throttleBy($email.'|'.$request->ip()));
         });
 
         RateLimiter::for('auth.reset-password', function (Request $request) {
-            return Limit::perMinute(5)->by((string) $request->ip());
+            return Limit::perMinute(5)->by($this->throttleBy((string) $request->ip()));
         });
 
         RateLimiter::for('auth.verification-resend', function (Request $request) {
             $userId = (string) optional($request->user())->getAuthIdentifier();
 
-            return Limit::perMinute(3)->by($userId.'|'.$request->ip());
+            return Limit::perMinute(3)->by($this->throttleBy($userId.'|'.$request->ip()));
         });
 
         RateLimiter::for('admin.mutations', function (Request $request) {
             $userId = (string) optional($request->user())->getAuthIdentifier();
 
-            return Limit::perMinute(30)->by($userId.'|'.$request->ip());
+            return Limit::perMinute(30)->by($this->throttleBy($userId.'|'.$request->ip()));
         });
 
         // Uploads are far heavier than ordinary admin writes: each accepted file
@@ -189,24 +222,24 @@ class AppServiceProvider extends ServiceProvider
         RateLimiter::for('admin.media-uploads', function (Request $request) {
             $userId = (string) optional($request->user())->getAuthIdentifier();
 
-            return Limit::perMinute(20)->by($userId.'|'.$request->ip());
+            return Limit::perMinute(20)->by($this->throttleBy($userId.'|'.$request->ip()));
         });
 
         RateLimiter::for('admin.pricing-bulk', function (Request $request) {
             $userId = (string) optional($request->user())->getAuthIdentifier();
 
-            return Limit::perMinute(10)->by($userId.'|'.$request->ip());
+            return Limit::perMinute(10)->by($this->throttleBy($userId.'|'.$request->ip()));
         });
 
         RateLimiter::for('admin.pricing-preview', function (Request $request) {
             $userId = (string) optional($request->user())->getAuthIdentifier();
 
-            return Limit::perMinute(30)->by($userId.'|'.$request->ip());
+            return Limit::perMinute(30)->by($this->throttleBy($userId.'|'.$request->ip()));
         });
 
         RateLimiter::for('catalog.public', function (Request $request) {
             return Limit::perMinute((int) config('catalog.public.rate_limits.browse_per_minute', 120))
-                ->by((string) $request->ip());
+                ->by($this->throttleBy((string) $request->ip()));
         });
 
         RateLimiter::for('catalog.public.list', function (Request $request) {
@@ -216,112 +249,178 @@ class AppServiceProvider extends ServiceProvider
                 : (int) config('catalog.public.rate_limits.list_per_minute', 60);
 
             return Limit::perMinute($limit)
-                ->by($request->ip().'|'.($searching ? 'search' : 'list'));
+                ->by($this->throttleBy($request->ip().'|'.($searching ? 'search' : 'list')));
         });
 
         RateLimiter::for('catalog.public.facets', function (Request $request) {
             return Limit::perMinute((int) config('catalog.public.rate_limits.facets_per_minute', 30))
-                ->by((string) $request->ip());
+                ->by($this->throttleBy((string) $request->ip()));
         });
 
         RateLimiter::for('search.public', function (Request $request) {
             return Limit::perMinute((int) config('search.rate_limits.grouped_per_minute', 30))
-                ->by((string) $request->ip());
+                ->by($this->throttleBy((string) $request->ip()));
         });
 
         RateLimiter::for('search.suggest', function (Request $request) {
             return Limit::perMinute((int) config('search.rate_limits.suggest_per_minute', 60))
-                ->by((string) $request->ip());
+                ->by($this->throttleBy((string) $request->ip()));
         });
 
         RateLimiter::for('cart.read', function (Request $request) {
             $userId = $request->user()?->getAuthIdentifier();
 
             return Limit::perMinute((int) config('cart.rate_limits.read_per_minute', 60))
-                ->by(($userId !== null ? 'u'.$userId : 'g'.$request->ip()));
+                ->by($this->throttleBy($userId !== null ? 'u'.$userId : 'g'.$request->ip()));
         });
 
         RateLimiter::for('cart.mutate', function (Request $request) {
             $userId = $request->user()?->getAuthIdentifier();
 
             return Limit::perMinute((int) config('cart.rate_limits.mutate_per_minute', 30))
-                ->by(($userId !== null ? 'u'.$userId : 'g'.$request->ip()));
+                ->by($this->throttleBy($userId !== null ? 'u'.$userId : 'g'.$request->ip()));
         });
 
         RateLimiter::for('checkout.read', function (Request $request) {
             $userId = $request->user()?->getAuthIdentifier();
 
             return Limit::perMinute((int) config('checkout.rate_limits.read_per_minute', 30))
-                ->by(($userId !== null ? 'u'.$userId : 'g'.$request->ip()));
+                ->by($this->throttleBy($userId !== null ? 'u'.$userId : 'g'.$request->ip()));
         });
 
         RateLimiter::for('checkout.mutate', function (Request $request) {
             $userId = $request->user()?->getAuthIdentifier();
 
             return Limit::perMinute((int) config('checkout.rate_limits.mutate_per_minute', 20))
-                ->by(($userId !== null ? 'u'.$userId : 'g'.$request->ip()));
+                ->by($this->throttleBy($userId !== null ? 'u'.$userId : 'g'.$request->ip()));
         });
 
         RateLimiter::for('checkout.quote', function (Request $request) {
             $userId = $request->user()?->getAuthIdentifier();
 
             return Limit::perMinute((int) config('checkout.rate_limits.quote_per_minute', 8))
-                ->by(($userId !== null ? 'u'.$userId : 'g'.$request->ip()));
+                ->by($this->throttleBy($userId !== null ? 'u'.$userId : 'g'.$request->ip()));
         });
 
         RateLimiter::for('orders.read', function (Request $request) {
             $userId = $request->user()?->getAuthIdentifier();
 
             return Limit::perMinute((int) config('order.rate_limits.read_per_minute', 30))
-                ->by(($userId !== null ? 'u'.$userId : 'g'.$request->ip()));
+                ->by($this->throttleBy($userId !== null ? 'u'.$userId : 'g'.$request->ip()));
         });
 
         RateLimiter::for('orders.create', function (Request $request) {
             $userId = $request->user()?->getAuthIdentifier();
 
             return Limit::perMinute((int) config('order.rate_limits.create_per_minute', 8))
-                ->by(($userId !== null ? 'u'.$userId : 'g'.$request->ip()));
+                ->by($this->throttleBy($userId !== null ? 'u'.$userId : 'g'.$request->ip()));
         });
 
         RateLimiter::for('orders.cancel', function (Request $request) {
             $userId = $request->user()?->getAuthIdentifier();
 
             return Limit::perMinute((int) config('order.rate_limits.cancel_per_minute', 8))
-                ->by(($userId !== null ? 'u'.$userId : 'g'.$request->ip()));
+                ->by($this->throttleBy($userId !== null ? 'u'.$userId : 'g'.$request->ip()));
         });
 
         RateLimiter::for('payments.methods', function (Request $request) {
             $userId = $request->user()?->getAuthIdentifier();
 
             return Limit::perMinute((int) config('payments.rate_limits.methods_per_minute', 30))
-                ->by(($userId !== null ? 'u'.$userId : 'g'.$request->ip()));
+                ->by($this->throttleBy($userId !== null ? 'u'.$userId : 'g'.$request->ip()));
         });
 
         RateLimiter::for('payments.read', function (Request $request) {
             $userId = $request->user()?->getAuthIdentifier();
 
             return Limit::perMinute((int) config('payments.rate_limits.read_per_minute', 30))
-                ->by(($userId !== null ? 'u'.$userId : 'g'.$request->ip()));
+                ->by($this->throttleBy($userId !== null ? 'u'.$userId : 'g'.$request->ip()));
         });
 
         RateLimiter::for('payments.mutate', function (Request $request) {
             $userId = $request->user()?->getAuthIdentifier();
 
             return Limit::perMinute((int) config('payments.rate_limits.mutate_per_minute', 10))
-                ->by(($userId !== null ? 'u'.$userId : 'g'.$request->ip()));
+                ->by($this->throttleBy($userId !== null ? 'u'.$userId : 'g'.$request->ip()));
         });
 
         RateLimiter::for('payments.webhook', function (Request $request) {
             return Limit::perMinute((int) config('payments.rate_limits.webhook_per_minute', 120))
-                ->by('wh'.$request->ip());
+                ->by($this->throttleBy('wh'.$request->ip()));
         });
 
         RateLimiter::for('payments.simulate', function (Request $request) {
             $userId = $request->user()?->getAuthIdentifier();
 
             return Limit::perMinute((int) config('payments.rate_limits.simulate_per_minute', 20))
-                ->by(($userId !== null ? 'u'.$userId : 'g'.$request->ip()));
+                ->by($this->throttleBy($userId !== null ? 'u'.$userId : 'g'.$request->ip()));
         });
+
+        RateLimiter::for('shipments.customer', function (Request $request) {
+            $userId = $request->user()?->getAuthIdentifier();
+
+            return Limit::perMinute((int) config('shipping.rate_limits.customer_read_per_minute', 30))
+                ->by($this->throttleBy($userId !== null ? 'u'.$userId : 'g'.$request->ip()));
+        });
+
+        RateLimiter::for('shipments.admin-mutate', function (Request $request) {
+            $userId = (string) optional($request->user())->getAuthIdentifier();
+
+            return Limit::perMinute((int) config('shipping.rate_limits.admin_mutate_per_minute', 30))
+                ->by($this->throttleBy($userId.'|'.$request->ip()));
+        });
+
+        RateLimiter::for('shipments.webhook', function (Request $request) {
+            return Limit::perMinute((int) config('shipping.rate_limits.webhook_per_minute', 120))
+                ->by($this->throttleBy('swh'.$request->ip()));
+        });
+
+        RateLimiter::for('species.public', function (Request $request) {
+            return Limit::perMinute((int) config('species.rate_limits.public_per_minute', 120))
+                ->by($this->throttleBy((string) $request->ip()));
+        });
+
+        RateLimiter::for('species.public.list', function (Request $request) {
+            $searching = filled($request->query('q'));
+            $limit = $searching
+                ? (int) config('species.rate_limits.search_per_minute', 20)
+                : (int) config('species.rate_limits.list_per_minute', 60);
+
+            return Limit::perMinute($limit)->by($this->throttleBy((string) $request->ip()));
+        });
+
+        RateLimiter::for('legal.public', function (Request $request) {
+            return Limit::perMinute((int) config('legal.rate_limits.public_per_minute', 60))
+                ->by($this->throttleBy((string) $request->ip()));
+        });
+
+        RateLimiter::for('legal.evaluate', function (Request $request) {
+            return Limit::perMinute((int) config('legal.rate_limits.evaluate_per_minute', 20))
+                ->by($this->throttleBy((string) $request->ip()));
+        });
+
+        RateLimiter::for('legal.calendar', function (Request $request) {
+            return Limit::perMinute((int) config('legal.rate_limits.calendar_per_minute', 30))
+                ->by($this->throttleBy((string) $request->ip()));
+        });
+
+        RateLimiter::for('legal.admin-download', function (Request $request) {
+            $userId = $request->user()?->getAuthIdentifier() ?? 'guest';
+
+            return Limit::perMinute((int) config('legal.rate_limits.admin_download_per_minute', 30))
+                ->by($this->throttleBy($userId.'|'.$request->ip()));
+        });
+    }
+
+    /**
+     * Pest parallel workers share Redis. ThrottleRequestsWithRedis keys by IP
+     * without the cache prefix, so tests append a per-test nonce.
+     */
+    private function throttleBy(string $key): string
+    {
+        $isolation = (string) config('testing.rate_limit_isolation', '');
+
+        return $isolation === '' ? $key : $key.'|'.$isolation;
     }
 
     private function registerPublicCatalogObservers(): void
@@ -411,6 +510,16 @@ class AppServiceProvider extends ServiceProvider
         Event::listen(OrderCancelled::class, [ClosePaymentAttemptsOnOrderClosed::class, 'handleCancelled']);
     }
 
+    private function registerSpeciesListeners(): void
+    {
+        $listener = $this->app->make(RefreshSpeciesProjections::class);
+        Event::listen(SpeciesChanged::class, [$listener, 'changed']);
+        Event::listen(SpeciesPublished::class, [$listener, 'changed']);
+        Event::listen(SpeciesUnpublished::class, [$listener, 'changed']);
+        Event::listen(SpeciesArchived::class, [$listener, 'changed']);
+        MediaAsset::saved(fn (MediaAsset $asset) => $listener->mediaAssetSaved($asset));
+    }
+
     /**
      * Morph types are stored as short aliases so polymorphic rows never hard-code a
      * PHP namespace. Enforcing the map means a new morphable model fails loudly
@@ -425,6 +534,14 @@ class AppServiceProvider extends ServiceProvider
         Relation::enforceMorphMap([
             'product' => Product::class,
             'product_variant' => ProductVariant::class,
+            'species' => Species::class,
+            'legal_rule' => LegalRule::class,
+            'legal_source' => LegalSource::class,
+            'legal_document' => LegalDocument::class,
+            'legal_document_version' => LegalDocumentVersion::class,
+            'legal_provision' => LegalProvision::class,
+            'legal_season_definition' => LegalSeasonDefinition::class,
+            'legal_season_override' => LegalSeasonOverride::class,
             User::class => User::class,
             \App\Models\User::class => \App\Models\User::class,
         ]);

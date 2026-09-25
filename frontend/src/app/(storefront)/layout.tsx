@@ -9,7 +9,10 @@ export default function StorefrontLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex min-h-screen flex-col bg-background text-foreground">
+    <div
+      data-storefront
+      className="flex min-h-screen flex-col bg-background text-foreground"
+    >
       <SiteHeader />
       <main id="storefront-main" className="flex-1 outline-none" tabIndex={-1}>
         {children}

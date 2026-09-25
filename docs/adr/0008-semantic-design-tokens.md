@@ -2,7 +2,7 @@
 
 ## Status
 
-Accepted — Day 13
+Accepted — Day 13. Storefront visual tokens later scoped under `[data-storefront]` (Alpine Slate & Olive, Montserrat + Inter). Admin continues to use `:root` / `.dark`. Georgian display uses Noto Sans Georgian so Latin-only heading fonts never paint Mkhedruli.
 
 ## Context
 
@@ -14,7 +14,7 @@ Days 8–12 established a premium Caucasus Field Intelligence look and a public 
 
 2. **Surface contexts, not a second theme switch.** `[data-surface="dark"|"paper"|"pine"|"commerce"]` remaps semantic colors so the same button or price can sit on cinematic ink or editorial paper. Admin already has `next-themes`; the storefront does not add another customer-facing toggle.
 
-3. **Georgian typography is a layout constraint.** Fraunces is Latin-only and never applied under `:lang(ka)`. Noto Serif Georgian covers display; Noto Sans Georgian covers body. Technical labels drop `uppercase` and wide tracking in Georgian. Line-height for Georgian body is 1.7.
+3. **Georgian typography is a layout constraint.** Montserrat, Inter, and Fraunces are Latin-only and never applied under `:lang(ka)`. Storefront display and body use Noto Sans Georgian. Technical labels drop `uppercase` and wide tracking in Georgian. Line-height for Georgian body is 1.7.
 
 4. **Primitives do not fetch.** UI, layout, commerce presentation, editorial, and outdoor-context components receive already-resolved DTOs. Public Catalog API calls stay in `features/catalog`. Pricing and availability numbers are never recalculated in the browser.
 

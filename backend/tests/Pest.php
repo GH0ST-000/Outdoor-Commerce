@@ -24,4 +24,11 @@ uses()->beforeEach(function (): void {
         'Accept-Language' => 'ka',
     ]);
     $this->withCredentials();
-})->in('Feature/Cart', 'Feature/Checkout', 'Feature/Orders', 'Feature/Payments');
+})->in('Feature/Cart', 'Feature/Checkout', 'Feature/Orders', 'Feature/Payments', 'Feature/Shipping');
+
+uses()->beforeEach(function (): void {
+    $this->withHeaders([
+        'X-Locale' => 'ka',
+        'Accept-Language' => 'ka',
+    ]);
+})->in('Feature/Species');

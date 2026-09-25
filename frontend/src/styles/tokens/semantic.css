@@ -1,6 +1,6 @@
 /**
  * Semantic tokens — purpose, not pigment.
- * Warm ivory for commerce, espresso for cinematic bands. Green is status only.
+ * Admin: warm ivory + cinematic espresso. Storefront: [data-storefront] Alpine Slate.
  */
 
 :root {
@@ -167,4 +167,157 @@
   --text-muted: color-mix(in oklab, var(--warm-bone) 58%, transparent);
   color: var(--warm-bone);
   background-color: #14110f;
+}
+
+/**
+ * Alpine Slate & Olive — storefront only.
+ * Admin keeps the warm atelier tokens above.
+ */
+[data-storefront] {
+  color-scheme: dark;
+  --night-forest: var(--alpine-slate);
+  --deep-pine: #161616;
+  --field-green: var(--olive);
+  --moss: #6e7a58;
+  --stone: #8d8d8d;
+  --warm-bone: var(--mist);
+  --paper: var(--alpine-slate);
+  --charcoal: var(--alpine-slate);
+  --copper: var(--sand);
+  --ember: #d4b896;
+  --amber: var(--sand);
+  --espresso: var(--alpine-slate);
+  --ink: var(--mist);
+
+  --background: var(--alpine-slate);
+  --foreground: var(--mist);
+  --card: var(--alpine-raised);
+  --card-foreground: var(--mist);
+  --popover: #333333;
+  --popover-foreground: var(--mist);
+  --primary: var(--olive);
+  --primary-foreground: var(--mist);
+  --secondary: #242424;
+  --secondary-foreground: var(--mist);
+  --muted: #242424;
+  --muted-foreground: color-mix(in oklab, var(--mist) 62%, transparent);
+  --accent: var(--sand);
+  --accent-foreground: var(--alpine-slate);
+  --destructive: var(--danger-red);
+  --destructive-foreground: #fff7f7;
+  --border: rgba(229, 229, 229, 0.1);
+  --input: rgba(229, 229, 229, 0.16);
+  --ring: var(--sand);
+  --surface-dark: var(--alpine-slate);
+  --surface-light: var(--alpine-raised);
+  --surface-muted: #242424;
+  --action-primary: var(--olive);
+  --action-primary-hover: color-mix(in oklab, var(--olive) 82%, white);
+  --success: #6b8f4e;
+  --warning: var(--sand);
+  --info: #7a96a0;
+  --spruce-deep: #121212;
+  --background-default: var(--background);
+  --background-elevated: var(--card);
+  --background-inverse: var(--mist);
+  --surface-primary: var(--card);
+  --surface-secondary: var(--secondary);
+  --surface-emphasis: var(--alpine-slate);
+  --text-primary: var(--mist);
+  --text-secondary: color-mix(in oklab, var(--mist) 70%, transparent);
+  --text-muted: color-mix(in oklab, var(--mist) 55%, transparent);
+  --text-inverse: var(--mist);
+  --border-default: var(--border);
+  --border-subtle: rgba(229, 229, 229, 0.06);
+  --border-strong: rgba(229, 229, 229, 0.2);
+  --focus-ring: var(--sand);
+  --status-success: var(--success);
+  --status-warning: var(--warning);
+  --status-danger: var(--destructive);
+  --status-info: var(--info);
+  --header-background: color-mix(
+    in oklab,
+    var(--alpine-slate) 82%,
+    transparent
+  );
+  --shadow-subtle: 0 1px 0 rgba(255, 255, 255, 0.04) inset;
+  --shadow-raised: 0 18px 40px -28px rgba(0, 0, 0, 0.7);
+  --shadow-overlay: 0 28px 70px -32px rgba(0, 0, 0, 0.75);
+  --radius-sm: 0.25rem;
+  --radius-md: 0.375rem;
+  --radius-lg: 0.5rem;
+  --radius-xl: 0.75rem;
+  --radius-2xl: 0.875rem;
+  --font-sans:
+    var(--font-inter), var(--font-noto-georgian), "Noto Sans Georgian",
+    sans-serif;
+  --font-display:
+    var(--font-montserrat), var(--font-noto-georgian), "Noto Sans Georgian",
+    sans-serif;
+  color: var(--mist);
+  background-color: var(--alpine-slate);
+  font-family: var(--font-sans);
+}
+
+[data-storefront] [data-surface="dark"],
+[data-storefront] [data-surface="ink"],
+[data-storefront] [data-surface="pine"],
+[data-storefront] [data-surface="light"],
+[data-storefront] [data-surface="paper"],
+[data-storefront] [data-surface="commerce"] {
+  --background: var(--alpine-slate);
+  --foreground: var(--mist);
+  --card: var(--alpine-raised);
+  --card-foreground: var(--mist);
+  --muted: #242424;
+  --muted-foreground: color-mix(in oklab, var(--mist) 62%, transparent);
+  --primary: var(--olive);
+  --primary-foreground: var(--mist);
+  --action-primary: var(--olive);
+  --action-primary-hover: color-mix(in oklab, var(--olive) 82%, white);
+  --accent: var(--sand);
+  --accent-foreground: var(--alpine-slate);
+  --border: rgba(229, 229, 229, 0.1);
+  --ring: var(--sand);
+  --header-background: color-mix(
+    in oklab,
+    var(--alpine-slate) 82%,
+    transparent
+  );
+  --text-primary: var(--mist);
+  --text-secondary: color-mix(in oklab, var(--mist) 70%, transparent);
+  --text-muted: color-mix(in oklab, var(--mist) 55%, transparent);
+  --text-inverse: var(--mist);
+  color: var(--mist);
+  background-color: var(--alpine-slate);
+}
+
+.dark [data-storefront],
+.dark [data-storefront] [data-surface="light"],
+.dark [data-storefront] [data-surface="paper"],
+.dark [data-storefront] [data-surface="commerce"] {
+  --background: var(--alpine-slate);
+  --foreground: var(--mist);
+  --card: var(--alpine-raised);
+  --card-foreground: var(--mist);
+  --muted: #242424;
+  --muted-foreground: color-mix(in oklab, var(--mist) 62%, transparent);
+  --primary: var(--olive);
+  --primary-foreground: var(--mist);
+  --action-primary: var(--olive);
+  --action-primary-hover: color-mix(in oklab, var(--olive) 82%, white);
+  --accent: var(--sand);
+  --accent-foreground: var(--alpine-slate);
+  --border: rgba(229, 229, 229, 0.1);
+  --ring: var(--sand);
+  --header-background: color-mix(
+    in oklab,
+    var(--alpine-slate) 82%,
+    transparent
+  );
+  --text-primary: var(--mist);
+  --text-secondary: color-mix(in oklab, var(--mist) 70%, transparent);
+  --text-muted: color-mix(in oklab, var(--mist) 55%, transparent);
+  color: var(--mist);
+  background-color: var(--alpine-slate);
 }

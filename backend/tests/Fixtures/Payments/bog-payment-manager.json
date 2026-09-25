@@ -1,0 +1,48 @@
+{
+  "_comment": "Sanitized Bank of Georgia Payment Manager fixtures. Schema reviewed 2026-09-23 from https://api.bog.ge/docs/en/payments/. No real credentials, customers, or bank private keys.",
+  "oauth_success": {
+    "access_token": "test-jwt",
+    "token_type": "Bearer",
+    "expires_in": 3600
+  },
+  "oauth_rejection": {
+    "error": "invalid_client"
+  },
+  "create_order_success": {
+    "id": "00000000-0000-4000-8000-000000000001",
+    "_links": {
+      "details": {
+        "href": "https://api.bog.ge/payments/v1/receipt/00000000-0000-4000-8000-000000000001"
+      },
+      "redirect": {
+        "href": "https://payment.bog.ge/?order_id=00000000-0000-4000-8000-000000000001"
+      }
+    }
+  },
+  "payment_details_completed": {
+    "order_id": "00000000-0000-4000-8000-000000000001",
+    "external_order_id": "11111111-1111-1111-1111-111111111111",
+    "order_status": { "key": "completed", "value": "completed" },
+    "purchase_units": {
+      "request_amount": "100.50",
+      "transfer_amount": "100.50",
+      "currency_code": "GEL"
+    },
+    "payment_detail": { "transaction_id": "txn-fixture" }
+  },
+  "callback_completed": {
+    "event": "order_payment",
+    "zoned_request_time": "2026-09-23T08:00:00.000000Z",
+    "body": {
+      "order_id": "00000000-0000-4000-8000-000000000001",
+      "external_order_id": "11111111-1111-1111-1111-111111111111",
+      "order_status": { "key": "completed", "value": "completed" },
+      "purchase_units": {
+        "request_amount": "100.50",
+        "transfer_amount": "100.50",
+        "currency_code": "GEL"
+      },
+      "payment_detail": { "transaction_id": "txn-fixture" }
+    }
+  }
+}

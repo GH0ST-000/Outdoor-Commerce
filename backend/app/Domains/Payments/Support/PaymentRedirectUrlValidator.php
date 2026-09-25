@@ -8,7 +8,10 @@ use App\Domains\Payments\Exceptions\PaymentException;
 
 final class PaymentRedirectUrlValidator
 {
-    public function validate(string $url): string
+    /**
+     * @param  list<string>  $additionalHosts
+     */
+    public function validate(string $url, array $additionalHosts = []): string
     {
         $max = max(1, (int) config('payments.max_redirect_url_length', 2048));
         if ($url === '' || strlen($url) > $max) {
@@ -41,8 +44,12 @@ final class PaymentRedirectUrlValidator
             throw PaymentException::invalidRedirect();
         }
 
-        $allowedHosts = config('payments.allowed_redirect_hosts', []);
-        if (! is_array($allowedHosts) || $allowedHosts === [] || ! in_array($host, $allowedHosts, true)) {
+        $configured = config('payments.allowed_redirect_hosts', []);
+        $allowedHosts = array_values(array_unique(array_map(
+            static fn (mixed $value): string => strtolower((string) $value),
+            array_merge(is_array($configured) ? $configured : [], $additionalHosts),
+        )));
+        if ($allowedHosts === [] || ! in_array($host, $allowedHosts, true)) {
             throw PaymentException::invalidRedirect();
         }
 

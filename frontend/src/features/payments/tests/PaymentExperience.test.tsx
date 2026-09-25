@@ -161,6 +161,37 @@ describe("PaymentSection", () => {
       await screen.findByText(/not available for this order/i),
     ).toBeInTheDocument();
   });
+
+  it("shows Bank of Georgia hosted payment without card fields or a test badge", async () => {
+    vi.mocked(listPaymentMethods).mockResolvedValue([
+      {
+        code: "bog_hosted_card",
+        type: "hosted_redirect",
+        name: "Bank of Georgia",
+        description:
+          "You will be redirected to Bank of Georgia’s secure payment page.",
+        icon: "bog",
+        development_only: false,
+        supported_currencies: ["GEL"],
+      },
+    ]);
+    render(
+      <TestProviders>
+        <PaymentSection
+          order={order}
+          localeTag="en"
+          onOrderRefresh={async () => undefined}
+        />
+      </TestProviders>,
+    );
+    expect(await screen.findByText("Bank of Georgia")).toBeInTheDocument();
+    expect(
+      screen.getByText(/Bank of Georgia’s secure payment page/i),
+    ).toBeInTheDocument();
+    expect(screen.queryByText(/Test provider/i)).not.toBeInTheDocument();
+    expect(screen.queryByLabelText(/card number/i)).not.toBeInTheDocument();
+    expect(screen.queryByAltText(/visa/i)).not.toBeInTheDocument();
+  });
 });
 
 describe("PaymentReturnPageView", () => {

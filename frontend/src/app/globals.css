@@ -141,7 +141,7 @@
   }
 
   .sf-topo {
-    background-image: url("data:image/svg+xml,%3Csvg width='120' height='120' viewBox='0 0 120 120' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M10 60c20-28 40-28 60 0s40 28 60 0' fill='none' stroke='%23566651' stroke-opacity='0.18' stroke-width='1'/%3E%3Cpath d='M10 80c20-28 40-28 60 0s40 28 60 0' fill='none' stroke='%23566651' stroke-opacity='0.12' stroke-width='1'/%3E%3C/svg%3E");
+    background-image: url("data:image/svg+xml,%3Csvg width='120' height='120' viewBox='0 0 120 120' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M10 60c20-28 40-28 60 0s40 28 60 0' fill='none' stroke='%23556B2F' stroke-opacity='0.22' stroke-width='1'/%3E%3Cpath d='M10 80c20-28 40-28 60 0s40 28 60 0' fill='none' stroke='%23556B2F' stroke-opacity='0.14' stroke-width='1'/%3E%3C/svg%3E");
   }
 
   .sf-reveal {
@@ -220,6 +220,46 @@
   .sf-nav-label {
     white-space: nowrap;
   }
+}
+
+[data-storefront] [data-slot="button"] {
+  border-radius: 0.5rem;
+}
+
+[data-storefront] h1,
+[data-storefront] h2,
+[data-storefront] h3,
+[data-storefront] .sf-display,
+[data-storefront] .type-display-xl,
+[data-storefront] .type-display-l,
+[data-storefront] .type-h1,
+[data-storefront] .type-h2,
+[data-storefront] .type-h3 {
+  font-family: var(--font-display);
+}
+
+[data-storefront] .sf-display,
+[data-storefront] .type-display-xl,
+[data-storefront] .type-display-l,
+[data-storefront] .type-h1 {
+  font-weight: var(--font-weight-bold);
+  letter-spacing: -0.04em;
+  text-transform: none;
+}
+
+[data-storefront]:lang(ka) h1,
+[data-storefront]:lang(ka) h2,
+[data-storefront]:lang(ka) h3,
+[data-storefront]:lang(ka) .sf-display,
+[data-storefront]:lang(ka) .type-display-xl,
+[data-storefront]:lang(ka) .type-display-l,
+[data-storefront]:lang(ka) .type-h1,
+[data-storefront]:lang(ka) .type-h2,
+[data-storefront]:lang(ka) .type-h3,
+[data-storefront][lang="ka"] .sf-display,
+[data-storefront] [lang="ka"] .sf-display {
+  font-family: var(--font-geo), sans-serif;
+  letter-spacing: 0;
 }
 
 @keyframes sheen {

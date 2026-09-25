@@ -73,6 +73,19 @@ return [
             'report' => false,
         ],
 
+        /*
+         | Official legal files. Private, never served by the web server.
+         | Downloads go through authorized admin endpoints only.
+         */
+        'legal_private' => [
+            'driver' => 'local',
+            'root' => storage_path('app/private/legal'),
+            'visibility' => 'private',
+            'serve' => false,
+            'throw' => false,
+            'report' => false,
+        ],
+
         's3' => [
             'driver' => 's3',
             'key' => env('AWS_ACCESS_KEY_ID'),

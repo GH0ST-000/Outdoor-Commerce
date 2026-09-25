@@ -78,7 +78,7 @@ describe("HomeView", () => {
     expect(
       screen.getByRole("heading", {
         level: 1,
-        name: /აღჭურვილობა ნადირობისთვის/,
+        name: /ველური საქართველო/,
       }),
     ).toBeInTheDocument();
     expect(

@@ -4,7 +4,7 @@ Canonical token, component, and contribution rules: [design-system.md](design-sy
 
 ## Direction
 
-**Caucasus Field Intelligence** — premium Georgian outdoor outfitter: deep pine and night forest surfaces, warm bone editorial sections, sparse copper accent, river-blue focus.
+**Alpine Slate & Olive** — premium Georgian outdoor outfitter: `#1A1A1A` / `#2C2C2C` surfaces, sand `#C4A484` accent, technical olive `#556B2F` actions, mist `#E5E5E5` type. Montserrat headings with Inter body. Scoped to `[data-storefront]`; admin is unchanged.
 
 ## Temporary brand
 

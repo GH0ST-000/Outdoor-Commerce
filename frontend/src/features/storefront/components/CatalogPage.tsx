@@ -618,7 +618,16 @@ export function CatalogPage({
         </div>
       </div>
 
-      <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_300px]">
+      <div className="grid items-start gap-6 lg:grid-cols-[280px_minmax(0,1fr)]">
+        <aside className="hidden lg:block" aria-label={t.catalog.filters}>
+          <div className="sticky top-24 rounded-[var(--radius-xl)] border border-border bg-card p-5">
+            {filterPanel(
+              query,
+              (next, event) => navigate(next, event),
+              "desktop",
+            )}
+          </div>
+        </aside>
         <div className="min-w-0 space-y-4">
           <h2 id={resultsId} className="sr-only">
             {t.catalog.resultsHeading}
@@ -697,16 +706,6 @@ export function CatalogPage({
             />
           ) : null}
         </div>
-
-        <aside className="hidden lg:block" aria-label={t.catalog.filters}>
-          <div className="sticky top-24 rounded-2xl border border-border bg-card p-5 shadow-[0_18px_40px_-28px_rgba(11,15,12,0.35)]">
-            {filterPanel(
-              query,
-              (next, event) => navigate(next, event),
-              "desktop",
-            )}
-          </div>
-        </aside>
       </div>
 
       <Drawer

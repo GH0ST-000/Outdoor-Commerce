@@ -76,15 +76,24 @@ Ordinary customers have **no** administrative role.
 | `promotions.publish` | Yes | No | No | No | No |
 | `orders.view` | Yes | No | No | Yes | No |
 | `orders.manage` | Yes | No | No | Yes | No |
-| `legal-rules.view` | Yes | No | No | No | Yes |
-| `legal-rules.manage` | Yes | No | No | No | Yes |
-| `legal-rules.publish` | Yes | No | No | No | Yes |
+| `fulfillment.view` | Yes | No | No | Yes | No |
+| `fulfillment.manage` | Yes | No | No | Yes | No |
+| `legal-rules.view` / `legal-rules.manage` / `legal-rules.publish` | Yes | No | No | No | Yes |
+| `legal.sources.view` / `manage` / `verify` | Yes | No | No | No | Yes |
+| `legal.documents.*` / `legal.versions.*` / `legal.provisions.manage` | Yes | No | No | No | Yes |
+| `legal.rules.create` / `update` / `review` / `publish` | Yes | No | No | No | Yes |
+| `legal.rules.supersede` / `legal.conflicts.resolve` | Yes | No | No | No | No |
+| `legal.conflicts.view` / `legal.audit.view` | Yes | No | No | No | Yes |
 | `content.view` | Yes | Yes | No | No | Yes |
 | `content.manage` | Yes | No | No | No | No |
 | `content.publish` | Yes | No | No | No | No |
 | `recommendations.view` | Yes | Yes | No | No | No |
 | `recommendations.manage` | Yes | Yes | No | No | No |
 | `operations.view` | Yes | No | No | No | No |
+| `species.view` | Yes | Yes | No | No | Yes |
+| `species.create` / `update` / `delete` / `review` / `publish` / `archive` / `manage_*` / `view_revisions` / `restore_revision` | Yes | No | No | No | Yes |
+
+Day 24 species permissions: legal-editor authors and publishes biological species records. Catalog-manager may view. See [docs/species.md](species.md).
 
 ### Matrix differences from the product brief
 

@@ -11,6 +11,7 @@ final class PaymentWebhookHeaderAllowlist
      */
     private const ALLOWED = [
         'content-type',
+        'callback-signature',
         'x-test-signature',
         'x-test-timestamp',
         'x-correlation-id',

@@ -136,4 +136,34 @@ class PaymentException extends DomainException implements ProvidesErrorDetails
     {
         return new self('Test payment simulation is not available.', 'PAYMENT_SIMULATE_FORBIDDEN');
     }
+
+    public static function configurationInvalid(): self
+    {
+        return new self('The payment provider is not configured correctly.', 'PAYMENT_PROVIDER_CONFIGURATION');
+    }
+
+    public static function authenticationFailed(): self
+    {
+        return new self('The payment provider could not authenticate this request.', 'PAYMENT_PROVIDER_AUTHENTICATION');
+    }
+
+    public static function malformedProviderResponse(): self
+    {
+        return new self('The payment provider returned an unusable response.', 'PAYMENT_PROVIDER_MALFORMED_RESPONSE');
+    }
+
+    public static function basketMismatch(): self
+    {
+        return new self('The order basket does not reconcile with the payment total.', 'PAYMENT_BASKET_MISMATCH');
+    }
+
+    public static function moneyInvalid(): self
+    {
+        return new self('The payment amount cannot be expressed for this provider.', 'PAYMENT_MONEY_INVALID');
+    }
+
+    public static function ttlInsufficient(): self
+    {
+        return new self('Not enough time remains in the payment window to start a bank payment.', 'PAYMENT_TTL_INSUFFICIENT');
+    }
 }

@@ -2,7 +2,13 @@ import { PERMISSIONS } from "@/features/admin/permissions/permissions";
 import { hasPermission } from "@/features/admin/permissions/has-permission";
 
 export type AdminNavSectionId =
-  "overview" | "catalog" | "inventory" | "pricing" | "access";
+  | "overview"
+  | "catalog"
+  | "inventory"
+  | "pricing"
+  | "content"
+  | "legal"
+  | "access";
 
 export type AdminNavItem = {
   id: string;
@@ -21,11 +27,13 @@ export const ADMIN_NAV_SECTIONS: readonly {
   { id: "catalog", label: "Catalog" },
   { id: "inventory", label: "Inventory" },
   { id: "pricing", label: "Pricing" },
+  { id: "content", label: "Species" },
+  { id: "legal", label: "Legal" },
   { id: "access", label: "Access & security" },
 ] as const;
 
 /**
- * Finished admin modules only. Orders/legal stay hidden until their UI lands.
+ * Finished admin modules only. Orders stay hidden until their UI lands.
  */
 export const ADMIN_NAV_ITEMS: readonly AdminNavItem[] = [
   {
@@ -90,6 +98,20 @@ export const ADMIN_NAV_ITEMS: readonly AdminNavItem[] = [
     href: "/admin/pricing/promotions",
     permission: PERMISSIONS.PROMOTIONS_VIEW,
     section: "pricing",
+  },
+  {
+    id: "species",
+    label: "Species",
+    href: "/admin/species",
+    permission: PERMISSIONS.SPECIES_VIEW,
+    section: "content",
+  },
+  {
+    id: "legal",
+    label: "Legal sources",
+    href: "/admin/legal",
+    permission: PERMISSIONS.LEGAL_RULES_VIEW,
+    section: "legal",
   },
   {
     id: "users",

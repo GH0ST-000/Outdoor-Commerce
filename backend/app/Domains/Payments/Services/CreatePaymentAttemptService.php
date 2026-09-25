@@ -15,7 +15,9 @@ use App\Domains\Orders\Enums\PaymentStatus;
 use App\Domains\Orders\Models\Order;
 use App\Domains\Payments\DTOs\CreatePaymentAttemptData;
 use App\Domains\Payments\DTOs\CreateProviderPaymentRequestData;
+use App\Domains\Payments\DTOs\ProviderPaymentBasketItemData;
 use App\Domains\Payments\Enums\PaymentAttemptStatus;
+use App\Domains\Payments\Enums\PaymentFailureCategory;
 use App\Domains\Payments\Events\PaymentAttemptCreated;
 use App\Domains\Payments\Events\PaymentRequiresAction;
 use App\Domains\Payments\Exceptions\PaymentException;
@@ -36,6 +38,7 @@ final class CreatePaymentAttemptService
         private readonly PaymentMethodRegistry $methods,
         private readonly PaymentProviderRegistry $providers,
         private readonly PaymentStateMachine $states,
+        private readonly ApplyPaymentFailureService $failure,
         private readonly PaymentDeadlockRetry $retry,
         private readonly Clock $clock,
         private readonly PaymentLogger $logger,
@@ -138,24 +141,47 @@ final class CreatePaymentAttemptService
 
     private function callProvider(PaymentAttempt $attempt, OrderActorData $actor): PaymentAttempt
     {
-        $order = $attempt->order()->firstOrFail();
+        $order = $attempt->order()->with('items')->firstOrFail();
         $provider = $this->providers->resolve($attempt->provider);
         $started = microtime(true);
 
-        $request = new CreateProviderPaymentRequestData(
-            merchantReference: $attempt->public_id,
-            amountMinor: $attempt->amount_minor,
-            currency: $attempt->currency,
-            description: $order->order_number,
-            returnUrl: rtrim((string) config('payments.return_url'), '/').'?order_id='.$order->public_id,
-            callbackUrl: rtrim((string) config('payments.app_url'), '/').'/api/v1/payments/webhooks/'.$attempt->provider,
-            customerLocale: $actor->locale(),
-            customerEmail: null,
-            customerPhone: null,
-            metadata: ['order_public_id' => $order->public_id],
-        );
+        $returnUrl = rtrim((string) config('payments.return_url'), '/').'?order_id='.$order->public_id;
+        $failureUrl = $returnUrl;
+        $callbackUrl = rtrim((string) config('payments.app_url'), '/').'/api/v1/payments/webhooks/'.$attempt->provider;
+        if ($attempt->provider === 'bog') {
+            $configuredSuccess = (string) config('payments.providers.bog.success_url', '');
+            $configuredFail = (string) config('payments.providers.bog.fail_url', '');
+            $configuredCallback = (string) config('payments.providers.bog.callback_url', '');
+            if ($configuredSuccess !== '') {
+                $returnUrl = $configuredSuccess.(str_contains($configuredSuccess, '?') ? '&' : '?').'order_id='.$order->public_id;
+            }
+            if ($configuredFail !== '') {
+                $failureUrl = $configuredFail.(str_contains($configuredFail, '?') ? '&' : '?').'order_id='.$order->public_id;
+            }
+            if ($configuredCallback !== '') {
+                $callbackUrl = $configuredCallback;
+            }
+        }
 
         try {
+            $request = new CreateProviderPaymentRequestData(
+                merchantReference: $attempt->public_id,
+                amountMinor: $attempt->amount_minor,
+                currency: $attempt->currency,
+                description: $order->order_number,
+                returnUrl: $returnUrl,
+                callbackUrl: $callbackUrl,
+                customerLocale: $actor->locale(),
+                customerEmail: null,
+                customerPhone: null,
+                metadata: ['order_public_id' => $order->public_id],
+                basketItems: $this->basketItems($order),
+                deliveryAmountMinor: $order->delivery_total_minor,
+                discountTotalMinor: $order->discount_total_minor,
+                reservationExpiresAt: $order->reservation_expires_at,
+                providerIdempotencyKey: $attempt->public_id,
+                failureReturnUrl: $failureUrl,
+            );
             $result = $provider->createPayment($request);
         } catch (PaymentProviderTimeoutException $exception) {
             $this->logger->warning('provider_timeout', [
@@ -173,6 +199,25 @@ final class CreatePaymentAttemptService
                     return $locked;
                 });
             });
+        } catch (PaymentException $exception) {
+            $this->retry->run(function () use ($attempt, $exception): void {
+                DB::transaction(function () use ($attempt, $exception): void {
+                    $locked = PaymentAttempt::query()->whereKey($attempt->id)->lockForUpdate()->firstOrFail();
+                    $order = Order::query()->whereKey($locked->order_id)->lockForUpdate()->firstOrFail();
+                    $category = $exception->errorCode() === 'PAYMENT_PROVIDER_UNAVAILABLE'
+                        ? PaymentFailureCategory::ProviderUnavailable
+                        : PaymentFailureCategory::ValidationFailed;
+                    $this->failure->execute(
+                        $locked,
+                        $order,
+                        PaymentAttemptStatus::Failed,
+                        $category,
+                        $exception->errorCode(),
+                    );
+                });
+            });
+
+            throw $exception;
         }
 
         $this->logger->info('provider_create', [
@@ -240,5 +285,44 @@ final class CreatePaymentAttemptService
         if ($active < 1) {
             throw PaymentException::reservationMissing();
         }
+    }
+
+    /**
+     * @return list<ProviderPaymentBasketItemData>
+     */
+    private function basketItems(Order $order): array
+    {
+        $items = [];
+        foreach ($order->items as $item) {
+            $unit = $item->unit_effective_price_minor;
+            if ($item->quantity > 0 && $item->line_total_minor === ($unit * $item->quantity)) {
+                $unitPrice = $unit;
+                $unitDiscount = 0;
+            } elseif ($item->quantity > 0 && ($item->line_total_minor % $item->quantity) === 0) {
+                $unitPrice = intdiv($item->line_total_minor, $item->quantity);
+                $unitDiscount = 0;
+            } else {
+                $this->logger->error('basket_line_unreconcilable', [
+                    'order_public_id' => $order->public_id,
+                    'item_public_id' => $item->public_id,
+                ]);
+                throw PaymentException::basketMismatch();
+            }
+
+            $media = $item->media_snapshot;
+            $image = is_array($media) && is_string($media['url'] ?? null) ? $media['url'] : null;
+
+            $items[] = new ProviderPaymentBasketItemData(
+                productId: $item->public_id,
+                description: trim($item->product_name.' '.$item->variant_name),
+                quantity: $item->quantity,
+                unitPriceMinor: $unitPrice,
+                unitDiscountMinor: $unitDiscount,
+                lineTotalMinor: $item->line_total_minor,
+                imageUrl: $image,
+            );
+        }
+
+        return $items;
     }
 }

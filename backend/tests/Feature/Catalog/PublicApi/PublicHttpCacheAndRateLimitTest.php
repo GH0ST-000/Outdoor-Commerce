@@ -3,7 +3,6 @@
 declare(strict_types=1);
 
 use App\Domains\Catalog\Services\CatalogCache;
-use Illuminate\Support\Facades\Cache;
 use Tests\Support\PublicCatalogFixtures;
 
 it('emits etag cache-control content-language and 304 without a body', function (): void {
@@ -33,7 +32,7 @@ it('emits etag cache-control content-language and 304 without a body', function 
 
 it('does not spend the search budget on ordinary product list requests', function (): void {
     PublicCatalogFixtures::publicProduct(['ka_name' => 'Searchable optic', 'sku' => 'PRD-SEARCH-1']);
-    Cache::flush();
+    $this->flushApplicationCacheSafely();
     config(['catalog.public.rate_limits.search_per_minute' => 2]);
 
     $this->getJson('/api/v1/catalog/products')->assertOk();
@@ -49,7 +48,7 @@ it('does not spend the search budget on ordinary product list requests', functio
 
 it('rate limits excessive public catalog browsing and returns standard headers', function (): void {
     PublicCatalogFixtures::priceList();
-    Cache::flush();
+    $this->flushApplicationCacheSafely();
     config(['catalog.public.rate_limits.browse_per_minute' => 3]);
 
     $this->getJson('/api/v1/catalog/categories')->assertOk();

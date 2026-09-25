@@ -39,10 +39,44 @@ enum Permission: string
 
     case OrdersView = 'orders.view';
     case OrdersManage = 'orders.manage';
+    case FulfillmentView = 'fulfillment.view';
+    case FulfillmentManage = 'fulfillment.manage';
 
     case LegalRulesView = 'legal-rules.view';
     case LegalRulesManage = 'legal-rules.manage';
     case LegalRulesPublish = 'legal-rules.publish';
+
+    case LegalSourcesView = 'legal.sources.view';
+    case LegalSourcesManage = 'legal.sources.manage';
+    case LegalSourcesVerify = 'legal.sources.verify';
+    case LegalDocumentsView = 'legal.documents.view';
+    case LegalDocumentsManage = 'legal.documents.manage';
+    case LegalVersionsUpload = 'legal.versions.upload';
+    case LegalVersionsReview = 'legal.versions.review';
+    case LegalProvisionsManage = 'legal.provisions.manage';
+    case LegalRulesCreate = 'legal.rules.create';
+    case LegalRulesUpdate = 'legal.rules.update';
+    case LegalRulesReview = 'legal.rules.review';
+    case LegalRulesPublishAction = 'legal.rules.publish';
+    case LegalRulesSupersede = 'legal.rules.supersede';
+    case LegalConflictsView = 'legal.conflicts.view';
+    case LegalConflictsResolve = 'legal.conflicts.resolve';
+    case LegalAuditView = 'legal.audit.view';
+
+    case LegalSeasonsView = 'legal.seasons.view';
+    case LegalSeasonsCreate = 'legal.seasons.create';
+    case LegalSeasonsUpdate = 'legal.seasons.update';
+    case LegalSeasonsReview = 'legal.seasons.review';
+    case LegalSeasonsPublish = 'legal.seasons.publish';
+    case LegalSeasonsSupersede = 'legal.seasons.supersede';
+    case LegalSeasonsGenerate = 'legal.seasons.generate';
+    case LegalSeasonOverridesView = 'legal.season_overrides.view';
+    case LegalSeasonOverridesCreate = 'legal.season_overrides.create';
+    case LegalSeasonOverridesReview = 'legal.season_overrides.review';
+    case LegalSeasonOverridesPublish = 'legal.season_overrides.publish';
+    case LegalCalendarPreview = 'legal.calendar.preview';
+    case LegalCalendarCoverage = 'legal.calendar.coverage';
+    case LegalCalendarGenerationRunsView = 'legal.calendar.generation_runs.view';
 
     case ContentView = 'content.view';
     case ContentManage = 'content.manage';
@@ -52,6 +86,20 @@ enum Permission: string
     case RecommendationsManage = 'recommendations.manage';
 
     case OperationsView = 'operations.view';
+
+    case SpeciesView = 'species.view';
+    case SpeciesCreate = 'species.create';
+    case SpeciesUpdate = 'species.update';
+    case SpeciesDelete = 'species.delete';
+    case SpeciesReview = 'species.review';
+    case SpeciesPublish = 'species.publish';
+    case SpeciesArchive = 'species.archive';
+    case SpeciesManageTaxonomy = 'species.manage_taxonomy';
+    case SpeciesManageAliases = 'species.manage_aliases';
+    case SpeciesManageSources = 'species.manage_sources';
+    case SpeciesManageMedia = 'species.manage_media';
+    case SpeciesViewRevisions = 'species.view_revisions';
+    case SpeciesRestoreRevision = 'species.restore_revision';
 
     /**
      * @return list<self>

@@ -9,9 +9,11 @@ use App\Domains\Catalog\PublicApi\Services\PublicCatalogContextFactory;
 use App\Domains\Catalog\Search\Exceptions\SearchUnavailableException;
 use App\Domains\Checkout\Exceptions\CheckoutException;
 use App\Domains\Checkout\Exceptions\CheckoutIdempotencyConflictException;
+use App\Domains\Hunting\Exceptions\SpeciesException;
 use App\Domains\Identity\Exceptions\AuthenticationFailedException;
 use App\Domains\Identity\Exceptions\LastActiveAdminException;
 use App\Domains\Inventory\Exceptions\InventoryStateConflictException;
+use App\Domains\Legal\Exceptions\LegalException;
 use App\Domains\Orders\Exceptions\OrderException;
 use App\Domains\Orders\Exceptions\OrderIdempotencyConflictException;
 use App\Domains\Payments\Exceptions\PaymentException;
@@ -20,6 +22,8 @@ use App\Domains\Pricing\Exceptions\PricingStateConflictException;
 use App\Domains\Shared\Exceptions\DomainException;
 use App\Domains\Shared\Exceptions\ProvidesErrorDetails;
 use App\Domains\Shared\Support\CorrelationId;
+use App\Domains\Shipping\Exceptions\ShipmentException;
+use App\Domains\Shipping\Exceptions\ShipmentIdempotencyConflictException;
 use App\Http\Middleware\EnsureAdminAccess;
 use App\Http\Middleware\EnsureCorrelationId;
 use App\Http\Middleware\EnsureHasPermission;
@@ -52,14 +56,20 @@ return Application::configure(basePath: dirname(__DIR__))
         $schedule->command('checkout:expire-sessions')->everyFiveMinutes();
         $schedule->command('orders:expire-unpaid')->everyMinute();
         $schedule->command('payments:reconcile')->everyMinute();
+        $schedule->command('shipments:reconcile')->everyFiveMinutes();
+        $schedule->command('shipments:detect-stale')->hourly();
         $schedule->command('catalog:refresh-time-sensitive-projections')->everyMinute();
         $schedule->command('carts:expire')->daily();
+        $schedule->command('legal:check-sources')->daily();
+        $schedule->command('legal-calendar:extend-horizon')->daily()->withoutOverlapping();
+        $schedule->command('legal-calendar:verify-projections')->daily()->withoutOverlapping();
     })
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->statefulApi();
 
         $middleware->validateCsrfTokens(except: [
             'api/v1/payments/webhooks/*',
+            'api/v1/shipments/webhooks/*',
         ]);
 
         $middleware->api(prepend: [
@@ -167,6 +177,61 @@ return Application::configure(basePath: dirname(__DIR__))
         $exceptions->render(function (PaymentIdempotencyConflictException $e, Request $request) {
             if ($request->is('api/*') || $request->expectsJson()) {
                 return ApiErrorResponse::make($request, $e->errorCode(), $e->getMessage(), 409);
+            }
+        });
+
+        $exceptions->render(function (ShipmentIdempotencyConflictException $e, Request $request) {
+            if ($request->is('api/*') || $request->expectsJson()) {
+                return ApiErrorResponse::make($request, $e->errorCode(), $e->getMessage(), 409);
+            }
+        });
+
+        $exceptions->render(function (ShipmentException $e, Request $request) {
+            if ($request->is('api/*') || $request->expectsJson()) {
+                $status = match ($e->errorCode()) {
+                    'SHIPMENT_NOT_FOUND',
+                    'SHIPMENT_PROVIDER_UNKNOWN' => 404,
+                    'SHIPMENT_VERSION_CONFLICT',
+                    'SHIPMENT_IDEMPOTENCY_CONFLICT',
+                    'SHIPMENT_ALREADY_DISPATCHED',
+                    'SHIPMENT_ALREADY_DELIVERED',
+                    'SHIPMENT_ALREADY_COLLECTED' => 409,
+                    'SHIPMENT_SIGNATURE_INVALID' => 400,
+                    'SHIPMENT_PAYLOAD_TOO_LARGE' => 413,
+                    default => 422,
+                };
+
+                return ApiErrorResponse::make(
+                    $request,
+                    $e->errorCode(),
+                    $e->getMessage(),
+                    $status,
+                    $e->errorDetails() !== [] ? $e->errorDetails() : null,
+                );
+            }
+        });
+
+        $exceptions->render(function (SpeciesException $e, Request $request) {
+            if ($request->is('api/*') || $request->expectsJson()) {
+                return ApiErrorResponse::make(
+                    $request,
+                    $e->errorCode(),
+                    $e->getMessage(),
+                    $e->httpStatus(),
+                    $e->errorDetails() !== [] ? $e->errorDetails() : null,
+                );
+            }
+        });
+
+        $exceptions->render(function (LegalException $e, Request $request) {
+            if ($request->is('api/*') || $request->expectsJson()) {
+                return ApiErrorResponse::make(
+                    $request,
+                    $e->errorCode(),
+                    $e->getMessage(),
+                    $e->httpStatus(),
+                    $e->errorDetails() !== [] ? $e->errorDetails() : null,
+                );
             }
         });
 
@@ -330,6 +395,8 @@ return Application::configure(basePath: dirname(__DIR__))
         $exceptions->render(function (TooManyRequestsHttpException $e, Request $request) {
             if ($request->is('api/*') || $request->expectsJson()) {
                 $code = match (true) {
+                    $request->is('api/v1/species*') => 'SPECIES_RATE_LIMITED',
+                    $request->is('api/v1/legal*') => 'LEGAL_RATE_LIMITED',
                     $request->is('api/v1/search*') => 'SEARCH_RATE_LIMITED',
                     $request->is('api/v1/catalog/*') => 'CATALOG_RATE_LIMITED',
                     $request->is('api/v1/cart*') => 'CART_RATE_LIMITED',

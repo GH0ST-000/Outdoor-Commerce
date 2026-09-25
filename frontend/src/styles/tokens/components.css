@@ -9,3 +9,17 @@
   --badge-sale-background: color-mix(in oklab, var(--copper) 16%, transparent);
   --badge-sale-foreground: var(--copper);
 }
+
+[data-storefront] {
+  --button-primary-background: var(--olive);
+  --button-primary-foreground: var(--mist);
+  --button-primary-hover: color-mix(in oklab, var(--olive) 82%, white);
+  --badge-sale-background: color-mix(in oklab, var(--sand) 18%, transparent);
+  --badge-sale-foreground: var(--sand);
+  --product-card-image-background: #1f1f1f;
+  --header-background: color-mix(
+    in oklab,
+    var(--alpine-slate) 82%,
+    transparent
+  );
+}

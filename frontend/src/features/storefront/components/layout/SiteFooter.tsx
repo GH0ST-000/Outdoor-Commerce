@@ -38,7 +38,7 @@ export function SiteFooter({ locale = "en" }: { locale?: "en" | "ka" }) {
           <ul className="mt-3 space-y-2 text-sm">
             <li>
               <Link
-                href="/hunting-calendar"
+                href="/seasons"
                 className="text-[var(--warm-bone)]/80 no-underline transition-colors hover:text-[var(--warm-bone)]"
               >
                 {t.nav.calendar}

@@ -41,7 +41,7 @@ export function ProductPricePanel({
   return (
     <div className="min-h-[2.5rem] space-y-1">
       <PriceDisplay
-        className="text-2xl font-semibold tracking-tight"
+        className="text-2xl font-semibold tracking-tight text-[var(--sand)]"
         currency={variant.price.currency}
         locale={numberLocale}
         baseAmountMinor={variant.price.base_amount_minor}

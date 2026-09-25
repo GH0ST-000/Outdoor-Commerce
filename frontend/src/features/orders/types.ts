@@ -19,11 +19,11 @@ export type PaymentStatus =
 
 export type FulfillmentStatus =
   | "unfulfilled"
-  | "preparing"
-  | "ready_for_pickup"
-  | "shipped"
-  | "delivered"
+  | "processing"
+  | "partially_fulfilled"
+  | "fulfilled"
   | "cancelled"
+  | "exception"
   | string;
 
 export type OrderTotals = {
@@ -96,6 +96,69 @@ export type OrderAddress = {
   postal_code: string | null;
 };
 
+export type OrderShipmentEvent = {
+  status: string;
+  message: string;
+  occurred_at: string;
+  location: string | null;
+};
+
+export type OrderShipment = {
+  id: string;
+  shipment_number: string;
+  type: "delivery" | "store_pickup" | string;
+  status: string;
+  provider: {
+    code: string;
+    name: string;
+    manual: boolean;
+  };
+  tracking: {
+    number: string | null;
+    url: string | null;
+  };
+  items: Array<{
+    order_item_id: string | null;
+    name: string | null;
+    variant_name: string | null;
+    quantity: number;
+    media: { url: string; alt: string | null } | null;
+  }>;
+  timeline: OrderShipmentEvent[];
+  pickup_location: {
+    id: string | null;
+    name: string | null;
+    address: string | null;
+    instructions?: string | null;
+    working_hours?: string | null;
+  } | null;
+  estimated_delivery: {
+    from: string | null;
+    to: string | null;
+    is_guaranteed: boolean;
+  };
+  shipped_at: string | null;
+  delivered_at: string | null;
+  collected_at: string | null;
+  exception: { code: string | null; message: string } | null;
+};
+
+export type OrderFulfillmentProgress = {
+  order_id: string;
+  fulfillment_status: FulfillmentStatus;
+  shipments: OrderShipment[];
+  remaining_items: Array<{
+    order_item_id: string;
+    name: string;
+    variant_name: string;
+    quantity: number;
+  }>;
+  capabilities: {
+    can_refresh: boolean;
+    poll: boolean;
+  };
+};
+
 import type { PaymentAttempt } from "@/features/payments/types";
 
 export type Order = {
@@ -115,9 +178,11 @@ export type Order = {
   totals: OrderTotals;
   adjustments: OrderAdjustment[];
   can_cancel: boolean;
+  cancellation_reason_code?: string | null;
   can_pay?: boolean;
   can_retry_payment?: boolean;
   current_payment_attempt?: PaymentAttempt | null;
+  fulfillment_progress?: OrderFulfillmentProgress;
 };
 
 export type OrderEnvelope = {

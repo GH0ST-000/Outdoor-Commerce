@@ -29,7 +29,7 @@ No package write, PR write, deployment, or admin permissions are granted.
 | --- | --- |
 | `repository-validation` | Lockfiles, env examples, Compose syntax, Composer validate, lock consistency, conflict markers |
 | `backend-quality` | Pint, PHPStan/Larastan, architecture tests |
-| `backend-tests` | Pest on real MySQL 8.4 + Redis 7 + Meilisearch 1.11; migrations; health/correlation/architecture coverage |
+| `backend-tests` | Pest `--parallel` on real MySQL 8.4 + Redis 7 + Meilisearch 1.11; per-worker databases; migrations; health/correlation/architecture coverage |
 | `frontend-quality` | Prettier, ESLint (`--max-warnings=0`), TypeScript |
 | `frontend-tests` | Vitest |
 | `frontend-build` | Next.js production build |
@@ -64,8 +64,21 @@ composer validate --strict --no-check-publish
 composer format:check
 composer analyse
 composer test:architecture
-composer test
+composer test              # Pest --parallel (default)
+composer test:sequential   # single process, for debugging flakes
 composer ci
+```
+
+Pest `--parallel` uses ParaTest (bundled with Pest 4). Feature tests that use `RefreshDatabase` get a per-worker database (`outdoor_test_test_{N}` on MySQL, isolated `:memory:` SQLite locally). CI grants `outdoor_test` access to those `outdoor_test%` schemas. PHP `pcntl` is required (already enabled on the backend-tests runner).
+
+ParaTest accepts a single path. Filter with one directory or a testsuite:
+
+```bash
+cd backend
+PAO_DISABLE=true vendor/bin/pest --parallel --compact --testsuite=Feature
+PAO_DISABLE=true vendor/bin/pest --parallel --compact tests/Feature/Legal
+# cap workers:
+PAO_DISABLE=true vendor/bin/pest --parallel --processes=4
 ```
 
 Frontend scripts:
@@ -95,6 +108,8 @@ Design-system documentation is development-only (`/dev/design-system` returns 40
 | Filesystem | `local` |
 
 Tests refuse non-test database names (must contain `test`, or sqlite `:memory:`).
+
+Pest `--parallel` shares one Redis. `Tests\TestCase` isolates each test with a unique cache prefix and rate-limit key suffix so workers do not steal unique job locks, exhaust IP throttles, or `FLUSHDB` each other. Do not call `Cache::flush()` against Redis in feature tests; use `$this->flushApplicationCacheSafely()`.
 
 Meilisearch, Mailpit, and MinIO are not started in CI unless a future test requires them.
 

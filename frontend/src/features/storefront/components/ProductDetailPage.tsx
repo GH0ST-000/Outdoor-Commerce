@@ -226,7 +226,7 @@ function ProductDetailExperience({
                 {detail.brand.name}
               </Link>
             ) : null}
-            <h1 className="font-display text-3xl leading-tight md:text-4xl">
+            <h1 className="sf-display text-3xl leading-tight md:text-4xl">
               {detail.name}
             </h1>
             <div className="flex flex-wrap gap-2">

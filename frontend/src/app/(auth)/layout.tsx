@@ -12,7 +12,7 @@ export default function AuthLayout({
   const { t } = useLocale();
 
   return (
-    <div className={styles.shell}>
+    <div data-storefront className={styles.shell}>
       <aside className={styles.visual} aria-hidden="true">
         <div className={styles.visualAtmosphere} />
         <p className={styles.brandMark}>{t.brand}</p>
@@ -20,7 +20,7 @@ export default function AuthLayout({
       </aside>
       <section className={styles.panel}>
         <div className="mb-4 flex justify-end">
-          <SiteControls tone="light" />
+          <SiteControls tone="dark" />
         </div>
         <div className={styles.panelInner}>
           <p className={styles.mobileBrand}>{t.brand}</p>

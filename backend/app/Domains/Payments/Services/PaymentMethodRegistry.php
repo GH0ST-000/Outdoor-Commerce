@@ -9,6 +9,7 @@ use App\Domains\Payments\DTOs\PaymentMethodData;
 use App\Domains\Payments\Enums\PaymentMethodType;
 use App\Domains\Payments\Enums\PaymentProviderCode;
 use App\Domains\Payments\Exceptions\PaymentException;
+use App\Domains\Payments\Providers\BankOfGeorgia\BankOfGeorgiaConfigurationValidator;
 use Illuminate\Contracts\Foundation\Application;
 
 final class PaymentMethodRegistry
@@ -16,6 +17,7 @@ final class PaymentMethodRegistry
     public function __construct(
         private readonly Application $app,
         private readonly PaymentProviderRegistry $providers,
+        private readonly BankOfGeorgiaConfigurationValidator $bog,
     ) {}
 
     /**
@@ -99,6 +101,10 @@ final class PaymentMethodRegistry
             if (! (bool) config('payments.test.enabled', false)) {
                 return false;
             }
+        }
+
+        if ($method->provider === PaymentProviderCode::Bog->value && ! $this->bog->isReady()) {
+            return false;
         }
 
         return true;

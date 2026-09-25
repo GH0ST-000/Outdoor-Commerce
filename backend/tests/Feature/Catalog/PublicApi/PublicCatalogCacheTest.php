@@ -7,14 +7,13 @@ use App\Domains\Inventory\Models\InventoryBalance;
 use App\Domains\Inventory\Services\InventoryCache;
 use App\Domains\Pricing\Models\PricePeriod;
 use App\Domains\Pricing\Services\PricingCache;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Tests\Support\PublicCatalogFixtures;
 
 it('caches equivalent public list requests regardless of parameter order', function (): void {
     PublicCatalogFixtures::publicProduct(['featured' => true]);
 
-    Cache::flush();
+    $this->flushApplicationCacheSafely();
     $miss = $this->getJson('/api/v1/catalog/products?featured=1&sort=featured');
     $miss->assertOk();
 
@@ -81,7 +80,7 @@ it('does not invalidate cache when a failed transaction rolls back', function ()
 
 it('remains correct when the cache store is empty', function (): void {
     $fixture = PublicCatalogFixtures::publicProduct();
-    Cache::flush();
+    $this->flushApplicationCacheSafely();
     $this->getJson('/api/v1/catalog/products/'.$fixture['ka_slug'])->assertOk()
         ->assertJsonPath('data.id', $fixture['product']->id);
 });

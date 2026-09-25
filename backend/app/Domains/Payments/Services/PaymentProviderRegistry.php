@@ -7,6 +7,8 @@ namespace App\Domains\Payments\Services;
 use App\Domains\Payments\Contracts\PaymentProvider;
 use App\Domains\Payments\Enums\PaymentProviderCode;
 use App\Domains\Payments\Exceptions\PaymentException;
+use App\Domains\Payments\Providers\BankOfGeorgia\BankOfGeorgiaConfigurationValidator;
+use App\Domains\Payments\Providers\BankOfGeorgia\BankOfGeorgiaPaymentProvider;
 use App\Domains\Payments\Providers\TestHostedPaymentProvider;
 use App\Domains\Payments\Support\PaymentLogger;
 use Illuminate\Contracts\Foundation\Application;
@@ -46,8 +48,17 @@ final class PaymentProviderRegistry
 
         return match ($driver) {
             'test' => $this->app->make(TestHostedPaymentProvider::class),
+            'bog' => $this->resolveBog(),
             default => throw PaymentException::providerUnknown(),
         };
+    }
+
+    private function resolveBog(): PaymentProvider
+    {
+        $validator = $this->app->make(BankOfGeorgiaConfigurationValidator::class);
+        $validator->assertReady();
+
+        return $this->app->make(BankOfGeorgiaPaymentProvider::class);
     }
 
     public function assertEnvironment(): void
@@ -64,7 +75,7 @@ final class PaymentProviderRegistry
     }
 
     /**
-     * @return array{provider: string, enabled: bool, production_allowed: bool}
+     * @return array{provider: string, enabled: bool, production_allowed: bool, ready: bool}
      */
     public function health(string $code): array
     {
@@ -77,6 +88,9 @@ final class PaymentProviderRegistry
             'provider' => $code,
             'enabled' => (bool) ($config['enabled'] ?? false),
             'production_allowed' => (bool) ($config['production_allowed'] ?? false),
+            'ready' => $code === PaymentProviderCode::Bog->value
+                ? $this->app->make(BankOfGeorgiaConfigurationValidator::class)->isReady()
+                : (bool) ($config['enabled'] ?? false),
         ];
     }
 }

@@ -58,6 +58,12 @@
             "@php artisan config:clear --ansi",
             "@putenv PAO_DISABLE=true",
             "@php -r \"is_dir('storage/logs') || mkdir('storage/logs', 0775, true);\"",
+            "@php vendor/bin/pest --parallel --recreate-databases --log-junit=storage/logs/junit.xml"
+        ],
+        "test:sequential": [
+            "@php artisan config:clear --ansi",
+            "@putenv PAO_DISABLE=true",
+            "@php -r \"is_dir('storage/logs') || mkdir('storage/logs', 0775, true);\"",
             "@php vendor/bin/pest --log-junit=storage/logs/junit.xml"
         ],
         "test:architecture": [

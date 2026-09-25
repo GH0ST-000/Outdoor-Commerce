@@ -7,4 +7,5 @@ namespace App\Domains\Payments\Enums;
 enum PaymentProviderCode: string
 {
     case Test = 'test';
+    case Bog = 'bog';
 }

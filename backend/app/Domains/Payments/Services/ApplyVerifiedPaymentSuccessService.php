@@ -35,11 +35,22 @@ final class ApplyVerifiedPaymentSuccessService
     ) {}
 
     /**
-     * @param  array{amount_minor: ?int, currency: ?string, provider_payment_id: string, provider_transaction_id: ?string}  $evidence
+     * @param  array{amount_minor: ?int, currency: ?string, provider_payment_id: string, provider_transaction_id: ?string, merchant_reference?: ?string}  $evidence
      */
     public function execute(PaymentAttempt $attempt, Order $order, array $evidence): void
     {
         if ($attempt->status === PaymentAttemptStatus::Succeeded && $order->payment_status === PaymentStatus::Paid) {
+            return;
+        }
+
+        $merchant = $evidence['merchant_reference'] ?? null;
+        if (is_string($merchant) && $merchant !== '' && $merchant !== $attempt->public_id) {
+            $this->logger->critical('merchant_reference_mismatch', [
+                'payment_attempt_public_id' => $attempt->public_id,
+                'order_public_id' => $order->public_id,
+            ]);
+            $this->sendToManualReview($attempt, $order, 'MERCHANT_REFERENCE_MISMATCH');
+
             return;
         }
 

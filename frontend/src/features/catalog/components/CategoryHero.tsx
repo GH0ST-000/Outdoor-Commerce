@@ -43,13 +43,13 @@ export function CategoryHero({
           sizes="100vw"
           className="object-cover object-center opacity-[0.22]"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-background/40 via-background/85 to-background" />
+        <div className="absolute inset-0 bg-gradient-to-b from-[var(--alpine-slate)]/40 via-[var(--alpine-slate)]/85 to-[var(--alpine-slate)]" />
       </div>
       <div className="sf-container relative py-7 sm:py-10">
         <Breadcrumbs label="Breadcrumb" items={breadcrumbs} />
         <div className="mt-4 flex flex-wrap items-end justify-between gap-4">
           <div className="max-w-2xl">
-            <p className="sf-label text-[var(--copper)]">{eyebrow}</p>
+            <p className="sf-label text-[var(--sand)]">{eyebrow}</p>
             <h1 className="sf-display mt-2 text-[clamp(2rem,6vw,3.75rem)] leading-[1.05]">
               {title}
             </h1>
