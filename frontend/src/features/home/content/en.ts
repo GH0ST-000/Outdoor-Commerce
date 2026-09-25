@@ -7,18 +7,17 @@ export const homeContentEn: HomePageContent = {
       "Equipment for hunting, fishing, and every route beyond the road. Catalog in Georgian and English, prices in GEL.",
   },
   hero: {
-    eyebrow: "Field outfitter",
-    headline:
-      "Equipment for hunting, fishing, and every route beyond the road.",
+    eyebrow: "Georgia",
+    headline: "WILD GEORGIA",
     support:
-      "Selected for Georgian terrain — forest, river, and ridge. Prices and availability come from the public catalog.",
-    primaryCta: "Browse the catalog",
+      "Premium field equipment for hunting, fishing, and every route beyond the road.",
+    primaryCta: "Discover the trail",
     secondaryCta: "Open field guide",
     scroll: "Scroll",
-    fieldNote: "Caucasus · field note",
+    fieldNote: "Caucasus · alpine slate",
   },
   categories: {
-    eyebrow: "Catalog",
+    eyebrow: "Featured categories",
     title: "Choose your field",
     lead: "Enter by pursuit — then refine by brand, price, and availability.",
   },
@@ -31,7 +30,7 @@ export const homeContentEn: HomePageContent = {
     knives: { description: "Edge and utility" },
   },
   featured: {
-    eyebrow: "Selection",
+    eyebrow: "Featured products",
     title: "Field-selected gear",
     lead: "Products the catalog marks as featured — with real GEL prices and availability.",
     catalogCta: "Full catalog",
@@ -43,19 +42,20 @@ export const homeContentEn: HomePageContent = {
   },
   season: {
     eyebrow: "Season",
-    title: "Hunting-period context",
-    question: "What may be hunted during this period?",
+    title: "What can I hunt now?",
+    question:
+      "Species, dates, and Georgian hunting context — labeled as demonstration, not law.",
     lead: "Verified seasons, species, and limits will appear here later. This section previews the interface — it is not current law.",
     previewLabel: "Interface preview",
     disclaimer:
       "Demonstration material only — not official Georgian hunting law, and not a claim that any species may be hunted now.",
-    calendarCta: "Hunting calendar",
+    calendarCta: "Open hunting guide",
     speciesCta: "Species coming later",
   },
   map: {
-    title: "Terrain preview",
-    lead: "Zones, access, and context belong on the map experience. This is a visual shell — not legal boundaries.",
-    cta: "Open map shell",
+    title: "Discover local spots",
+    lead: "Explore Georgian hunting grounds, protected parks, and regional context. This is a visual shell — not legal boundaries.",
+    cta: "Open the map",
     previewLabel: "Interface preview",
     disclaimer:
       "The terrain image is atmospheric. Protected areas and permitted zones are not connected yet.",
@@ -96,7 +96,7 @@ export const homeContentEn: HomePageContent = {
     ],
   },
   newsletter: {
-    title: "Stay ahead of the season",
+    title: "Join the field list",
     lead: "Season notes, field guides, and new equipment — when the list goes live.",
     cta: "Notify me",
     hint: "Email capture is not connected yet.",

@@ -79,7 +79,7 @@ export default function AccountPage() {
   const { t } = useLocale();
 
   return (
-    <div className={shellStyles.shell}>
+    <div data-storefront className={shellStyles.shell}>
       <aside className={shellStyles.visual} aria-hidden="true">
         <div className={shellStyles.visualAtmosphere} />
         <p className={shellStyles.brandMark}>{t.brand}</p>
@@ -87,7 +87,7 @@ export default function AccountPage() {
       </aside>
       <section className={shellStyles.panel}>
         <div className="mb-4 flex justify-end">
-          <SiteControls tone="light" />
+          <SiteControls tone="dark" />
         </div>
         <div className={shellStyles.panelInner}>
           <p className={shellStyles.mobileBrand}>{t.brand}</p>

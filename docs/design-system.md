@@ -1,6 +1,6 @@
 # Storefront design system
 
-Day 13 productionizes the Caucasus Field Intelligence visual foundation. It is not a generic component library.
+Day 13 productionizes the visual foundation. The storefront now uses **Alpine Slate & Olive** (technical, modern, dark-first). Admin keeps the warm atelier tokens and is out of this document's scope.
 
 Live gallery (development only): `/dev/design-system`
 
@@ -8,7 +8,7 @@ ADR: [0008 — Semantic design tokens and storefront component boundaries](adr/0
 
 ## Design philosophy
 
-Premium Caucasus outdoor outfitter + editorial field journal + precise equipment UI + high-conversion commerce. Copper/amber are restrained. Surfaces do the atmospheric work; photography and spacing do the rest.
+Premium Georgian outdoor outfitter: rugged, high-end, and photographic. Alpine Slate surfaces, Technical Olive conversion actions, and Sand accents. Large outdoor imagery and tight borders — not a generic light template.
 
 ## Token architecture
 
@@ -20,36 +20,49 @@ Premium Caucasus outdoor outfitter + editorial field journal + precise equipment
 
 TypeScript mirrors for breakpoints and z-index: `frontend/src/lib/design-system/tokens.ts`. CSS remains the runtime source of truth.
 
+Storefront theming is scoped with `[data-storefront]` on the customer layout. Do not restyle admin by changing `:root` / `.dark` for this look.
+
 Do not add raw repeated hex, arbitrary `z-[99999]`, or one-off type sizes in feature code. Optical exceptions belong in a comment.
 
 ## Color and surfaces
 
-Preserve Night Forest, Deep Pine, Field Green, Moss, Stone, Warm Bone, Paper, Charcoal, Copper, Ember, Amber, River, Danger, Success.
+Storefront Alpine Slate & Olive:
 
-Scoped surfaces:
+| Token | Hex | Role |
+| --- | --- | --- |
+| Alpine Slate | `#1A1A1A` | Page background |
+| Raised slate | `#2C2C2C` | Cards and panels |
+| Sand | `#C4A484` | Accent, prices, labels |
+| Mist | `#E5E5E5` | Body text |
+| Technical Olive | `#556B2F` | Primary actions |
+
+Admin continues to use the warm atelier primitives (Night Forest, Copper, Paper). Do not reuse those names in new storefront work — prefer `--sand`, `--olive`, `--alpine-slate`, or semantic tokens.
 
 ```html
-<section data-surface="dark">   <!-- cinematic ink -->
-<section data-surface="paper">  <!-- warm editorial -->
-<section data-surface="commerce">
+<div data-storefront>
+  <section data-surface="dark">
 ```
 
-Existing `.sf-band-ink`, `.sf-band-paper`, `.sf-band-pine` remain for current homepage sections. Prefer `data-surface` on new work.
+Existing `.sf-band-ink`, `.sf-band-paper`, `.sf-band-pine` remain. Under `[data-storefront]` they all resolve to Alpine Slate. Prefer `data-surface` on new work.
 
-Admin `next-themes` dark class still remaps the same semantic names. No customer-facing storefront theme switch.
+Admin `next-themes` dark class still remaps admin semantic names. The storefront does not add a second customer-facing theme; `[data-storefront]` stays Alpine Slate even if the document theme class changes.
 
 WCAG 2.2 AA for text and focus. Status always includes a label, not only color. Photography overlays use ink scrims so type stays readable.
 
 ## Typography
 
-Two primary families:
+Storefront pairing (Latin):
 
-- **Manrope** (Latin body/UI) + **Noto Sans Georgian** (Georgian body/UI)
-- **Fraunces** (Latin display only) + **Noto Serif Georgian** (Georgian display)
+- **Montserrat** — headings / display
+- **Inter** — body / UI
 
-Weights are loaded intentionally (400–700 body, 500–600 display). Georgian is never auto-uppercased and never letter-spaced like Latin small-caps.
+Georgian:
 
-Classes: `.type-display-xl`, `.type-display-l`, `.type-h1`–`.type-h5`, `.type-body-lg`, `.type-body`, `.type-body-sm`, `.sf-label` / `.type-label`, `.type-button`, `.type-price-lg`, `.type-price`, `.type-numeric`, `.type-measure`.
+- **Noto Sans Georgian** for body and display (Montserrat and Inter do not cover Mkhedruli). Georgian is never auto-uppercased and never letter-spaced like Latin small-caps.
+
+Admin still loads Manrope + Fraunces for its own chrome.
+
+Weights: 400–700 body, 600–800 display. Classes: `.type-display-xl`, `.type-display-l`, `.type-h1`–`.type-h5`, `.type-body-lg`, `.type-body`, `.type-body-sm`, `.sf-label` / `.type-label`, `.type-button`, `.type-price-lg`, `.type-price`, `.type-numeric`, `.type-measure`.
 
 Prefer these classes over ad-hoc `text-[13px]`. Do not wrap every string in a React typography component.
 

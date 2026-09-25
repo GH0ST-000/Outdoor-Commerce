@@ -95,7 +95,7 @@ final class ProcessVerifiedPaymentWebhookService
                 $attempt->last_provider_sync_at = $this->clock->now();
                 $attempt->save();
 
-                $this->outcome->execute($attempt, $order, $status, $amount, $currency, (string) $providerPaymentId, $transactionId);
+                $this->outcome->execute($attempt, $order, $status, $amount, $currency, (string) $providerPaymentId, $transactionId, is_string($merchant) ? $merchant : null);
 
                 $processed = $this->finish($locked, PaymentWebhookProcessingStatus::Processed);
                 $publicId = $processed->public_id;

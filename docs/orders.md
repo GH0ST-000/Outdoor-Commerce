@@ -12,7 +12,7 @@ Three independent fields:
 | --- | --- | --- |
 | `status` | `pending_payment` | Order lifecycle. Central `OrderStateMachine`. |
 | `payment_status` | `unpaid` | Payment lifecycle. `OrderPaymentStatusService`. Day 20 moves this. |
-| `fulfillment_status` | `unfulfilled` | Shipping/pickup. Day 22. |
+| `fulfillment_status` | `unfulfilled` | Aggregate from Day 22 shipments: `unfulfilled`, `processing`, `partially_fulfilled`, `fulfilled`, `cancelled`, `exception`. |
 
 Do not treat pending-payment as paid or confirmed.
 
@@ -67,8 +67,9 @@ All responses `{ data: … }` with `Cache-Control: private, no-store`.
 | Method | Path | Notes |
 | --- | --- | --- |
 | POST | `/api/v1/orders` | Body: `checkout_session_id`, `quote_id`, `checkout_version`. Header: `Idempotency-Key`. First create `201`. |
-| GET | `/api/v1/orders/{orderPublicId}` | Confirmation refresh. Request-time expiry. |
-| POST | `/api/v1/orders/{orderPublicId}/cancel` | Pending unpaid only. Idempotent. |
+| GET | `/api/v1/orders/{orderPublicId}` | Confirmation refresh. Request-time expiry. Includes `fulfillment_progress`. |
+| GET | `/api/v1/orders/{orderPublicId}/fulfillment` | Customer-safe shipments and timeline. Same ownership as the order. |
+| POST | `/api/v1/orders/{orderPublicId}/cancel` | Pending unpaid only. Blocked after fulfillment starts. Idempotent. |
 
 Client money/status fields are prohibited.
 

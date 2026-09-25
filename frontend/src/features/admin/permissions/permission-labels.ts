@@ -146,6 +146,16 @@ const PERMISSION_META: Record<
     group: "commerce",
     summary: "Update and fulfill orders",
   },
+  "fulfillment.view": {
+    label: "View fulfillment",
+    group: "commerce",
+    summary: "See shipments and pickup progress",
+  },
+  "fulfillment.manage": {
+    label: "Manage fulfillment",
+    group: "commerce",
+    summary: "Create shipments and update delivery status",
+  },
   "legal-rules.view": {
     label: "View hunting rules",
     group: "content",
@@ -160,6 +170,86 @@ const PERMISSION_META: Record<
     label: "Publish hunting rules",
     group: "content",
     summary: "Make legal rules public",
+  },
+  "legal.sources.view": {
+    label: "View legal sources",
+    group: "content",
+    summary: "Read official legal source records",
+  },
+  "legal.sources.manage": {
+    label: "Manage legal sources",
+    group: "content",
+    summary: "Create and edit official sources",
+  },
+  "legal.sources.verify": {
+    label: "Verify legal sources",
+    group: "content",
+    summary: "Mark official sources as verified",
+  },
+  "legal.documents.view": {
+    label: "View legal documents",
+    group: "content",
+    summary: "Read versioned legal documents",
+  },
+  "legal.documents.manage": {
+    label: "Manage legal documents",
+    group: "content",
+    summary: "Create and edit legal documents",
+  },
+  "legal.versions.upload": {
+    label: "Upload legal versions",
+    group: "content",
+    summary: "Store official document files",
+  },
+  "legal.versions.review": {
+    label: "Review legal versions",
+    group: "content",
+    summary: "Approve or reject document versions",
+  },
+  "legal.provisions.manage": {
+    label: "Manage legal provisions",
+    group: "content",
+    summary: "Record articles and clauses",
+  },
+  "legal.rules.create": {
+    label: "Create legal rules",
+    group: "content",
+    summary: "Draft structured legal rules",
+  },
+  "legal.rules.update": {
+    label: "Update legal rules",
+    group: "content",
+    summary: "Edit unpublished legal rules",
+  },
+  "legal.rules.review": {
+    label: "Review legal rules",
+    group: "content",
+    summary: "Submit, approve, or reject rules",
+  },
+  "legal.rules.publish": {
+    label: "Publish structured legal rules",
+    group: "content",
+    summary: "Publish source-backed rules",
+  },
+  "legal.rules.supersede": {
+    label: "Supersede legal rules",
+    group: "content",
+    summary: "Replace published rules without deleting history",
+  },
+  "legal.conflicts.view": {
+    label: "View legal conflicts",
+    group: "content",
+    summary: "See overlapping rule conflicts",
+  },
+  "legal.conflicts.resolve": {
+    label: "Resolve legal conflicts",
+    group: "content",
+    summary: "Record human conflict decisions",
+  },
+  "legal.audit.view": {
+    label: "View legal audit events",
+    group: "content",
+    summary: "Read legal workflow history",
   },
   "content.view": {
     label: "View content",
@@ -190,6 +280,71 @@ const PERMISSION_META: Record<
     label: "View operations overview",
     group: "operations",
     summary: "See operational dashboards",
+  },
+  "species.view": {
+    label: "View species",
+    group: "content",
+    summary: "Browse the species knowledge base",
+  },
+  "species.create": {
+    label: "Create species",
+    group: "content",
+    summary: "Add species drafts",
+  },
+  "species.update": {
+    label: "Edit species",
+    group: "content",
+    summary: "Update biological species records",
+  },
+  "species.delete": {
+    label: "Delete species drafts",
+    group: "content",
+    summary: "Remove unpublished species",
+  },
+  "species.review": {
+    label: "Submit species for review",
+    group: "content",
+    summary: "Move species into editorial review",
+  },
+  "species.publish": {
+    label: "Publish species",
+    group: "content",
+    summary: "Make species pages public",
+  },
+  "species.archive": {
+    label: "Archive species",
+    group: "content",
+    summary: "Remove species from public view",
+  },
+  "species.manage_taxonomy": {
+    label: "Manage species taxonomy",
+    group: "content",
+    summary: "Edit scientific classification",
+  },
+  "species.manage_aliases": {
+    label: "Manage species aliases",
+    group: "content",
+    summary: "Add synonyms and regional names",
+  },
+  "species.manage_sources": {
+    label: "Manage species sources",
+    group: "content",
+    summary: "Attach citations and provenance",
+  },
+  "species.manage_media": {
+    label: "Manage species media",
+    group: "content",
+    summary: "Upload identification images",
+  },
+  "species.view_revisions": {
+    label: "View species revisions",
+    group: "content",
+    summary: "See editorial history",
+  },
+  "species.restore_revision": {
+    label: "Restore species revisions",
+    group: "content",
+    summary: "Restore a previous editorial snapshot",
   },
 };
 

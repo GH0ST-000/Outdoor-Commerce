@@ -18,6 +18,7 @@ use App\Http\Controllers\Api\V1\Admin\Inventory\AdminInventoryReservationControl
 use App\Http\Controllers\Api\V1\Admin\Inventory\AdminInventoryStockCountController;
 use App\Http\Controllers\Api\V1\Admin\Inventory\AdminInventoryTransferController;
 use App\Http\Controllers\Api\V1\Admin\Inventory\AdminWarehouseController;
+use App\Http\Controllers\Api\V1\Admin\Legal\AdminLegalController;
 use App\Http\Controllers\Api\V1\Admin\Media\AdminMediaStatusController;
 use App\Http\Controllers\Api\V1\Admin\Media\AdminProductMediaController;
 use App\Http\Controllers\Api\V1\Admin\Media\AdminProductVariantMediaController;
@@ -28,6 +29,8 @@ use App\Http\Controllers\Api\V1\Admin\Products\AdminProductController;
 use App\Http\Controllers\Api\V1\Admin\Products\AdminProductVariantAxesController;
 use App\Http\Controllers\Api\V1\Admin\Products\AdminProductVariantController;
 use App\Http\Controllers\Api\V1\Admin\Products\AdminProductVariantGenerationController;
+use App\Http\Controllers\Api\V1\Admin\Shipping\AdminFulfillmentController;
+use App\Http\Controllers\Api\V1\Admin\Species\AdminSpeciesController;
 use App\Http\Controllers\Api\V1\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Api\V1\Auth\CurrentUserController;
 use App\Http\Controllers\Api\V1\Auth\EmailVerificationController;
@@ -40,13 +43,17 @@ use App\Http\Controllers\Api\V1\Catalog\PublicCategoryController;
 use App\Http\Controllers\Api\V1\Catalog\PublicProductController;
 use App\Http\Controllers\Api\V1\Catalog\PublicProductFacetController;
 use App\Http\Controllers\Api\V1\Checkout\PublicCheckoutController;
+use App\Http\Controllers\Api\V1\Legal\PublicLegalController;
 use App\Http\Controllers\Api\V1\Orders\PublicOrderController;
+use App\Http\Controllers\Api\V1\Orders\PublicOrderFulfillmentController;
 use App\Http\Controllers\Api\V1\Payments\PaymentWebhookController;
 use App\Http\Controllers\Api\V1\Payments\PublicPaymentAttemptController;
 use App\Http\Controllers\Api\V1\Payments\PublicPaymentMethodController;
 use App\Http\Controllers\Api\V1\Payments\TestPaymentSimulateController;
 use App\Http\Controllers\Api\V1\Search\PublicSearchController;
 use App\Http\Controllers\Api\V1\Search\PublicSearchSuggestionController;
+use App\Http\Controllers\Api\V1\Shipping\ShipmentWebhookController;
+use App\Http\Controllers\Api\V1\Species\PublicSpeciesController;
 use App\Http\Middleware\EnsureAdminAccess;
 use App\Http\Middleware\EnsureHasPermission;
 use App\Http\Middleware\EnsureUserIsActive;
@@ -74,6 +81,31 @@ Route::prefix('v1/catalog')->group(function (): void {
     Route::get('/products/{slug}', [PublicProductController::class, 'show'])
         ->middleware('throttle:catalog.public')
         ->where('slug', '.*');
+});
+
+Route::prefix('v1/species')->group(function (): void {
+    Route::get('/filters', [PublicSpeciesController::class, 'filters'])
+        ->middleware('throttle:species.public');
+    Route::get('/', [PublicSpeciesController::class, 'index'])
+        ->middleware('throttle:species.public.list');
+    Route::get('/{slug}/similar', [PublicSpeciesController::class, 'similar'])
+        ->middleware('throttle:species.public')
+        ->where('slug', '.*');
+    Route::get('/{slug}/legal-overview', [PublicLegalController::class, 'speciesOverview'])
+        ->middleware('throttle:legal.public')
+        ->where('slug', '.*');
+    Route::get('/{slug}', [PublicSpeciesController::class, 'show'])
+        ->middleware('throttle:species.public')
+        ->where('slug', '.*');
+});
+
+Route::prefix('v1/legal')->group(function (): void {
+    Route::get('/sources', [PublicLegalController::class, 'sources'])
+        ->middleware('throttle:legal.public');
+    Route::get('/sources/{slug}', [PublicLegalController::class, 'showSource'])
+        ->middleware('throttle:legal.public');
+    Route::post('/evaluate', [PublicLegalController::class, 'evaluate'])
+        ->middleware('throttle:legal.evaluate');
 });
 
 Route::prefix('v1/search')->group(function (): void {
@@ -132,6 +164,9 @@ Route::prefix('v1/orders')->group(function (): void {
     Route::post('/{orderPublicId}/cancel', [PublicOrderController::class, 'cancel'])
         ->middleware('throttle:orders.cancel')
         ->where('orderPublicId', '[0-9a-fA-F-]{36}');
+    Route::get('/{orderPublicId}/fulfillment', [PublicOrderFulfillmentController::class, 'show'])
+        ->middleware('throttle:shipments.customer')
+        ->where('orderPublicId', '[0-9a-fA-F-]{36}');
     Route::post('/{orderPublicId}/payment-attempts', [PublicPaymentAttemptController::class, 'store'])
         ->middleware('throttle:payments.mutate')
         ->where('orderPublicId', '[0-9a-fA-F-]{36}');
@@ -154,6 +189,10 @@ Route::prefix('v1/payment-attempts')->group(function (): void {
 
 Route::post('/v1/payments/webhooks/{providerCode}', [PaymentWebhookController::class, 'store'])
     ->middleware('throttle:payments.webhook')
+    ->where('providerCode', '[a-z0-9_]+');
+
+Route::post('/v1/shipments/webhooks/{providerCode}', [ShipmentWebhookController::class, 'store'])
+    ->middleware('throttle:shipments.webhook')
     ->where('providerCode', '[a-z0-9_]+');
 
 Route::post('/v1/payments/test/attempts/{paymentAttemptPublicId}/simulate', [TestPaymentSimulateController::class, 'store'])
@@ -451,4 +490,204 @@ Route::prefix('v1/admin')
             ->middleware([EnsureHasPermission::class.':promotions.publish', 'throttle:admin.mutations']);
         Route::post('/promotions/{promotion}/preview', [AdminPromotionController::class, 'previewExisting'])
             ->middleware([EnsureHasPermission::class.':promotions.view', 'throttle:admin.pricing-preview']);
+
+        Route::get('/orders/{orderPublicId}/fulfillment', [AdminFulfillmentController::class, 'order'])
+            ->middleware(EnsureHasPermission::class.':fulfillment.view')
+            ->where('orderPublicId', '[0-9a-fA-F-]{36}');
+        Route::post('/orders/{orderPublicId}/shipments', [AdminFulfillmentController::class, 'store'])
+            ->middleware([EnsureHasPermission::class.':fulfillment.manage', 'throttle:shipments.admin-mutate'])
+            ->where('orderPublicId', '[0-9a-fA-F-]{36}');
+        Route::get('/shipments/{shipmentPublicId}', [AdminFulfillmentController::class, 'show'])
+            ->middleware(EnsureHasPermission::class.':fulfillment.view')
+            ->where('shipmentPublicId', '[0-9a-fA-F-]{36}');
+
+        $shipmentMutations = [
+            'start-preparation' => 'startPreparation',
+            'pick' => 'pick',
+            'pack' => 'pack',
+            'ready-for-dispatch' => 'readyForDispatch',
+            'dispatch' => 'dispatch',
+            'mark-in-transit' => 'markInTransit',
+            'mark-out-for-delivery' => 'markOutForDelivery',
+            'mark-delivered' => 'markDelivered',
+            'record-delivery-attempt-failed' => 'recordDeliveryAttemptFailed',
+            'mark-ready-for-pickup' => 'markReadyForPickup',
+            'mark-collected' => 'markCollected',
+            'record-exception' => 'recordException',
+            'cancel' => 'cancel',
+        ];
+        foreach ($shipmentMutations as $path => $action) {
+            Route::post('/shipments/{shipmentPublicId}/'.$path, [AdminFulfillmentController::class, $action])
+                ->middleware([EnsureHasPermission::class.':fulfillment.manage', 'throttle:shipments.admin-mutate'])
+                ->where('shipmentPublicId', '[0-9a-fA-F-]{36}');
+        }
+
+        Route::get('/species', [AdminSpeciesController::class, 'index'])
+            ->middleware(EnsureHasPermission::class.':species.view');
+        Route::post('/species', [AdminSpeciesController::class, 'store'])
+            ->middleware([EnsureHasPermission::class.':species.create', 'throttle:admin.mutations']);
+        Route::get('/species/{speciesPublicId}', [AdminSpeciesController::class, 'show'])
+            ->middleware(EnsureHasPermission::class.':species.view')
+            ->where('speciesPublicId', '[0-9a-fA-F-]{36}');
+        Route::patch('/species/{speciesPublicId}', [AdminSpeciesController::class, 'update'])
+            ->middleware([EnsureHasPermission::class.':species.update', 'throttle:admin.mutations'])
+            ->where('speciesPublicId', '[0-9a-fA-F-]{36}');
+        Route::delete('/species/{speciesPublicId}', [AdminSpeciesController::class, 'destroy'])
+            ->middleware([EnsureHasPermission::class.':species.delete', 'throttle:admin.mutations'])
+            ->where('speciesPublicId', '[0-9a-fA-F-]{36}');
+        Route::post('/species/{speciesPublicId}/submit-review', [AdminSpeciesController::class, 'submitReview'])
+            ->middleware([EnsureHasPermission::class.':species.review', 'throttle:admin.mutations'])
+            ->where('speciesPublicId', '[0-9a-fA-F-]{36}');
+        Route::post('/species/{speciesPublicId}/publish', [AdminSpeciesController::class, 'publish'])
+            ->middleware([EnsureHasPermission::class.':species.publish', 'throttle:admin.mutations'])
+            ->where('speciesPublicId', '[0-9a-fA-F-]{36}');
+        Route::post('/species/{speciesPublicId}/unpublish', [AdminSpeciesController::class, 'unpublish'])
+            ->middleware([EnsureHasPermission::class.':species.publish', 'throttle:admin.mutations'])
+            ->where('speciesPublicId', '[0-9a-fA-F-]{36}');
+        Route::post('/species/{speciesPublicId}/archive', [AdminSpeciesController::class, 'archive'])
+            ->middleware([EnsureHasPermission::class.':species.archive', 'throttle:admin.mutations'])
+            ->where('speciesPublicId', '[0-9a-fA-F-]{36}');
+        Route::post('/species/{speciesPublicId}/aliases', [AdminSpeciesController::class, 'aliases'])
+            ->middleware([EnsureHasPermission::class.':species.manage_aliases', 'throttle:admin.mutations'])
+            ->where('speciesPublicId', '[0-9a-fA-F-]{36}');
+        Route::post('/species/{speciesPublicId}/sources', [AdminSpeciesController::class, 'sources'])
+            ->middleware([EnsureHasPermission::class.':species.manage_sources', 'throttle:admin.mutations'])
+            ->where('speciesPublicId', '[0-9a-fA-F-]{36}');
+        Route::post('/species/{speciesPublicId}/similar-species', [AdminSpeciesController::class, 'similar'])
+            ->middleware([EnsureHasPermission::class.':species.update', 'throttle:admin.mutations'])
+            ->where('speciesPublicId', '[0-9a-fA-F-]{36}');
+        Route::post('/species/{speciesPublicId}/media', [AdminSpeciesController::class, 'media'])
+            ->middleware([EnsureHasPermission::class.':species.manage_media', 'throttle:admin.media-uploads'])
+            ->where('speciesPublicId', '[0-9a-fA-F-]{36}');
+        Route::get('/species/{speciesPublicId}/revisions', [AdminSpeciesController::class, 'revisions'])
+            ->middleware(EnsureHasPermission::class.':species.view_revisions')
+            ->where('speciesPublicId', '[0-9a-fA-F-]{36}');
+        Route::post('/species/{speciesPublicId}/revisions/{revision}/restore', [AdminSpeciesController::class, 'restoreRevision'])
+            ->middleware([EnsureHasPermission::class.':species.restore_revision', 'throttle:admin.mutations'])
+            ->where('speciesPublicId', '[0-9a-fA-F-]{36}')
+            ->whereNumber('revision');
+
+        Route::get('/legal/dashboard', [AdminLegalController::class, 'dashboard'])
+            ->middleware(EnsureHasPermission::class.':legal-rules.view');
+        Route::get('/legal/authorities', [AdminLegalController::class, 'authorities'])
+            ->middleware(EnsureHasPermission::class.':legal.sources.view');
+        Route::post('/legal/authorities', [AdminLegalController::class, 'storeAuthority'])
+            ->middleware([EnsureHasPermission::class.':legal.sources.manage', 'throttle:admin.mutations']);
+        Route::get('/legal/sources', [AdminLegalController::class, 'sources'])
+            ->middleware(EnsureHasPermission::class.':legal.sources.view');
+        Route::post('/legal/sources', [AdminLegalController::class, 'storeSource'])
+            ->middleware([EnsureHasPermission::class.':legal.sources.manage', 'throttle:admin.mutations']);
+        Route::get('/legal/sources/{source}', [AdminLegalController::class, 'showSource'])
+            ->middleware(EnsureHasPermission::class.':legal.sources.view')
+            ->where('source', '[0-9a-fA-F-]{36}');
+        Route::patch('/legal/sources/{source}', [AdminLegalController::class, 'updateSource'])
+            ->middleware([EnsureHasPermission::class.':legal.sources.manage', 'throttle:admin.mutations'])
+            ->where('source', '[0-9a-fA-F-]{36}');
+        Route::post('/legal/sources/{source}/submit-review', [AdminLegalController::class, 'submitSourceReview'])
+            ->middleware([EnsureHasPermission::class.':legal.sources.manage', 'throttle:admin.mutations'])
+            ->where('source', '[0-9a-fA-F-]{36}');
+        Route::post('/legal/sources/{source}/verify', [AdminLegalController::class, 'verifySource'])
+            ->middleware([EnsureHasPermission::class.':legal.sources.verify', 'throttle:admin.mutations'])
+            ->where('source', '[0-9a-fA-F-]{36}');
+        Route::post('/legal/sources/{source}/reject', [AdminLegalController::class, 'rejectSource'])
+            ->middleware([EnsureHasPermission::class.':legal.sources.verify', 'throttle:admin.mutations'])
+            ->where('source', '[0-9a-fA-F-]{36}');
+        Route::post('/legal/sources/{source}/check-for-changes', [AdminLegalController::class, 'checkSource'])
+            ->middleware([EnsureHasPermission::class.':legal.sources.manage', 'throttle:admin.mutations'])
+            ->where('source', '[0-9a-fA-F-]{36}');
+
+        Route::get('/legal/documents', [AdminLegalController::class, 'documents'])
+            ->middleware(EnsureHasPermission::class.':legal.documents.view');
+        Route::post('/legal/documents', [AdminLegalController::class, 'storeDocument'])
+            ->middleware([EnsureHasPermission::class.':legal.documents.manage', 'throttle:admin.mutations']);
+        Route::get('/legal/documents/{document}', [AdminLegalController::class, 'showDocument'])
+            ->middleware(EnsureHasPermission::class.':legal.documents.view')
+            ->where('document', '[0-9a-fA-F-]{36}');
+        Route::patch('/legal/documents/{document}', [AdminLegalController::class, 'updateDocument'])
+            ->middleware([EnsureHasPermission::class.':legal.documents.manage', 'throttle:admin.mutations'])
+            ->where('document', '[0-9a-fA-F-]{36}');
+        Route::get('/legal/documents/{document}/versions', [AdminLegalController::class, 'documentVersions'])
+            ->middleware(EnsureHasPermission::class.':legal.documents.view')
+            ->where('document', '[0-9a-fA-F-]{36}');
+        Route::post('/legal/documents/{document}/versions', [AdminLegalController::class, 'storeVersion'])
+            ->middleware([EnsureHasPermission::class.':legal.versions.upload', 'throttle:admin.mutations'])
+            ->where('document', '[0-9a-fA-F-]{36}');
+        Route::get('/legal/versions/{version}', [AdminLegalController::class, 'showVersion'])
+            ->middleware(EnsureHasPermission::class.':legal.documents.view')
+            ->where('version', '[0-9a-fA-F-]{36}');
+        Route::post('/legal/versions/{version}/submit-review', [AdminLegalController::class, 'submitVersion'])
+            ->middleware([EnsureHasPermission::class.':legal.versions.upload', 'throttle:admin.mutations'])
+            ->where('version', '[0-9a-fA-F-]{36}');
+        Route::post('/legal/versions/{version}/approve', [AdminLegalController::class, 'approveVersion'])
+            ->middleware([EnsureHasPermission::class.':legal.versions.review', 'throttle:admin.mutations'])
+            ->where('version', '[0-9a-fA-F-]{36}');
+        Route::post('/legal/versions/{version}/reject', [AdminLegalController::class, 'rejectVersion'])
+            ->middleware([EnsureHasPermission::class.':legal.versions.review', 'throttle:admin.mutations'])
+            ->where('version', '[0-9a-fA-F-]{36}');
+        Route::get('/legal/versions/{version}/download', [AdminLegalController::class, 'downloadVersion'])
+            ->middleware([EnsureHasPermission::class.':legal.documents.view', 'throttle:legal.admin-download'])
+            ->where('version', '[0-9a-fA-F-]{36}');
+        Route::get('/legal/versions/{version}/provisions', [AdminLegalController::class, 'provisions'])
+            ->middleware(EnsureHasPermission::class.':legal.documents.view')
+            ->where('version', '[0-9a-fA-F-]{36}');
+        Route::post('/legal/versions/{version}/provisions', [AdminLegalController::class, 'storeProvision'])
+            ->middleware([EnsureHasPermission::class.':legal.provisions.manage', 'throttle:admin.mutations'])
+            ->where('version', '[0-9a-fA-F-]{36}');
+        Route::get('/legal/provisions/{provision}', [AdminLegalController::class, 'showProvision'])
+            ->middleware(EnsureHasPermission::class.':legal.documents.view')
+            ->where('provision', '[0-9a-fA-F-]{36}');
+        Route::patch('/legal/provisions/{provision}', [AdminLegalController::class, 'updateProvision'])
+            ->middleware([EnsureHasPermission::class.':legal.provisions.manage', 'throttle:admin.mutations'])
+            ->where('provision', '[0-9a-fA-F-]{36}');
+        Route::delete('/legal/provisions/{provision}', [AdminLegalController::class, 'destroyProvision'])
+            ->middleware([EnsureHasPermission::class.':legal.provisions.manage', 'throttle:admin.mutations'])
+            ->where('provision', '[0-9a-fA-F-]{36}');
+
+        Route::get('/legal/rules', [AdminLegalController::class, 'rules'])
+            ->middleware(EnsureHasPermission::class.':legal-rules.view');
+        Route::post('/legal/rules', [AdminLegalController::class, 'storeRule'])
+            ->middleware([EnsureHasPermission::class.':legal.rules.create', 'throttle:admin.mutations']);
+        Route::get('/legal/rules/{rule}', [AdminLegalController::class, 'showRule'])
+            ->middleware(EnsureHasPermission::class.':legal-rules.view')
+            ->where('rule', '[0-9a-fA-F-]{36}');
+        Route::patch('/legal/rules/{rule}', [AdminLegalController::class, 'updateRule'])
+            ->middleware([EnsureHasPermission::class.':legal.rules.update', 'throttle:admin.mutations'])
+            ->where('rule', '[0-9a-fA-F-]{36}');
+        Route::post('/legal/rules/{rule}/submit-review', [AdminLegalController::class, 'submitRule'])
+            ->middleware([EnsureHasPermission::class.':legal.rules.review', 'throttle:admin.mutations'])
+            ->where('rule', '[0-9a-fA-F-]{36}');
+        Route::post('/legal/rules/{rule}/approve', [AdminLegalController::class, 'approveRule'])
+            ->middleware([EnsureHasPermission::class.':legal.rules.review', 'throttle:admin.mutations'])
+            ->where('rule', '[0-9a-fA-F-]{36}');
+        Route::post('/legal/rules/{rule}/publish', [AdminLegalController::class, 'publishRule'])
+            ->middleware([EnsureHasPermission::class.':legal.rules.publish', 'throttle:admin.mutations'])
+            ->where('rule', '[0-9a-fA-F-]{36}');
+        Route::post('/legal/rules/{rule}/reject', [AdminLegalController::class, 'rejectRule'])
+            ->middleware([EnsureHasPermission::class.':legal.rules.review', 'throttle:admin.mutations'])
+            ->where('rule', '[0-9a-fA-F-]{36}');
+        Route::post('/legal/rules/{rule}/supersede', [AdminLegalController::class, 'supersedeRule'])
+            ->middleware([EnsureHasPermission::class.':legal.rules.supersede', 'throttle:admin.mutations'])
+            ->where('rule', '[0-9a-fA-F-]{36}');
+        Route::post('/legal/rules/{rule}/evaluate-preview', [AdminLegalController::class, 'previewEvaluate'])
+            ->middleware([EnsureHasPermission::class.':legal-rules.view', 'throttle:admin.mutations'])
+            ->where('rule', '[0-9a-fA-F-]{36}');
+        Route::post('/legal/evaluate', [AdminLegalController::class, 'previewEvaluateStandalone'])
+            ->middleware([EnsureHasPermission::class.':legal-rules.view', 'throttle:admin.mutations']);
+
+        Route::get('/legal/conflicts', [AdminLegalController::class, 'conflicts'])
+            ->middleware(EnsureHasPermission::class.':legal.conflicts.view');
+        Route::get('/legal/conflicts/{conflict}', [AdminLegalController::class, 'showConflict'])
+            ->middleware(EnsureHasPermission::class.':legal.conflicts.view')
+            ->where('conflict', '[0-9a-fA-F-]{36}');
+        Route::post('/legal/conflicts/{conflict}/resolve', [AdminLegalController::class, 'resolveConflict'])
+            ->middleware([EnsureHasPermission::class.':legal.conflicts.resolve', 'throttle:admin.mutations'])
+            ->where('conflict', '[0-9a-fA-F-]{36}');
+        Route::get('/legal/change-detections', [AdminLegalController::class, 'detections'])
+            ->middleware(EnsureHasPermission::class.':legal.sources.view');
+        Route::post('/legal/change-detections/{detection}/confirm', [AdminLegalController::class, 'confirmDetection'])
+            ->middleware([EnsureHasPermission::class.':legal.sources.manage', 'throttle:admin.mutations'])
+            ->where('detection', '[0-9a-fA-F-]{36}');
+        Route::post('/legal/change-detections/{detection}/dismiss', [AdminLegalController::class, 'dismissDetection'])
+            ->middleware([EnsureHasPermission::class.':legal.sources.manage', 'throttle:admin.mutations'])
+            ->where('detection', '[0-9a-fA-F-]{36}');
     });

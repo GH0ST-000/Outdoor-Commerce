@@ -5,6 +5,7 @@ namespace App\Providers;
 use App\Domains\Cart\Contracts\CartOwnerResolver;
 use App\Domains\Cart\Services\CartResolver;
 use App\Domains\Catalog\Contracts\CatalogProductLookup;
+use App\Domains\Catalog\Contracts\SearchGateway as CatalogSearchGateway;
 use App\Domains\Catalog\Events\CatalogAttributeChanged;
 use App\Domains\Catalog\Events\CatalogBrandChanged;
 use App\Domains\Catalog\Events\CatalogCategoryChanged;
@@ -33,6 +34,13 @@ use App\Domains\Catalog\Search\Services\MeilisearchGateway;
 use App\Domains\Catalog\Services\EloquentCatalogProductLookup;
 use App\Domains\Checkout\Contracts\FulfillmentQuoteProvider;
 use App\Domains\Checkout\Services\ConfiguredRateFulfillmentQuoteProvider;
+use App\Domains\Hunting\Events\SpeciesArchived;
+use App\Domains\Hunting\Events\SpeciesChanged;
+use App\Domains\Hunting\Events\SpeciesPublished;
+use App\Domains\Hunting\Events\SpeciesUnpublished;
+use App\Domains\Hunting\Listeners\RefreshSpeciesProjections;
+use App\Domains\Hunting\Models\Species;
+use App\Domains\Hunting\Policies\SpeciesPolicy;
 use App\Domains\Identity\Models\User;
 use App\Domains\Identity\Policies\UserPolicy;
 use App\Domains\Identity\Support\EmailNormalizer;
@@ -58,6 +66,13 @@ use App\Domains\Inventory\Policies\WarehousePolicy;
 use App\Domains\Inventory\Services\DefaultCheckoutInventoryService;
 use App\Domains\Inventory\Services\DefaultWarehouseAllocationStrategy;
 use App\Domains\Inventory\Services\EloquentPublicInventoryAvailability;
+use App\Domains\Legal\Models\LegalConflict;
+use App\Domains\Legal\Models\LegalDocument;
+use App\Domains\Legal\Models\LegalDocumentVersion;
+use App\Domains\Legal\Models\LegalProvision;
+use App\Domains\Legal\Models\LegalRule;
+use App\Domains\Legal\Models\LegalSource;
+use App\Domains\Legal\Policies\LegalPolicy;
 use App\Domains\Orders\Events\OrderCancelled;
 use App\Domains\Orders\Events\OrderExpired;
 use App\Domains\Payments\Listeners\ClosePaymentAttemptsOnOrderClosed;
@@ -81,6 +96,8 @@ use App\Domains\Pricing\Services\DefaultPublicCatalogPricing;
 use App\Domains\Pricing\Services\PricingReadinessService;
 use App\Domains\Shared\Support\Clock;
 use App\Domains\Shared\Support\SystemClock;
+use App\Domains\Shipping\Models\Shipment;
+use App\Domains\Shipping\Policies\ShipmentPolicy;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Database\Eloquent\Relations\Relation;
@@ -106,6 +123,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(PublicCatalogPricing::class, DefaultPublicCatalogPricing::class);
         $this->app->bind(PublicInventoryAvailability::class, EloquentPublicInventoryAvailability::class);
         $this->app->singleton(SearchGateway::class, MeilisearchGateway::class);
+        $this->app->alias(SearchGateway::class, CatalogSearchGateway::class);
     }
 
     public function boot(): void
@@ -122,6 +140,7 @@ class AppServiceProvider extends ServiceProvider
         $this->registerPublicCatalogListeners();
         $this->registerSearchListeners();
         $this->registerPaymentListeners();
+        $this->registerSpeciesListeners();
 
         $cartCookie = config('cart.cookie.name');
         if (is_string($cartCookie) && $cartCookie !== '') {
@@ -141,6 +160,14 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(PriceList::class, PriceListPolicy::class);
         Gate::policy(PricePeriod::class, PricePeriodPolicy::class);
         Gate::policy(Promotion::class, PromotionPolicy::class);
+        Gate::policy(Shipment::class, ShipmentPolicy::class);
+        Gate::policy(Species::class, SpeciesPolicy::class);
+        Gate::policy(LegalSource::class, LegalPolicy::class);
+        Gate::policy(LegalDocument::class, LegalPolicy::class);
+        Gate::policy(LegalDocumentVersion::class, LegalPolicy::class);
+        Gate::policy(LegalProvision::class, LegalPolicy::class);
+        Gate::policy(LegalRule::class, LegalPolicy::class);
+        Gate::policy(LegalConflict::class, LegalPolicy::class);
 
         // Password policy: min 12, mixed case, numbers.
         // Compromised-password checks run only in production (HIBP).
@@ -322,6 +349,56 @@ class AppServiceProvider extends ServiceProvider
             return Limit::perMinute((int) config('payments.rate_limits.simulate_per_minute', 20))
                 ->by(($userId !== null ? 'u'.$userId : 'g'.$request->ip()));
         });
+
+        RateLimiter::for('shipments.customer', function (Request $request) {
+            $userId = $request->user()?->getAuthIdentifier();
+
+            return Limit::perMinute((int) config('shipping.rate_limits.customer_read_per_minute', 30))
+                ->by(($userId !== null ? 'u'.$userId : 'g'.$request->ip()));
+        });
+
+        RateLimiter::for('shipments.admin-mutate', function (Request $request) {
+            $userId = (string) optional($request->user())->getAuthIdentifier();
+
+            return Limit::perMinute((int) config('shipping.rate_limits.admin_mutate_per_minute', 30))
+                ->by($userId.'|'.$request->ip());
+        });
+
+        RateLimiter::for('shipments.webhook', function (Request $request) {
+            return Limit::perMinute((int) config('shipping.rate_limits.webhook_per_minute', 120))
+                ->by('swh'.$request->ip());
+        });
+
+        RateLimiter::for('species.public', function (Request $request) {
+            return Limit::perMinute((int) config('species.rate_limits.public_per_minute', 120))
+                ->by((string) $request->ip());
+        });
+
+        RateLimiter::for('species.public.list', function (Request $request) {
+            $searching = filled($request->query('q'));
+            $limit = $searching
+                ? (int) config('species.rate_limits.search_per_minute', 20)
+                : (int) config('species.rate_limits.list_per_minute', 60);
+
+            return Limit::perMinute($limit)->by((string) $request->ip());
+        });
+
+        RateLimiter::for('legal.public', function (Request $request) {
+            return Limit::perMinute((int) config('legal.rate_limits.public_per_minute', 60))
+                ->by((string) $request->ip());
+        });
+
+        RateLimiter::for('legal.evaluate', function (Request $request) {
+            return Limit::perMinute((int) config('legal.rate_limits.evaluate_per_minute', 20))
+                ->by((string) $request->ip());
+        });
+
+        RateLimiter::for('legal.admin-download', function (Request $request) {
+            $userId = $request->user()?->getAuthIdentifier() ?? 'guest';
+
+            return Limit::perMinute((int) config('legal.rate_limits.admin_download_per_minute', 30))
+                ->by($userId.'|'.$request->ip());
+        });
     }
 
     private function registerPublicCatalogObservers(): void
@@ -411,6 +488,16 @@ class AppServiceProvider extends ServiceProvider
         Event::listen(OrderCancelled::class, [ClosePaymentAttemptsOnOrderClosed::class, 'handleCancelled']);
     }
 
+    private function registerSpeciesListeners(): void
+    {
+        $listener = $this->app->make(RefreshSpeciesProjections::class);
+        Event::listen(SpeciesChanged::class, [$listener, 'changed']);
+        Event::listen(SpeciesPublished::class, [$listener, 'changed']);
+        Event::listen(SpeciesUnpublished::class, [$listener, 'changed']);
+        Event::listen(SpeciesArchived::class, [$listener, 'changed']);
+        MediaAsset::saved(fn (MediaAsset $asset) => $listener->mediaAssetSaved($asset));
+    }
+
     /**
      * Morph types are stored as short aliases so polymorphic rows never hard-code a
      * PHP namespace. Enforcing the map means a new morphable model fails loudly
@@ -425,6 +512,12 @@ class AppServiceProvider extends ServiceProvider
         Relation::enforceMorphMap([
             'product' => Product::class,
             'product_variant' => ProductVariant::class,
+            'species' => Species::class,
+            'legal_rule' => LegalRule::class,
+            'legal_source' => LegalSource::class,
+            'legal_document' => LegalDocument::class,
+            'legal_document_version' => LegalDocumentVersion::class,
+            'legal_provision' => LegalProvision::class,
             User::class => User::class,
             \App\Models\User::class => \App\Models\User::class,
         ]);

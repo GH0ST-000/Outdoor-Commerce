@@ -61,6 +61,14 @@ final class PaymentLogger
             $context['redirect_url'],
             $context['customer_email'],
             $context['customer_phone'],
+            $context['client_secret'],
+            $context['client_id'],
+            $context['access_token'],
+            $context['bearer'],
+            $context['callback-signature'],
+            $context['payer_identifier'],
+            $context['auth_code'],
+            $context['card_expiry_date'],
             $context['webhook_secret'],
         );
 

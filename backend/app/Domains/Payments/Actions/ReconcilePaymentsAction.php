@@ -13,8 +13,8 @@ final class ReconcilePaymentsAction
     /**
      * @return array{processed: int, succeeded: int, failed: int, skipped: int}
      */
-    public function execute(?string $attemptPublicId = null): array
+    public function execute(?string $attemptPublicId = null, ?string $provider = null): array
     {
-        return $this->payments->execute($attemptPublicId);
+        return $this->payments->execute($attemptPublicId, $provider);
     }
 }

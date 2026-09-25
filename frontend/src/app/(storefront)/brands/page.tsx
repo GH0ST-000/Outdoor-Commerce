@@ -15,7 +15,7 @@ export default async function Page() {
             <li key={brand.id}>
               <Link
                 href={brand.path || `/brands/${brand.slug}`}
-                className="sf-lift block rounded-2xl border border-border bg-card px-4 py-5 no-underline hover:border-[var(--copper)]/40"
+                className="sf-lift block rounded-2xl border border-border bg-card px-4 py-5 no-underline hover:border-[var(--sand)]/40"
               >
                 <p className="font-semibold text-foreground">{brand.name}</p>
                 <p className="mt-1 text-sm text-muted-foreground tabular-nums">

@@ -9,11 +9,13 @@ use App\Domains\Orders\Actions\CreateOrderFromQuoteAction;
 use App\Domains\Orders\Actions\GetOrderAction;
 use App\Domains\Orders\DTOs\OrderMutationResultData;
 use App\Domains\Orders\Exceptions\OrderIdempotencyReplayException;
+use App\Domains\Orders\Models\Order;
 use App\Domains\Orders\Services\OrderIdempotencyService;
 use App\Domains\Orders\Services\OrderPresenter;
 use App\Domains\Payments\Actions\GetPaymentAttemptAction;
 use App\Domains\Payments\Services\PaymentPresenter;
 use App\Domains\Shared\Support\CorrelationId;
+use App\Domains\Shipping\Services\FulfillmentPresenter;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\V1\Orders\CancelOrderRequest;
 use App\Http\Requests\Api\V1\Orders\CreateOrderRequest;
@@ -34,6 +36,7 @@ final class PublicOrderController extends Controller
         private readonly CancelOrderAction $cancel,
         private readonly GetPaymentAttemptAction $paymentAttempts,
         private readonly PaymentPresenter $payments,
+        private readonly FulfillmentPresenter $fulfillment,
         private readonly GuestOrderCookie $orderCookie,
         private readonly GuestCartCookie $cartCookie,
     ) {}
@@ -62,11 +65,7 @@ final class PublicOrderController extends Controller
         }
 
         $status = $result->created ? 201 : 200;
-        $body = $this->payments->enrichOrder(
-            $this->presenter->present($result->order),
-            $result->order,
-            $this->paymentAttempts->currentForOrder($result->order),
-        );
+        $body = $this->enrich($request, $result->order, $this->presenter->present($result->order));
         if ($record !== null) {
             $this->idempotency->complete($record, $body, $status);
         }
@@ -79,10 +78,10 @@ final class PublicOrderController extends Controller
         $actor = $this->actors->fromRequest($request);
         $order = $this->get->execute($actor, $orderPublicId);
 
-        return $this->respond($request, $this->payments->enrichOrder(
-            $this->presenter->present($order),
+        return $this->respond($request, $this->enrich(
+            $request,
             $order,
-            $this->paymentAttempts->currentForOrder($order),
+            $this->presenter->present($order),
         ), 200);
     }
 
@@ -104,16 +103,31 @@ final class PublicOrderController extends Controller
                 ->header(CorrelationId::HEADER, (string) $request->attributes->get(CorrelationId::REQUEST_ATTRIBUTE));
         }
 
-        $body = $this->payments->enrichOrder(
-            $this->presenter->present($order),
-            $order,
-            $this->paymentAttempts->currentForOrder($order),
-        );
+        $body = $this->enrich($request, $order, $this->presenter->present($order));
         if ($record !== null) {
             $this->idempotency->complete($record, $body, 200);
         }
 
         return $this->respond($request, $body, 200);
+    }
+
+    /**
+     * @param  array{data: array<string, mixed>}  $payload
+     * @return array{data: array<string, mixed>}
+     */
+    private function enrich(Request $request, Order $order, array $payload): array
+    {
+        $locale = str_starts_with(strtolower((string) $request->header('X-Locale', 'ka')), 'en') ? 'en' : 'ka';
+
+        return $this->fulfillment->enrichOrder(
+            $this->payments->enrichOrder(
+                $payload,
+                $order,
+                $this->paymentAttempts->currentForOrder($order),
+            ),
+            $order,
+            $locale,
+        );
     }
 
     /**

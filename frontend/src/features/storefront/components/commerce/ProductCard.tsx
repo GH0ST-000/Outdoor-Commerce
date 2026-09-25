@@ -43,8 +43,8 @@ export function ProductCard({
         "sf-lift group overflow-hidden",
         isList ? "flex flex-col sm:flex-row" : "flex h-full flex-col",
         onInk
-          ? "rounded-[var(--radius-2xl)] border border-white/10 bg-[color-mix(in_oklab,var(--warm-bone)_96%,white)] text-[var(--charcoal)]"
-          : "rounded-[var(--radius-2xl)] border border-border/60 bg-card shadow-[0_1px_0_rgba(255,255,255,0.6)_inset]",
+          ? "rounded-[var(--radius-xl)] border border-white/10 bg-card text-foreground"
+          : "rounded-[var(--radius-xl)] border border-border/60 bg-card",
         className,
       )}
     >
@@ -76,7 +76,7 @@ export function ProductCard({
               <Badge
                 key={badge}
                 variant="secondary"
-                className="bg-[var(--warm-bone)]/92 text-[var(--charcoal)] capitalize backdrop-blur-sm"
+                className="bg-[var(--alpine-slate)]/88 text-[var(--mist)] capitalize backdrop-blur-sm"
               >
                 {badge}
               </Badge>
@@ -90,14 +90,7 @@ export function ProductCard({
           isList ? "justify-center p-3 sm:p-5" : "p-3 sm:p-5",
         )}
       >
-        <p
-          className={cn(
-            "text-xs font-medium tracking-wide",
-            onInk
-              ? "text-[color-mix(in_oklab,var(--charcoal)_55%,transparent)]"
-              : "text-muted-foreground",
-          )}
-        >
+        <p className="text-xs font-medium tracking-wide text-muted-foreground">
           {product.brand}
         </p>
         <h3
@@ -110,10 +103,7 @@ export function ProductCard({
         >
           <Link
             href={product.href}
-            className={cn(
-              "no-underline hover:underline",
-              onInk ? "text-[var(--charcoal)]" : "text-foreground",
-            )}
+            className="text-foreground no-underline hover:underline"
           >
             {name}
           </Link>
@@ -121,11 +111,8 @@ export function ProductCard({
         {product.attributePreview ? (
           <p
             className={cn(
-              "sf-line-clamp-1 text-sm",
+              "sf-line-clamp-1 text-sm text-muted-foreground",
               !isList && "min-h-[1.25em]",
-              onInk
-                ? "text-[color-mix(in_oklab,var(--charcoal)_55%,transparent)]"
-                : "text-muted-foreground",
             )}
           >
             {product.attributePreview[locale]}
@@ -135,19 +122,11 @@ export function ProductCard({
         ) : null}
         <div
           className={cn(
-            "border-t pt-3",
+            "border-t border-border/60 pt-3",
             isList ? "mt-3" : "mt-auto",
-            onInk
-              ? "border-[color-mix(in_oklab,var(--charcoal)_10%,transparent)]"
-              : "border-border/60",
           )}
         >
-          <p
-            className={cn(
-              "text-sm font-medium type-price",
-              onInk ? "text-[var(--charcoal)]" : "text-foreground",
-            )}
-          >
+          <p className="type-price text-sm font-medium text-foreground">
             {product.pricing ? (
               <span className="inline-flex flex-wrap items-baseline gap-2">
                 <PriceDisplay
@@ -179,11 +158,6 @@ export function ProductCard({
           <AvailabilityStatus
             status={product.availabilityStatus ?? "unavailable"}
             label={product.availabilityLabel?.[locale] ?? t.common.comingSoon}
-            className={
-              onInk
-                ? "text-[color-mix(in_oklab,var(--charcoal)_52%,transparent)]"
-                : undefined
-            }
           />
           {isCartEnabled() ? (
             directAdd ? (

@@ -133,9 +133,16 @@
 [lang="ka"] .type-display-xl,
 [lang="ka"] .type-display-l,
 [lang="ka"] .type-h1 {
-  font-family: var(--font-geo-serif), var(--font-geo), serif;
+  font-family: var(--font-geo), sans-serif;
   letter-spacing: 0;
   line-height: var(--leading-geo);
+}
+
+[data-storefront]:lang(ka) .sf-display,
+[data-storefront]:lang(ka) .type-display-xl,
+[data-storefront]:lang(ka) .type-display-l,
+[data-storefront]:lang(ka) .type-h1 {
+  font-family: var(--font-geo), sans-serif;
 }
 
 :lang(ka) .sf-label,

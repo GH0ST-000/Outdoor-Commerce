@@ -11,12 +11,14 @@ import { PriceDisplay } from "@/features/pricing/components/PriceDisplay";
 import { useCart } from "@/features/cart/providers/CartProvider";
 import { cancelOrder, getOrder } from "@/features/orders/api/order-client";
 import {
+  fulfillmentStatusLabel,
   orderStatusLabel,
   paymentStatusLabel,
   useOrderCopy,
 } from "@/features/orders/copy";
 import type { Order } from "@/features/orders/types";
 import { PaymentSection } from "@/features/payments/components/PaymentSection";
+import { FulfillmentTrackingSection } from "@/features/orders/components/FulfillmentTrackingSection";
 
 export function OrderConfirmationPageView({
   orderPublicId,
@@ -55,6 +57,15 @@ export function OrderConfirmationPageView({
       setStatus("error");
     }
   }, [copy.loadError, orderPublicId, refresh]);
+
+  const refreshOrder = useCallback(async () => {
+    try {
+      const next = await getOrder(orderPublicId);
+      setOrder(next);
+    } catch {
+      setError(copy.loadError);
+    }
+  }, [copy.loadError, orderPublicId]);
 
   useEffect(() => {
     const timer = window.setTimeout(() => {
@@ -165,6 +176,10 @@ export function OrderConfirmationPageView({
           <dt className="text-muted-foreground">{copy.paymentStatus}</dt>
           <dd>{paymentStatusLabel(copy, order.payment_status)}</dd>
         </div>
+        <div>
+          <dt className="text-muted-foreground">{copy.fulfillmentStatus}</dt>
+          <dd>{fulfillmentStatusLabel(copy, order.fulfillment_status)}</dd>
+        </div>
         {deadline && pendingPayment ? (
           <div>
             <dt className="text-muted-foreground">{copy.paymentDeadline}</dt>
@@ -262,6 +277,12 @@ export function OrderConfirmationPageView({
           }}
         />
       ) : null}
+
+      <FulfillmentTrackingSection
+        order={order}
+        localeTag={localeTag}
+        onRefresh={refreshOrder}
+      />
 
       <section className="mt-8 grid gap-4 text-sm sm:grid-cols-2">
         <div>

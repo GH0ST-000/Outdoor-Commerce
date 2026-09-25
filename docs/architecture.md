@@ -25,9 +25,17 @@ See also:
 - [Checkout (Day 18)](checkout.md)
 - [Orders (Day 19)](orders.md)
 - [Payments (Day 20)](payments.md)
+- [Bank of Georgia Payment Manager (Day 21)](payments-bog.md)
 - [ADR 0013: Immutable checkout quotes with short-lived inventory reservations](adr/0013-immutable-checkout-quotes.md)
 - [ADR 0014: Atomic order creation from immutable checkout quotes](adr/0014-atomic-order-creation.md)
 - [ADR 0015: Provider-agnostic payment core with verified webhook authority](adr/0015-provider-agnostic-payment-core.md)
+- [ADR 0016: Bank of Georgia Payment Manager as the first production payment adapter](adr/0016-bog-payment-manager.md)
+- [Fulfillment (Day 22)](fulfillment.md)
+- [ADR 0017: Carrier-neutral fulfillment with shipment-level state machines](adr/0017-carrier-neutral-fulfillment.md)
+- [Species knowledge base (Day 24)](species.md)
+- [Legal information (Day 25)](legal.md)
+- [ADR 0018: Separation of biological species knowledge from legal hunting and fishing rules](adr/0018-species-facts-vs-legal-rules.md)
+- [ADR 0019: Versioned official legal sources and deterministic rule evaluation](adr/0019-versioned-legal-rules.md)
 - Per-module notes under `backend/app/Domains/*/README.md`
 
 ## Modular monolith definition
@@ -52,8 +60,9 @@ See also:
 | Checkout | Checkout orchestration toward an order | Payment-provider integration details |
 | Orders | Order lifecycle and immutable order snapshots | Payment-provider implementation |
 | Payments | Payment intents, callbacks, reconciliation | Order-item composition |
-| Shipping | Shipments, rates selection, fulfillment addressing | Inventory reservation rules |
-| Hunting | Species, seasons, limits, legal sources | Geographic polygon storage |
+| Shipping | Shipments, pickup, tracking, aggregate fulfillment | Inventory reservation rules, payment capture |
+| Hunting | Species knowledge (Day 24 biological facts) | Legal permission, seasons, maps |
+| Legal | Official sources, versioned documents, structured rules, evaluation (Day 25) | Species biology, calendars, geospatial polygons |
 | Geography | Zones, polygons, spatial queries | Legal interpretation, product ranking |
 | Recommendations | Contextual ranking of products | Legal permission decisions |
 | Content | CMS-like pages, articles, editorial blocks | Product canonical data |

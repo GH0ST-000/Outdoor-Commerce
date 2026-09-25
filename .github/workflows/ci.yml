@@ -207,6 +207,21 @@ jobs:
             exit(1);
           '
 
+      - name: Grant parallel Pest databases
+        run: |
+          php -r '
+            $pdo = new PDO(
+              "mysql:host=127.0.0.1;port=3306",
+              "root",
+              "root_test_ci",
+              [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]
+            );
+            $pdo->exec("GRANT CREATE ON *.* TO \"outdoor_test\"@\"%\"");
+            $pdo->exec("GRANT ALL PRIVILEGES ON `outdoor_test%`.* TO \"outdoor_test\"@\"%\"");
+            $pdo->exec("FLUSH PRIVILEGES");
+            echo "Granted outdoor_test% databases for Pest --parallel\n";
+          '
+
       - name: Prepare Laravel
         run: |
           php artisan config:clear

@@ -29,7 +29,7 @@ No package write, PR write, deployment, or admin permissions are granted.
 | --- | --- |
 | `repository-validation` | Lockfiles, env examples, Compose syntax, Composer validate, lock consistency, conflict markers |
 | `backend-quality` | Pint, PHPStan/Larastan, architecture tests |
-| `backend-tests` | Pest on real MySQL 8.4 + Redis 7 + Meilisearch 1.11; migrations; health/correlation/architecture coverage |
+| `backend-tests` | Pest `--parallel` on real MySQL 8.4 + Redis 7 + Meilisearch 1.11; per-worker databases; migrations; health/correlation/architecture coverage |
 | `frontend-quality` | Prettier, ESLint (`--max-warnings=0`), TypeScript |
 | `frontend-tests` | Vitest |
 | `frontend-build` | Next.js production build |
@@ -64,8 +64,21 @@ composer validate --strict --no-check-publish
 composer format:check
 composer analyse
 composer test:architecture
-composer test
+composer test              # Pest --parallel (default)
+composer test:sequential   # single process, for debugging flakes
 composer ci
+```
+
+Pest `--parallel` uses ParaTest (bundled with Pest 4). Feature tests that use `RefreshDatabase` get a per-worker database (`outdoor_test_test_{N}` on MySQL, isolated `:memory:` SQLite locally). CI grants `outdoor_test` access to those `outdoor_test%` schemas. PHP `pcntl` is required (already enabled on the backend-tests runner).
+
+ParaTest accepts a single path. Filter with one directory or a testsuite:
+
+```bash
+cd backend
+PAO_DISABLE=true vendor/bin/pest --parallel --compact --testsuite=Feature
+PAO_DISABLE=true vendor/bin/pest --parallel --compact tests/Feature/Legal
+# cap workers:
+PAO_DISABLE=true vendor/bin/pest --parallel --processes=4
 ```
 
 Frontend scripts:

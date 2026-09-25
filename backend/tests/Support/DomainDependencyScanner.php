@@ -25,6 +25,7 @@ final class DomainDependencyScanner
             'Payments',
             'Shipping',
             'Hunting',
+            'Legal',
             'Geography',
             'Recommendations',
             'Content',

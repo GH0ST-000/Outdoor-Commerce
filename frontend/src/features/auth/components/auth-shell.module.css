@@ -36,16 +36,16 @@
   background:
     linear-gradient(
       160deg,
-      rgba(8, 20, 16, 0.35),
-      rgba(11, 28, 23, 0.75) 55%,
-      rgba(12, 24, 32, 0.9)
+      rgba(26, 26, 26, 0.35),
+      rgba(26, 26, 26, 0.78) 55%,
+      rgba(18, 18, 18, 0.92)
     ),
     radial-gradient(
       circle at 30% 20%,
-      rgba(212, 161, 92, 0.22),
+      rgba(196, 164, 132, 0.22),
       transparent 45%
     ),
-    linear-gradient(145deg, #0b1c17, #1a3d34 50%, #243844);
+    linear-gradient(145deg, #1a1a1a, #2c2c2c 50%, #1a1a1a);
   animation: drift 26s var(--ease-out) infinite alternate;
 }
 

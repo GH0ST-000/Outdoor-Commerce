@@ -60,6 +60,7 @@ export type SeasonDemoRow = {
   month: Record<StorefrontLocale, string>;
   status: SeasonStatus;
   limit: Record<StorefrontLocale, string>;
+  imageSrc: string;
 };
 
 export type FieldGuideCardData = {
@@ -246,6 +247,12 @@ export type StorefrontCopy = {
     closed: string;
     conditional: string;
     unknown: string;
+    eyebrow: string;
+    regulationsTitle: string;
+    regulationsLead: string;
+    checklist: string[];
+    fieldKitTitle: string;
+    fieldKit: string[];
   };
   map: {
     title: string;
@@ -253,6 +260,13 @@ export type StorefrontCopy = {
     legend: string;
     panel: string;
     unavailable: string;
+    grounds: string;
+    parks: string;
+    species: string;
+    access: string;
+    legendOpen: string;
+    legendPark: string;
+    legendUnverified: string;
   };
   fieldGuide: {
     title: string;

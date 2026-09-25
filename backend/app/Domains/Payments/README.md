@@ -2,7 +2,7 @@
 
 ## Responsibility
 
-Payment attempts, provider adapters, webhook inbox, reconciliation. Day 20 ships a provider-agnostic core plus a development-only test hosted-redirect provider.
+Payment attempts, provider adapters, webhook inbox, reconciliation. Day 20 ships a provider-agnostic core plus a development-only test hosted-redirect provider. Day 21 adds the Bank of Georgia Payment Manager adapter (`bog`). Deprecated iPay is not used.
 
 ## Data owned
 
@@ -11,7 +11,7 @@ Payment attempts, attempt status history, webhook inbox, payment idempotency rec
 ## Public contracts
 
 - HTTP: `PublicPaymentMethodController`, `PublicPaymentAttemptController`, `PaymentWebhookController`
-- Actions: `CreatePaymentAttemptAction`, `GetPaymentAttemptAction`, `CancelPaymentAttemptAction`, `ListEligiblePaymentMethodsAction`, `ReceivePaymentWebhookAction`, `ReconcilePaymentsAction`, `RetryPaymentWebhookAction`, `SimulateTestPaymentAction`
+- Actions: `CreatePaymentAttemptAction`, `GetPaymentAttemptAction`, `CancelPaymentAttemptAction`, `ListEligiblePaymentMethodsAction`, `ReceivePaymentWebhookAction`, `ReconcilePaymentsAction`, `RetryPaymentWebhookAction`, `SimulateTestPaymentAction`, `CheckPaymentProviderAction`
 - Contract: `PaymentProvider`
 - Events: `PaymentAttemptCreated`, `PaymentRequiresAction`, `PaymentProcessing`, `PaymentSucceeded`, `PaymentFailed`, `PaymentCancelled`, `PaymentExpired`, `PaymentNeedsManualReview`, `PaymentWebhookReceived`, `PaymentWebhookProcessed`, `PaymentReconciled`, `InventoryCommittedForOrder`
 
@@ -27,8 +27,8 @@ Shared; Orders (Actions, Models, Enums, Events, DTOs); Inventory (`CheckoutInven
 
 ## Explicitly outside this module
 
-Order line composition, refunds, real bank SDKs, card PAN/CVV, shipments.
+Order line composition, refunds, card PAN/CVV, shipments, deprecated iPay.
 
 ## Structure
 
-See `docs/payments.md` and `docs/adr/0015-provider-agnostic-payment-core.md`.
+See `docs/payments.md`, `docs/payments-bog.md`, `docs/adr/0015-provider-agnostic-payment-core.md`, and `docs/adr/0016-bog-payment-manager.md`.

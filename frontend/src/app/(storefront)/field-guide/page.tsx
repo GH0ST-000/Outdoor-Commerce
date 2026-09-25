@@ -12,7 +12,7 @@ export default function FieldGuidePage() {
     <div className="sf-band-paper sf-section">
       <div className="sf-container space-y-8">
         <header className="max-w-2xl">
-          <p className="sf-label text-[var(--copper)]">
+          <p className="sf-label text-[var(--sand)]">
             {locale === "ka" ? "გზამკვლევი" : "Field notes"}
           </p>
           <h1 className="sf-display mt-2 text-4xl sm:text-5xl">
@@ -36,7 +36,7 @@ export default function FieldGuidePage() {
                 />
               </div>
               <div className="p-5">
-                <p className="sf-label text-[var(--copper)]">
+                <p className="sf-label text-[var(--sand)]">
                   {guide.category[locale]}
                 </p>
                 <h2 className="mt-2 text-xl font-semibold">
@@ -47,7 +47,7 @@ export default function FieldGuidePage() {
                 </p>
                 <Link
                   href={guide.href}
-                  className="mt-4 inline-flex text-sm font-semibold text-[var(--copper)]"
+                  className="mt-4 inline-flex text-sm font-semibold text-[var(--sand)]"
                 >
                   {t.fieldGuide.read}
                 </Link>

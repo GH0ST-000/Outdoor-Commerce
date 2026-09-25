@@ -29,6 +29,7 @@ final class ApplyNormalizedPaymentOutcomeService
         ?string $currency,
         string $providerPaymentId,
         ?string $transactionId,
+        ?string $merchantReference = null,
     ): void {
         if ($attempt->status === PaymentAttemptStatus::Succeeded && $status !== PaymentAttemptStatus::Succeeded) {
             $this->logger->warning('ignored_downgrade', [
@@ -45,6 +46,7 @@ final class ApplyNormalizedPaymentOutcomeService
                 'currency' => $currency,
                 'provider_payment_id' => $providerPaymentId,
                 'provider_transaction_id' => $transactionId,
+                'merchant_reference' => $merchantReference,
             ]),
             PaymentAttemptStatus::Failed => $this->failure->execute(
                 $attempt,

@@ -46,6 +46,41 @@ return [
             'enabled' => (bool) env('PAYMENT_TEST_PROVIDER_ENABLED', false),
             'production_allowed' => false,
         ],
+        'bog' => [
+            'driver' => 'bog',
+            'enabled' => (bool) env('BOG_PAYMENT_ENABLED', false),
+            'production_allowed' => true,
+            'environment' => env('BOG_PAYMENT_ENVIRONMENT', 'test'),
+            'client_id' => env('BOG_PAYMENT_CLIENT_ID'),
+            'client_secret' => env('BOG_PAYMENT_CLIENT_SECRET'),
+            'oauth_url' => env('BOG_PAYMENT_OAUTH_URL', 'https://oauth2.bog.ge/auth/realms/bog/protocol/openid-connect/token'),
+            'api_base_url' => env('BOG_PAYMENT_API_BASE_URL', 'https://api.bog.ge/payments/v1'),
+            'callback_public_key' => env('BOG_PAYMENT_CALLBACK_PUBLIC_KEY'),
+            'callback_public_key_path' => env('BOG_PAYMENT_CALLBACK_PUBLIC_KEY_PATH'),
+            'callback_public_key_previous' => env('BOG_PAYMENT_CALLBACK_PUBLIC_KEY_PREVIOUS'),
+            // Official public key from https://api.bog.ge/docs/en/payments/standard-process/callback reviewed 2026-09-23.
+            'documented_callback_public_key' => <<<'PEM'
+-----BEGIN PUBLIC KEY-----
+MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAu4RUyAw3+CdkS3ZNILQhzHI9Hemo+vKB9U2BSabppkKjzjjkf+0Sm76hSMiu/HFtYhqWOESryoCDJoqffY0Q1VNt25aTxbj068QNUtnxQ7KQVLA+pG0smf+EBWlS1vBEAFbIas9d8c9b9sSEkTrrTYQ90WIM8bGB6S/KLVoT1a7SnzabjoLc5Qf/SLDG5fu8dH8zckyeYKdRKSBJKvhxtcBuHV4f7qsynQT+f2UYbESX/TLHwT5qFWZDHZ0YUOUIvb8n7JujVSGZO9/+ll/g4ZIWhC1MlJgPObDwRkRd8NFOopgxMcMsDIZIoLbWKhHVq67hdbwpAq9K9WMmEhPnPwIDAQAB
+-----END PUBLIC KEY-----
+PEM,
+            'callback_url' => env('BOG_PAYMENT_CALLBACK_URL', rtrim($appUrl, '/').'/api/v1/payments/webhooks/bog'),
+            'success_url' => env('BOG_PAYMENT_SUCCESS_URL', env('PAYMENT_RETURN_URL', rtrim($frontend, '/').'/payment/return')),
+            'fail_url' => env('BOG_PAYMENT_FAILURE_URL', env('PAYMENT_RETURN_URL', rtrim($frontend, '/').'/payment/return')),
+            'connect_timeout_seconds' => (float) env('BOG_PAYMENT_CONNECT_TIMEOUT_SECONDS', 5),
+            'request_timeout_seconds' => (float) env('BOG_PAYMENT_REQUEST_TIMEOUT_SECONDS', 15),
+            'token_refresh_skew_seconds' => (int) env('BOG_PAYMENT_TOKEN_REFRESH_SKEW_SECONDS', 60),
+            'default_ttl_minutes' => (int) env('BOG_PAYMENT_DEFAULT_TTL_MINUTES', 15),
+            'ttl_safety_margin_minutes' => (int) env('BOG_PAYMENT_TTL_SAFETY_MARGIN_MINUTES', 1),
+            'allowed_methods' => array_values(array_filter(array_map('trim', explode(',', (string) env('BOG_PAYMENT_ALLOWED_METHODS', 'card'))))),
+            'theme' => env('BOG_PAYMENT_THEME', 'dark'),
+            'account_tag' => env('BOG_PAYMENT_ACCOUNT_TAG'),
+            'allowed_redirect_hosts' => array_values(array_filter(array_map('trim', explode(',', (string) env(
+                'BOG_PAYMENT_ALLOWED_REDIRECT_HOSTS',
+                'payment.bog.ge',
+            ))))),
+            'documentation_reviewed_at' => '2026-09-23',
+        ],
     ],
     'methods' => [
         'test_hosted_redirect' => [
@@ -66,6 +101,26 @@ return [
             'descriptions' => [
                 'en' => 'Development-only test provider. Not a real bank. No card details are collected.',
                 'ka' => 'მხოლოდ განვითარების ტესტური პროვაიდერი. ეს ბანკი არ არის. ბარათის მონაცემები არ გროვდება.',
+            ],
+        ],
+        'bog_hosted_card' => [
+            'code' => 'bog_hosted_card',
+            'provider' => 'bog',
+            'type' => 'hosted_redirect',
+            'icon' => 'bog',
+            'is_enabled' => (bool) env('BOG_PAYMENT_ENABLED', false),
+            'development_only' => false,
+            'supported_currencies' => ['GEL', 'USD', 'EUR', 'GBP'],
+            'minimum_amount_minor' => 1,
+            'maximum_amount_minor' => 10_000_000,
+            'sort_order' => 10,
+            'names' => [
+                'en' => 'Bank of Georgia',
+                'ka' => 'საქართველოს ბანკი',
+            ],
+            'descriptions' => [
+                'en' => 'You will be redirected to Bank of Georgia’s secure payment page. Card details stay with the bank.',
+                'ka' => 'გადამისამართდები საქართველოს ბანკის უსაფრთხო გადახდის გვერდზე. ბარათის მონაცემები რჩება ბანკთან.',
             ],
         ],
     ],

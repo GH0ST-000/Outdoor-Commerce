@@ -81,9 +81,9 @@ export function DesignSystemGallery() {
   const product = featuredProducts[0]!;
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div data-storefront className="min-h-screen bg-background text-foreground">
       <EditorialHero
-        eyebrow="Caucasus Field Intelligence"
+        eyebrow="Alpine Slate & Olive"
         title="Storefront design system"
         lead="Development-only gallery for tokens, primitives, and commerce presentation. Not shipped in production."
       />
@@ -94,7 +94,7 @@ export function DesignSystemGallery() {
               Dark cinematic
             </Surface>
             <Surface name="paper" className="rounded-[var(--radius-lg)] p-6">
-              Warm editorial paper
+              Raised alpine surface
             </Surface>
             <Surface name="commerce" className="rounded-[var(--radius-lg)] p-6">
               Neutral commerce

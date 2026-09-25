@@ -28,11 +28,11 @@ export function CatalogPageSkeleton() {
         <Skeleton className="mt-4 h-14 w-2/3 max-w-lg motion-reduce:animate-none" />
         <Skeleton className="mt-3 h-4 w-full max-w-xl motion-reduce:animate-none" />
       </div>
-      <div className="sf-container grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_300px]">
-        <ProductGridSkeleton />
+      <div className="sf-container grid items-start gap-6 lg:grid-cols-[280px_minmax(0,1fr)]">
         <div className="hidden space-y-3 lg:block">
-          <Skeleton className="h-72 w-full rounded-2xl motion-reduce:animate-none" />
+          <Skeleton className="h-72 w-full rounded-[var(--radius-xl)] motion-reduce:animate-none" />
         </div>
+        <ProductGridSkeleton />
       </div>
     </div>
   );

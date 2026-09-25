@@ -53,8 +53,16 @@ Architecture docs:
 - [docs/checkout.md](docs/checkout.md)
 - [docs/orders.md](docs/orders.md)
 - [docs/payments.md](docs/payments.md)
+- [docs/payments-bog.md](docs/payments-bog.md)
 - [docs/adr/0014-atomic-order-creation.md](docs/adr/0014-atomic-order-creation.md)
 - [docs/adr/0015-provider-agnostic-payment-core.md](docs/adr/0015-provider-agnostic-payment-core.md)
+- [docs/adr/0016-bog-payment-manager.md](docs/adr/0016-bog-payment-manager.md)
+- [docs/fulfillment.md](docs/fulfillment.md)
+- [docs/adr/0017-carrier-neutral-fulfillment.md](docs/adr/0017-carrier-neutral-fulfillment.md)
+- [docs/species.md](docs/species.md)
+- [docs/adr/0018-species-facts-vs-legal-rules.md](docs/adr/0018-species-facts-vs-legal-rules.md)
+- [docs/legal.md](docs/legal.md)
+- [docs/adr/0019-versioned-legal-rules.md](docs/adr/0019-versioned-legal-rules.md)
 
 Backend and frontend dependencies stay isolated (`backend/vendor`, `frontend/node_modules`).
 
@@ -159,7 +167,11 @@ make test-backend
 docker compose exec backend composer test
 # host-side (uses isolated sqlite in-memory via phpunit.xml):
 cd backend && composer test
+# sequential (debugging):
+cd backend && composer test:sequential
 ```
+
+`composer test` runs Pest with `--parallel`. Each worker gets its own SQLite memory database locally, or `outdoor_test_test_{N}` on MySQL. Requires PHP `pcntl`. If a run looks flaky, use `composer test:sequential`.
 
 ## Frontend tests
 

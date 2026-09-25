@@ -39,8 +39,23 @@ export type OrderCopy = {
   contact: string;
   address: string;
   pickup: string;
+  trackingTitle: string;
+  trackingBody: string;
+  unfulfilledBody: string;
+  remainingTitle: string;
+  refreshTracking: string;
+  trackingNumber: string;
+  externalTracking: string;
+  pickupShipment: string;
+  deliveryShipment: string;
+  showDetails: string;
+  hideDetails: string;
+  exceptionTitle: string;
+  exceptionBody: string;
   statuses: Record<string, string>;
   paymentStatuses: Record<string, string>;
+  fulfillmentStatuses: Record<string, string>;
+  shipmentStatuses: Record<string, string>;
 };
 
 export const orderCopy: Record<Locale, OrderCopy> = {
@@ -87,6 +102,21 @@ export const orderCopy: Record<Locale, OrderCopy> = {
     contact: "Contact",
     address: "Delivery address",
     pickup: "Pickup",
+    trackingTitle: "Delivery and pickup",
+    trackingBody:
+      "Progress comes from the warehouse and carrier records. Closing a tracking page does not change the order.",
+    unfulfilledBody: "Fulfillment has not started yet.",
+    remainingTitle: "Still to send",
+    refreshTracking: "Refresh tracking",
+    trackingNumber: "Tracking number",
+    externalTracking: "Open carrier tracking (opens in a new tab)",
+    pickupShipment: "Store pickup",
+    deliveryShipment: "Delivery",
+    showDetails: "Show shipment details",
+    hideDetails: "Hide shipment details",
+    exceptionTitle: "This delivery needs a short review",
+    exceptionBody:
+      "The payment is unchanged. Our team will continue from the latest warehouse status.",
     statuses: {
       pending_payment: "Pending payment",
       payment_processing: "Payment processing",
@@ -100,6 +130,28 @@ export const orderCopy: Record<Locale, OrderCopy> = {
       pending: "Pending",
       paid: "Paid",
       failed: "Failed",
+      cancelled: "Cancelled",
+    },
+    fulfillmentStatuses: {
+      unfulfilled: "Not started",
+      processing: "Preparing",
+      partially_fulfilled: "Partially fulfilled",
+      fulfilled: "Fulfilled",
+      cancelled: "Cancelled",
+      exception: "Needs review",
+    },
+    shipmentStatuses: {
+      draft: "Draft",
+      preparing: "Preparing",
+      ready_for_dispatch: "Ready for dispatch",
+      shipped: "Shipped",
+      in_transit: "In transit",
+      out_for_delivery: "Out for delivery",
+      delivery_attempt_failed: "Delivery attempt failed",
+      delivered: "Delivered",
+      ready_for_pickup: "Ready for pickup",
+      collected: "Collected",
+      exception: "Needs review",
       cancelled: "Cancelled",
     },
   },
@@ -147,6 +199,20 @@ export const orderCopy: Record<Locale, OrderCopy> = {
     contact: "კონტაქტი",
     address: "მიწოდების მისამართი",
     pickup: "გატანა",
+    trackingTitle: "მიწოდება და გატანა",
+    trackingBody:
+      "პროგრესი მოდის საწყობისა და გადამზიდავის ჩანაწერებიდან. თვალთვალის გვერდის დახურვა შეკვეთას არ ცვლის.",
+    unfulfilledBody: "მიწოდება ჯერ არ დაწყებულა.",
+    remainingTitle: "ჯერ გასაგზავნი",
+    refreshTracking: "თვალთვალის განახლება",
+    trackingNumber: "თვალთვალის ნომერი",
+    externalTracking: "გადამზიდავის თვალთვალი (იხსნება ახალ ჩანართში)",
+    pickupShipment: "მაღაზიიდან გატანა",
+    deliveryShipment: "მიწოდება",
+    showDetails: "დეტალების ჩვენება",
+    hideDetails: "დეტალების დამალვა",
+    exceptionTitle: "ამ გზავნილს სჭირდება მოკლე შემოწმება",
+    exceptionBody: "გადახდა უცვლელია. გუნდი გააგრძელებს უახლესი სტატუსიდან.",
     statuses: {
       pending_payment: "ელოდება გადახდას",
       payment_processing: "გადახდა მუშავდება",
@@ -160,6 +226,28 @@ export const orderCopy: Record<Locale, OrderCopy> = {
       pending: "მოლოდინში",
       paid: "გადახდილი",
       failed: "წარუმატებელი",
+      cancelled: "გაუქმებული",
+    },
+    fulfillmentStatuses: {
+      unfulfilled: "არ დაწყებულა",
+      processing: "მზადდება",
+      partially_fulfilled: "ნაწილობრივ შესრულებული",
+      fulfilled: "შესრულებული",
+      cancelled: "გაუქმებული",
+      exception: "საჭიროებს შემოწმებას",
+    },
+    shipmentStatuses: {
+      draft: "მონახაზი",
+      preparing: "მზადდება",
+      ready_for_dispatch: "მზად არის გასაგზავნად",
+      shipped: "გაგზავნილი",
+      in_transit: "გზაშია",
+      out_for_delivery: "მიწოდების პროცესშია",
+      delivery_attempt_failed: "მიწოდება ვერ შესრულდა",
+      delivered: "მიწოდებული",
+      ready_for_pickup: "მზად არის გასატანად",
+      collected: "გატანილი",
+      exception: "საჭიროებს შემოწმებას",
       cancelled: "გაუქმებული",
     },
   },
@@ -176,4 +264,15 @@ export function orderStatusLabel(copy: OrderCopy, status: string): string {
 
 export function paymentStatusLabel(copy: OrderCopy, status: string): string {
   return copy.paymentStatuses[status] ?? status;
+}
+
+export function fulfillmentStatusLabel(
+  copy: OrderCopy,
+  status: string,
+): string {
+  return copy.fulfillmentStatuses[status] ?? status;
+}
+
+export function shipmentStatusLabel(copy: OrderCopy, status: string): string {
+  return copy.shipmentStatuses[status] ?? status;
 }

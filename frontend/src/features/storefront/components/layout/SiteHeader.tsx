@@ -77,7 +77,7 @@ export function SiteHeader() {
         className={cn(
           "sticky top-0 z-[var(--z-header)] transition-[background-color,border-color,backdrop-filter,box-shadow] duration-[var(--duration-control)] ease-[var(--ease-standard)]",
           solid
-            ? "border-b border-border/50 bg-[var(--header-background)] shadow-[0_10px_30px_-24px_rgba(26,22,19,0.35)] backdrop-blur-xl"
+            ? "border-b border-border/50 bg-[var(--header-background)] shadow-[0_10px_30px_-24px_rgba(0,0,0,0.55)] backdrop-blur-xl"
             : "border-b border-transparent bg-transparent",
         )}
       >
@@ -233,7 +233,7 @@ export function SiteHeader() {
                 !solid && isHome && "[&_button]:text-[var(--text-inverse)]",
               )}
             >
-              <SiteControls tone={solid || !isHome ? "light" : "dark"} />
+              <SiteControls tone="dark" />
             </div>
           </div>
         </div>

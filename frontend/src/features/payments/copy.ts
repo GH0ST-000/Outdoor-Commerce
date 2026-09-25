@@ -10,6 +10,7 @@ export type PaymentCopy = {
   retry: string;
   cancelAttempt: string;
   noMethods: string;
+  bogHostedNote: string;
   testOnly: string;
   processingTitle: string;
   processingBody: string;
@@ -43,6 +44,8 @@ export const paymentCopy: Record<Locale, PaymentCopy> = {
     cancelAttempt: "Cancel this payment attempt",
     noMethods: "Online payment is not available for this order yet.",
     testOnly: "Test provider — not a real bank",
+    bogHostedNote:
+      "You will be redirected to Bank of Georgia’s secure payment page.",
     processingTitle: "Confirming payment",
     processingBody:
       "We are waiting for a verified payment confirmation. This page does not treat return links as proof of payment.",
@@ -78,6 +81,8 @@ export const paymentCopy: Record<Locale, PaymentCopy> = {
     cancelAttempt: "გადახდის მცდელობის გაუქმება",
     noMethods: "ონლაინ გადახდა ამ შეკვეთისთვის ჯერ არ არის ხელმისაწვდომი.",
     testOnly: "ტესტური პროვაიდერი — ეს ბანკი არ არის",
+    bogHostedNote:
+      "გადამისამართდები საქართველოს ბანკის უსაფრთხო გადახდის გვერდზე.",
     processingTitle: "გადახდა დასტურდება",
     processingBody:
       "ველოდებით დადასტურებულ გადახდას. დაბრუნების ბმული გადახდის მტკიცებულება არ არის.",

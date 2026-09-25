@@ -1,8 +1,10 @@
 "use client";
 
+import Image from "next/image";
 import { LegalDemoBanner } from "@/features/storefront/components/outdoor/LegalDemoBanner";
 import { SeasonStatusBadge } from "@/features/storefront/components/outdoor/SeasonStatusBadge";
 import { seasonDemo } from "@/features/storefront/fixtures/demo-catalog";
+import { storefrontMedia } from "@/features/storefront/config/media";
 import { useStorefrontCopy } from "@/features/storefront/hooks/use-storefront-copy";
 import { Input } from "@/components/ui/input";
 import { useMemo, useState } from "react";
@@ -19,17 +21,30 @@ export default function HuntingCalendarPage() {
   }, [locale, query]);
 
   return (
-    <div className="sf-band-paper sf-section">
-      <div className="sf-container space-y-6">
-        <header className="max-w-2xl">
-          <p className="sf-label text-[var(--copper)]">
-            {locale === "ka" ? "კალენდარი" : "Calendar"}
-          </p>
-          <h1 className="sf-display mt-2 text-4xl sm:text-5xl">
+    <div className="pb-16">
+      <section className="relative isolate overflow-hidden">
+        <div className="absolute inset-0">
+          <Image
+            src={storefrontMedia.categories.hunting}
+            alt=""
+            fill
+            sizes="100vw"
+            className="object-cover object-center"
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-[var(--alpine-slate)]/55 via-[var(--alpine-slate)]/75 to-[var(--alpine-slate)]" />
+        </div>
+        <div className="sf-container relative py-16 sm:py-20">
+          <p className="sf-label text-[var(--sand)]">{t.calendar.eyebrow}</p>
+          <h1 className="sf-display mt-3 text-[clamp(2.25rem,7vw,4.5rem)] leading-[1.02]">
             {t.calendar.title}
           </h1>
-          <p className="mt-3 text-muted-foreground">{t.calendar.lead}</p>
-        </header>
+          <p className="mt-4 max-w-xl text-sm leading-relaxed text-muted-foreground sm:text-base">
+            {t.calendar.lead}
+          </p>
+        </div>
+      </section>
+
+      <div className="sf-container space-y-10 pt-6">
         <LegalDemoBanner />
         <Input
           value={query}
@@ -38,60 +53,80 @@ export default function HuntingCalendarPage() {
           aria-label={t.calendar.search}
           className="max-w-md"
         />
-        <div className="grid gap-3 md:hidden">
+
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {rows.map((row) => (
             <article
               key={row.id}
-              className="rounded-2xl border border-border/70 bg-card p-4"
+              className="overflow-hidden rounded-[var(--radius-xl)] border border-border bg-card"
             >
-              <div className="flex items-start justify-between gap-3">
-                <div>
-                  <p className="font-semibold">{row.species[locale]}</p>
-                  <p className="mt-1 text-sm text-muted-foreground">
-                    {row.region[locale]} · {row.month[locale]}
-                  </p>
+              <div className="relative aspect-[16/10]">
+                <Image
+                  src={row.imageSrc}
+                  alt=""
+                  fill
+                  sizes="(max-width:1024px) 100vw, 33vw"
+                  className="object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-[var(--alpine-slate)]/85 via-transparent to-transparent" />
+                <div className="absolute top-3 right-3">
+                  <SeasonStatusBadge status={row.status} />
                 </div>
-                <SeasonStatusBadge status={row.status} />
               </div>
-              <p className="mt-3 text-sm text-muted-foreground">
-                {row.limit[locale]}
-              </p>
+              <div className="space-y-2 p-4">
+                <h2 className="text-lg font-semibold">{row.species[locale]}</h2>
+                <p className="text-sm text-muted-foreground">
+                  {row.region[locale]} · {row.month[locale]}
+                </p>
+                <p className="text-sm text-muted-foreground">
+                  {row.limit[locale]}
+                </p>
+              </div>
             </article>
           ))}
         </div>
-        <div className="hidden overflow-hidden rounded-2xl border border-border/70 md:block">
-          <table className="w-full text-left text-sm">
-            <thead className="bg-muted/50 text-xs uppercase tracking-wide text-muted-foreground">
-              <tr>
-                <th className="px-4 py-3">Species</th>
-                <th className="px-4 py-3">Region</th>
-                <th className="px-4 py-3">Month</th>
-                <th className="px-4 py-3">Status</th>
-                <th className="px-4 py-3">Limit</th>
-              </tr>
-            </thead>
-            <tbody>
-              {rows.map((row) => (
-                <tr
-                  key={row.id}
-                  className="border-t border-border/50 transition-colors hover:bg-muted/40"
+
+        <section className="grid gap-4 lg:grid-cols-2">
+          <div className="rounded-[var(--radius-xl)] border border-border bg-card p-5 sm:p-6">
+            <h2 className="sf-display text-2xl">
+              {t.calendar.regulationsTitle}
+            </h2>
+            <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+              {t.calendar.regulationsLead}
+            </p>
+            <ul className="mt-5 space-y-3">
+              {t.calendar.checklist.map((item) => (
+                <li
+                  key={item}
+                  className="flex gap-3 text-sm leading-relaxed text-foreground"
                 >
-                  <td className="px-4 py-3 font-medium">
-                    {row.species[locale]}
-                  </td>
-                  <td className="px-4 py-3">{row.region[locale]}</td>
-                  <td className="px-4 py-3">{row.month[locale]}</td>
-                  <td className="px-4 py-3">
-                    <SeasonStatusBadge status={row.status} />
-                  </td>
-                  <td className="px-4 py-3 text-muted-foreground">
-                    {row.limit[locale]}
-                  </td>
-                </tr>
+                  <span
+                    className="mt-1 size-1.5 shrink-0 rounded-full bg-[var(--olive)]"
+                    aria-hidden
+                  />
+                  {item}
+                </li>
               ))}
-            </tbody>
-          </table>
-        </div>
+            </ul>
+          </div>
+          <div className="rounded-[var(--radius-xl)] border border-border bg-[var(--alpine-slate)] p-5 sm:p-6">
+            <h2 className="sf-display text-2xl">{t.calendar.fieldKitTitle}</h2>
+            <ul className="mt-5 space-y-3">
+              {t.calendar.fieldKit.map((item) => (
+                <li
+                  key={item}
+                  className="flex gap-3 rounded-md border border-border/70 bg-card/40 px-3 py-3 text-sm leading-relaxed"
+                >
+                  <span
+                    className="mt-1 size-1.5 shrink-0 rounded-full bg-[var(--sand)]"
+                    aria-hidden
+                  />
+                  {item}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </section>
       </div>
     </div>
   );

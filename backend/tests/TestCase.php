@@ -7,6 +7,7 @@ namespace Tests;
 use App\Domains\Catalog\Search\Contracts\SearchGateway;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\ParallelTesting;
 use Illuminate\Support\Facades\RateLimiter;
 use RuntimeException;
 use Spatie\Permission\PermissionRegistrar;
@@ -26,6 +27,7 @@ abstract class TestCase extends BaseTestCase
     /**
      * CI keeps Redis across tests while RefreshDatabase rolls MySQL back.
      * Permission lookups and IP rate limits must not see the previous test.
+     * Parallel workers must not Cache::flush() Redis (FLUSHDB) or share Meilisearch prefixes.
      */
     protected function isolateSharedTestState(): void
     {
@@ -34,7 +36,17 @@ abstract class TestCase extends BaseTestCase
         $registrar = $this->app->make(PermissionRegistrar::class);
         $registrar->initializeCache();
         $registrar->forgetCachedPermissions();
-        Cache::flush();
+
+        $token = ParallelTesting::token();
+        if ($token !== false && $token !== '') {
+            // Laravel already prefixes cache per worker. Cache::flush() on Redis
+            // uses FLUSHDB and would wipe sibling processes.
+            config([
+                'search.index_prefix' => (string) config('search.index_prefix').'_p'.$token,
+            ]);
+        } else {
+            Cache::flush();
+        }
 
         foreach (['127.0.0.1', '::1'] as $ip) {
             RateLimiter::clear(md5('auth.register'.$ip));

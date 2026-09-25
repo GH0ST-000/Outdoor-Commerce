@@ -30,7 +30,7 @@ final class PaymentReconciliationService
     /**
      * @return array{processed: int, succeeded: int, failed: int, skipped: int}
      */
-    public function execute(?string $attemptPublicId = null): array
+    public function execute(?string $attemptPublicId = null, ?string $provider = null): array
     {
         $processed = 0;
         $succeeded = 0;
@@ -53,6 +53,10 @@ final class PaymentReconciliationService
 
         if ($attemptPublicId !== null) {
             $query = PaymentAttempt::query()->where('public_id', $attemptPublicId);
+        }
+
+        if ($provider !== null && $provider !== '') {
+            $query->where('provider', $provider);
         }
 
         foreach ($query->get() as $attempt) {
@@ -120,6 +124,7 @@ final class PaymentReconciliationService
                 }
                 $locked->save();
 
+                $merchant = $result->safeMetadata['merchant_reference'] ?? null;
                 $this->outcome->execute(
                     $locked,
                     $order,
@@ -128,6 +133,7 @@ final class PaymentReconciliationService
                     $result->currency,
                     $result->providerPaymentId,
                     $result->providerTransactionId,
+                    is_string($merchant) ? $merchant : null,
                 );
             });
         });

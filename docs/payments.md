@@ -2,9 +2,9 @@
 
 Laravel is the authority for payment amounts, currencies, and completion. The browser never submits an amount. A hosted redirect is not proof of payment. Only a **verified provider webhook or reconciliation status fetch** may complete a payment.
 
-See [ADR 0015](adr/0015-provider-agnostic-payment-core.md).
+See [ADR 0015](adr/0015-provider-agnostic-payment-core.md) and [ADR 0016](adr/0016-bog-payment-manager.md).
 
-Day 21 adds a Georgian bank by implementing `PaymentProvider` — not by changing order, inventory, or frontend business rules.
+Day 21 adds Bank of Georgia Payment Manager behind `PaymentProvider` — not by changing order, inventory, or frontend business rules. Deprecated iPay is not used.
 
 ## Boundaries
 
@@ -102,8 +102,19 @@ Order GET includes `can_pay`, `can_retry_payment`, `current_payment_attempt`.
 
 ## Environment
 
-See `backend/.env.example`: `PAYMENT_TEST_PROVIDER_ENABLED`, `PAYMENT_TEST_WEBHOOK_SECRET` (server-only), timeouts, rate limits, redirect host allowlist. Never put secrets in `NEXT_PUBLIC_*`.
+See `backend/.env.example`: `PAYMENT_TEST_PROVIDER_ENABLED`, `PAYMENT_TEST_WEBHOOK_SECRET` (server-only), `BOG_PAYMENT_*` merchant placeholders, timeouts, rate limits, redirect host allowlist. Never put secrets in `NEXT_PUBLIC_*`.
 
-## Day 21 adapter checklist
+## Bank of Georgia (Day 21)
 
-Implement `PaymentProvider` for the bank: credentials, create-payment, GEL minor units, redirect extraction, official webhook verification, status mapping, fetch/reconcile, sandbox vs production config, contract tests. Do not change Orders or frontend payment rules.
+Production adapter `bog` / method `bog_hosted_card`. Disabled until `BOG_PAYMENT_ENABLED=true` and merchant credentials exist. Deprecated iPay is not used.
+
+See [payments-bog.md](payments-bog.md) and [ADR 0016](adr/0016-bog-payment-manager.md).
+
+Commands:
+
+```bash
+php artisan payments:check-provider bog
+php artisan payments:check-provider bog --connect
+php artisan payments:reconcile --provider=bog
+php artisan payments:reconcile --provider=bog --attempt={publicId}
+```

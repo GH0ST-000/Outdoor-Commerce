@@ -19,6 +19,8 @@ describe("admin navigation", () => {
       "price-lists",
       "prices",
       "promotions",
+      "species",
+      "legal",
       "users",
       "roles",
       "audit-logs",

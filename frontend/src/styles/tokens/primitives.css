@@ -1,6 +1,7 @@
 /**
- * Primitive tokens — warm outdoor atelier, not swamp green.
- * Feature components should prefer semantic tokens, not these names.
+ * Primitive tokens.
+ * Storefront Alpine Slate lives under [data-storefront] in semantic.css.
+ * These names remain the admin / shared baseline.
  */
 
 :root {
@@ -20,6 +21,12 @@
   --success-green: #3e7650;
   --espresso: #14110f;
   --ink: #1a1613;
+
+  --alpine-slate: #1a1a1a;
+  --alpine-raised: #2c2c2c;
+  --sand: #c4a484;
+  --mist: #e5e5e5;
+  --olive: #556b2f;
 
   --space-0: 0;
   --space-1: 0.25rem;
@@ -43,6 +50,7 @@
   --font-weight-medium: 500;
   --font-weight-semibold: 600;
   --font-weight-bold: 700;
+  --font-weight-extrabold: 800;
 
   --radius-sm: 0.5rem;
   --radius-md: 0.75rem;

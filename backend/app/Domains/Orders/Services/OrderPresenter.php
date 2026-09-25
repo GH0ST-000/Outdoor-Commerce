@@ -60,6 +60,7 @@ final class OrderPresenter
                     ->values()
                     ->all(),
                 'can_cancel' => $canCancel,
+                'cancellation_reason_code' => $canCancel ? null : $this->cancellationReasonCode($order),
             ],
         ];
     }
@@ -80,6 +81,30 @@ final class OrderPresenter
         }
 
         return true;
+    }
+
+    public function cancellationReasonCode(Order $order): ?string
+    {
+        if ($this->canCancel($order)) {
+            return null;
+        }
+        if ($order->status !== OrderStatus::PendingPayment) {
+            return 'ORDER_NOT_PENDING_PAYMENT';
+        }
+        if ($order->payment_status->isSuccessful()) {
+            return 'ORDER_ALREADY_PAID';
+        }
+        if ($order->fulfillment_status->hasStarted()) {
+            return 'FULFILLMENT_STARTED';
+        }
+        if ($order->reservation_expires_at !== null && $order->reservation_expires_at->lte($this->clock->now())) {
+            return 'ORDER_PAYMENT_WINDOW_EXPIRED';
+        }
+        if ($order->fulfillment_status !== FulfillmentStatus::Unfulfilled) {
+            return 'FULFILLMENT_STARTED';
+        }
+
+        return 'ORDER_CANCELLATION_NOT_ALLOWED';
     }
 
     /**

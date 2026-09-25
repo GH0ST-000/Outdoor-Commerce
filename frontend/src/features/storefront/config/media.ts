@@ -29,4 +29,10 @@ export const storefrontMedia = {
     optics: u("photo-1469474968028-56623f02e42e", 1400),
     river: u("photo-1501785888041-af3ef285b470", 1400),
   },
+  season: u("photo-1484406566174-9da000fda645", 2000),
+  species: {
+    roe: u("photo-1484406566174-9da000fda645", 1200),
+    boar: u("photo-1441974231531-c6227db76b6e", 1200),
+    chamois: u("photo-1464822759023-fed622ff2c3b", 1200),
+  },
 } as const;

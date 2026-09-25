@@ -100,4 +100,54 @@ enum AuditEvent: string
     case OrderCreated = 'order.created';
     case OrderCancelled = 'order.cancelled';
     case OrderExpired = 'order.expired';
+
+    case ShipmentCreated = 'shipment.created';
+    case ShipmentPreparationStarted = 'shipment.preparation_started';
+    case ShipmentPicked = 'shipment.picked';
+    case ShipmentPacked = 'shipment.packed';
+    case ShipmentReadyForDispatch = 'shipment.ready_for_dispatch';
+    case ShipmentDispatched = 'shipment.dispatched';
+    case ShipmentInTransit = 'shipment.in_transit';
+    case ShipmentOutForDelivery = 'shipment.out_for_delivery';
+    case ShipmentDelivered = 'shipment.delivered';
+    case ShipmentCollected = 'shipment.collected';
+    case ShipmentExceptionRecorded = 'shipment.exception_recorded';
+    case ShipmentCancelled = 'shipment.cancelled';
+    case ShipmentReadyForPickup = 'shipment.ready_for_pickup';
+    case ShipmentDeliveryAttemptFailed = 'shipment.delivery_attempt_failed';
+
+    case SpeciesCreated = 'species.created';
+    case SpeciesUpdated = 'species.updated';
+    case SpeciesSubmittedReview = 'species.submitted_review';
+    case SpeciesPublished = 'species.published';
+    case SpeciesUnpublished = 'species.unpublished';
+    case SpeciesArchived = 'species.archived';
+    case SpeciesReturnedToDraft = 'species.returned_to_draft';
+    case SpeciesRevisionRestored = 'species.revision_restored';
+
+    case LegalSourceCreated = 'legal.source.created';
+    case LegalSourceUpdated = 'legal.source.updated';
+    case LegalSourceSubmittedReview = 'legal.source.submitted_review';
+    case LegalSourceVerified = 'legal.source.verified';
+    case LegalSourceRejected = 'legal.source.rejected';
+    case LegalDocumentCreated = 'legal.document.created';
+    case LegalDocumentUpdated = 'legal.document.updated';
+    case LegalVersionCreated = 'legal.version.created';
+    case LegalVersionSubmittedReview = 'legal.version.submitted_review';
+    case LegalVersionApproved = 'legal.version.approved';
+    case LegalVersionRejected = 'legal.version.rejected';
+    case LegalProvisionCreated = 'legal.provision.created';
+    case LegalProvisionUpdated = 'legal.provision.updated';
+    case LegalProvisionDeleted = 'legal.provision.deleted';
+    case LegalRuleCreated = 'legal.rule.created';
+    case LegalRuleUpdated = 'legal.rule.updated';
+    case LegalRuleSubmittedReview = 'legal.rule.submitted_review';
+    case LegalRuleApproved = 'legal.rule.approved';
+    case LegalRulePublished = 'legal.rule.published';
+    case LegalRuleRejected = 'legal.rule.rejected';
+    case LegalRuleSuperseded = 'legal.rule.superseded';
+    case LegalChangeDetected = 'legal.change.detected';
+    case LegalChangeConfirmed = 'legal.change.confirmed';
+    case LegalChangeDismissed = 'legal.change.dismissed';
+    case LegalConflictResolved = 'legal.conflict.resolved';
 }

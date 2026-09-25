@@ -29,9 +29,7 @@ export function FieldGuideArticle({ slug }: { slug: string }) {
         >
           ← {t.nav.fieldGuide}
         </Link>
-        <p className="sf-label text-[var(--copper)]">
-          {guide.category[locale]}
-        </p>
+        <p className="sf-label text-[var(--sand)]">{guide.category[locale]}</p>
         <h1 className="sf-display text-4xl sm:text-5xl">
           {guide.title[locale]}
         </h1>
