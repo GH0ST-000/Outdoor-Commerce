@@ -88,10 +88,36 @@ final class FindZonesContainingPointQuery
             });
 
         if (SpatialDriver::supportsNativeGeometry() && (bool) config('spatial.query.mysql_mbr_candidate_filter', true)) {
-            $wkt = sprintf('POINT(%F %F)', $point->longitude->value, $point->latitude->value);
-            $query->whereRaw('MBRContains(ST_GeomFromText(?, 4326), geometry) OR MBRIntersects(ST_GeomFromText(?, 4326), geometry)', [$wkt, $wkt]);
+            // A raw point misses zones whose box starts just outside it. The pad is the
+            // same distance later used to flag a boundary warning.
+            $query->whereRaw(
+                'MBRIntersects(geometry, ST_GeomFromText(?, 4326))',
+                [$this->envelopeWkt($bbox)],
+            );
         }
 
         return $query->get();
+    }
+
+    private function envelopeWkt(BoundingBox $bbox): string
+    {
+        $west = $bbox->west->value;
+        $south = $bbox->south->value;
+        $east = $bbox->east->value;
+        $north = $bbox->north->value;
+
+        return sprintf(
+            'POLYGON((%F %F, %F %F, %F %F, %F %F, %F %F))',
+            $west,
+            $south,
+            $east,
+            $south,
+            $east,
+            $north,
+            $west,
+            $north,
+            $west,
+            $south,
+        );
     }
 }
