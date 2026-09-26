@@ -63,8 +63,15 @@ Architecture docs:
 - [docs/adr/0018-species-facts-vs-legal-rules.md](docs/adr/0018-species-facts-vs-legal-rules.md)
 - [docs/legal.md](docs/legal.md)
 - [docs/legal-calendar.md](docs/legal-calendar.md)
+- [docs/spatial.md](docs/spatial.md)
+- [docs/official-georgia.md](docs/official-georgia.md)
 - [docs/adr/0019-versioned-legal-rules.md](docs/adr/0019-versioned-legal-rules.md)
 - [docs/adr/0020-season-calendar-projections.md](docs/adr/0020-season-calendar-projections.md)
+- [docs/adr/0021-mysql-spatial-zones.md](docs/adr/0021-mysql-spatial-zones.md)
+- [docs/map.md](docs/map.md)
+- [docs/adr/0022-interactive-legal-map.md](docs/adr/0022-interactive-legal-map.md)
+- [docs/recommendations.md](docs/recommendations.md)
+- [docs/adr/0023-deterministic-contextual-recommendations.md](docs/adr/0023-deterministic-contextual-recommendations.md)
 
 Backend and frontend dependencies stay isolated (`backend/vendor`, `frontend/node_modules`).
 

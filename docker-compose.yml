@@ -135,7 +135,7 @@ services:
       start_period: 40s
     command: >
       sh -c "if [ ! -d vendor ]; then composer install --no-interaction; fi &&
-             php artisan storage:link --force &&
+             rm -f public/storage &&
              php artisan serve --host=0.0.0.0 --port=8000"
 
   # Derivative generation for Day 9 media. Shares the ./backend bind mount with the

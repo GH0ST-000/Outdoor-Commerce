@@ -34,6 +34,13 @@ use App\Domains\Catalog\Search\Services\MeilisearchGateway;
 use App\Domains\Catalog\Services\EloquentCatalogProductLookup;
 use App\Domains\Checkout\Contracts\FulfillmentQuoteProvider;
 use App\Domains\Checkout\Services\ConfiguredRateFulfillmentQuoteProvider;
+use App\Domains\Geography\Models\LegalRuleSpatialZone;
+use App\Domains\Geography\Models\SpatialDataset;
+use App\Domains\Geography\Models\SpatialDatasetVersion;
+use App\Domains\Geography\Models\SpatialImport;
+use App\Domains\Geography\Models\SpatialSource;
+use App\Domains\Geography\Models\SpatialZone;
+use App\Domains\Geography\Policies\SpatialPolicy;
 use App\Domains\Hunting\Events\SpeciesArchived;
 use App\Domains\Hunting\Events\SpeciesChanged;
 use App\Domains\Hunting\Events\SpeciesPublished;
@@ -174,6 +181,12 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(LegalSeasonDefinition::class, LegalPolicy::class);
         Gate::policy(LegalSeasonOverride::class, LegalPolicy::class);
         Gate::policy(LegalCalendarGenerationRun::class, LegalPolicy::class);
+        Gate::policy(SpatialSource::class, SpatialPolicy::class);
+        Gate::policy(SpatialDataset::class, SpatialPolicy::class);
+        Gate::policy(SpatialDatasetVersion::class, SpatialPolicy::class);
+        Gate::policy(SpatialZone::class, SpatialPolicy::class);
+        Gate::policy(SpatialImport::class, SpatialPolicy::class);
+        Gate::policy(LegalRuleSpatialZone::class, SpatialPolicy::class);
 
         // Password policy: min 12, mixed case, numbers.
         // Compromised-password checks run only in production (HIBP).
@@ -410,6 +423,40 @@ class AppServiceProvider extends ServiceProvider
             return Limit::perMinute((int) config('legal.rate_limits.admin_download_per_minute', 30))
                 ->by($this->throttleBy($userId.'|'.$request->ip()));
         });
+
+        RateLimiter::for('spatial.public', function (Request $request) {
+            return Limit::perMinute((int) config('spatial.rate_limits.public_per_minute', 30))
+                ->by($this->throttleBy((string) $request->ip()));
+        });
+
+        RateLimiter::for('spatial.evaluate', function (Request $request) {
+            return Limit::perMinute((int) config('spatial.rate_limits.evaluate_per_minute', 12))
+                ->by($this->throttleBy((string) $request->ip()));
+        });
+
+        RateLimiter::for('spatial.lookup', function (Request $request) {
+            return Limit::perMinute((int) config('spatial.rate_limits.lookup_per_minute', 20))
+                ->by($this->throttleBy((string) $request->ip()));
+        });
+
+        RateLimiter::for('recommendations.public', function (Request $request) {
+            return Limit::perMinute((int) config('recommendations.rate_limits.public_per_minute', 30))
+                ->by($this->throttleBy((string) $request->ip()));
+        });
+
+        RateLimiter::for('recommendations.simulate', function (Request $request) {
+            $userId = $request->user()?->getAuthIdentifier() ?? 'guest';
+
+            return Limit::perMinute((int) config('recommendations.rate_limits.simulate_per_minute', 10))
+                ->by($this->throttleBy($userId.'|'.$request->ip()));
+        });
+
+        RateLimiter::for('spatial.admin-download', function (Request $request) {
+            $userId = $request->user()?->getAuthIdentifier() ?? 'guest';
+
+            return Limit::perMinute((int) config('spatial.rate_limits.admin_download_per_minute', 20))
+                ->by($this->throttleBy($userId.'|'.$request->ip()));
+        });
     }
 
     /**
@@ -542,6 +589,12 @@ class AppServiceProvider extends ServiceProvider
             'legal_provision' => LegalProvision::class,
             'legal_season_definition' => LegalSeasonDefinition::class,
             'legal_season_override' => LegalSeasonOverride::class,
+            'spatial_source' => SpatialSource::class,
+            'spatial_dataset' => SpatialDataset::class,
+            'spatial_dataset_version' => SpatialDatasetVersion::class,
+            'spatial_zone' => SpatialZone::class,
+            'spatial_import' => SpatialImport::class,
+            'legal_rule_spatial_zone' => LegalRuleSpatialZone::class,
             User::class => User::class,
             \App\Models\User::class => \App\Models\User::class,
         ]);

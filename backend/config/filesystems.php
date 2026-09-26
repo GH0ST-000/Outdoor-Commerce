@@ -33,7 +33,7 @@ return [
         'local' => [
             'driver' => 'local',
             'root' => storage_path('app/private'),
-            'serve' => true,
+            'serve' => false,
             'throw' => false,
             'report' => false,
         ],
@@ -62,13 +62,16 @@ return [
 
         /*
          | Generated derivatives. The only publicly reachable media artifacts.
-         | Requires `php artisan storage:link`.
+         | `serve` lets `php artisan serve` return these files. That server
+         | rejects the public/storage symlink because the target is outside
+         | the document root.
          */
         'media_public' => [
             'driver' => 'local',
             'root' => storage_path('app/public/media'),
             'url' => rtrim(env('APP_URL', 'http://localhost'), '/').'/storage/media',
             'visibility' => 'public',
+            'serve' => true,
             'throw' => false,
             'report' => false,
         ],
@@ -80,6 +83,19 @@ return [
         'legal_private' => [
             'driver' => 'local',
             'root' => storage_path('app/private/legal'),
+            'visibility' => 'private',
+            'serve' => false,
+            'throw' => false,
+            'report' => false,
+        ],
+
+        /*
+         | Official spatial source files. Private, never served by the web server.
+         | Downloads go through authorized admin endpoints only.
+         */
+        'spatial_private' => [
+            'driver' => 'local',
+            'root' => storage_path('app/private/spatial'),
             'visibility' => 'private',
             'serve' => false,
             'throw' => false,

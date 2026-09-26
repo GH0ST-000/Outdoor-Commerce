@@ -2,30 +2,33 @@
 
 ## Responsibility
 
-Deterministic contextual ranking of products for display.
+Deterministic, explainable ranking of published catalog products for a derived outdoor context. Day 30.
+
+Legal allow, deny, and conflict decisions stay in the Legal and Geography modules. This module reads a derived conclusion and applies a recommendation gate. It does not change the legal outcome.
 
 ## Data owned
 
-Ranking inputs/outputs and recommendation traces.
+- `context_taxonomy_terms` and translations
+- `product_context_assignments`
+- `product_compatibility_rules`
+- `recommendation_profiles` and `recommendation_profile_weights`
+- `recommendation_merchandising_rules`
+- `recommendation_simulations`
 
-## Public contracts
+MySQL is authoritative. The optional `{prefix}_recommendation_context` Meilisearch index only proposes candidates.
 
-Recommend products for a given outdoor context contract.
+## Public entry points
 
-Classes under `Contracts/`, and any Action/Query/DTO explicitly listed here as public, are the only approved entry points for other modules.
+- `App\Domains\Recommendations\Services\ContextualProductRecommender`
+- `App\Domains\Legal\Actions\IssueOutdoorContextTokenAction`
+- `App\Domains\Legal\Actions\VerifyOutdoorContextTokenAction`
+- `App\Domains\Legal\Queries\ResolveDerivedLegalContextQuery`
+- `App\Domains\Legal\DTOs\DerivedLegalContextData`
 
-## Events this module may publish
-
-RecommendationsGenerated (example for later).
-
-## May depend on
-
-Shared; Catalog and optional Hunting/Geography context via contracts.
+Other modules should use these actions, queries, and DTOs rather than recommendation services' internals.
 
 ## Explicitly outside this module
 
-Legal allow/deny decisions. Recommendations never decide legality.
+Legal conclusions, spatial geometry, inventory reservation, cart contents, and machine-learning rankers.
 
-## Structure
-
-Follow the standard module layout documented in `docs/architecture.md` when implementing features. Day 2 ships boundaries only—no business behavior yet.
+See [docs/recommendations.md](../../../../docs/recommendations.md) and [ADR 0023](../../../../docs/adr/0023-deterministic-contextual-recommendations.md).

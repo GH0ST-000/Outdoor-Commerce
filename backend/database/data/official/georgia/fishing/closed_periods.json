@@ -1,0 +1,18 @@
+{
+  "kind": "closed_periods",
+  "retrieval_status": "current_consolidation_not_public",
+  "records": [],
+  "review_status": "extracted_unreviewed",
+  "reviewer": null,
+  "source_url": "https://www.matsne.gov.ge/ka/document/view/2187155?publication=16",
+  "source_document_slug": "ge-fishing-regulation-423",
+  "notes": "The current consolidated technical regulation, listed as 22/06/2026, is behind Matsne paid access. The original 2014 text was visible and was not imported as current recreational or sport-fishing law. Public fishing results stay unknown.",
+  "manual_retrieval": [
+    "Open https://www.matsne.gov.ge/ka/document/view/2187155",
+    "Sign in to Matsne and obtain the paid consolidated-view right if the site still requires it.",
+    "Open the consolidated publication dated 22/06/2026 (publication=16 at the time of retrieval).",
+    "Confirm the page no longer says that the original form is being shown.",
+    "Save a new snapshot version. Do not edit this 2026-09-26.1 snapshot in place.",
+    "Extract recreational and sport-fishing rules separately from industrial, coastal, and inland commercial rules."
+  ]
+}

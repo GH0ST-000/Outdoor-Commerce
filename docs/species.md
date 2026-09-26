@@ -91,7 +91,9 @@ Legal editor receives the species permissions. Catalog manager may view. Admin r
 
 ## Out of scope
 
-Seasons, limits, quotas, permits, maps, polygons, product recommendations, image recognition.
+Seasons, limits, quotas, permits, maps, polygons, image recognition.
+
+Species pages can show species-related gear from Day 30. That section does not use the shopper's location and does not claim the activity is legal. See [recommendations.md](recommendations.md).
 
 ## Content-entry guidelines
 

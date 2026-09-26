@@ -13,6 +13,7 @@ const LINKS = [
   { href: "/admin/legal/seasons/definitions", label: "Season editor" },
   { href: "/admin/legal/coverage", label: "Coverage" },
   { href: "/admin/legal/overrides", label: "Overrides" },
+  { href: "/admin/spatial", label: "Spatial zones" },
 ] as const;
 
 export function LegalWorkspaceNav() {

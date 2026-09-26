@@ -90,12 +90,12 @@ New permissions: `legal.seasons.*`, `legal.season_overrides.*`, `legal.calendar.
 
 No Georgian hunting or fishing seasons are seeded. Tests use fictional species (`Testus …`) and fictional jurisdictions/rules marked as test-only. Production calendars stay empty until verified sources are entered — the explorer then shows unknown, not “closed”.
 
-## Known limitations / Day 27
+## Known limitations
 
-- `zone_reference` is stored but not spatially matched.
-- Region codes are strings; no polygon intersection.
+- Season `zone_reference` remains a string identifier; Day 27 location matching uses published spatial zones, not that string.
+- Region codes are strings; no polygon intersection inside the calendar projector.
 - Meilisearch does not index season windows.
-- Product recommendations are not attached to legal conclusions.
+- The season explorer can request Day 30 gear for the selected activity, species, and period. Those products follow the legal-outcome gate and are not a legal confirmation. See [recommendations.md](recommendations.md).
 
 ## Recovery
 

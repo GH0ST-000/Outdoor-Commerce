@@ -1,0 +1,95 @@
+{
+  "kind": "spatial_datasets",
+  "review_status": "extracted_unreviewed",
+  "reviewer": null,
+  "retrieved_at": "2026-09-25T21:10:00Z",
+  "catalogue_url": "https://portal.mepa.gov.ge/Ge/User/data",
+  "geometry_retrieved": false,
+  "records": [
+    {
+      "source_code": "APA17",
+      "dataset_slug": "protected-areas-georgia",
+      "dataset_type": "protected_areas",
+      "name_ka": "დაცული ტერიტორიების საზღვრები",
+      "name_en": "Boundary of Protected Areas",
+      "layer_name": "DACULI_TERITORIEBIS_SAZGVREBI",
+      "publisher": "სსიპ დაცული ტერიტორიების სააგენტო",
+      "authority_slug": "ge-apa",
+      "map_url": "https://portal.mepa.gov.ge/Ge/user/map/10",
+      "detail_url": "https://portal.mepa.gov.ge/Ge/User/DataDetails?geoDataId=17",
+      "catalogue_record_at": "2026-04-22T15:31:23+04:00",
+      "sharing": "საჯარო",
+      "payment": "უფასო",
+      "geometry_file": null,
+      "version_label": null
+    },
+    {
+      "source_code": "APA29",
+      "dataset_slug": "protected-area-functional-zones-georgia",
+      "dataset_type": "special_regulation_zones",
+      "name_ka": "დაცული ტერიტორიების ფუნქციური ზონირება",
+      "name_en": "Zoning of Protected Areas",
+      "layer_name": "DACULI_TERITORIEBIS_ZONIREBA_NEW",
+      "publisher": "სსიპ დაცული ტერიტორიების სააგენტო",
+      "authority_slug": "ge-apa",
+      "map_url": "https://portal.mepa.gov.ge/Ge/user/map/10",
+      "detail_url": "https://portal.mepa.gov.ge/Ge/User/DataDetails?geoDataId=29",
+      "catalogue_record_at": "2026-04-22T11:30:15.863000+00:00",
+      "sharing": "საჯარო",
+      "payment": "უფასო",
+      "geometry_file": null,
+      "version_label": null
+    },
+    {
+      "source_code": "MEPA52",
+      "dataset_slug": "bird-special-protection-areas-georgia",
+      "dataset_type": "special_regulation_zones",
+      "name_ka": "ფრინველთა სპეციალური დაცული ტერიტორიები",
+      "name_en": "Special Protection Areas (SPA) for birds",
+      "layer_name": "SPA_Birds",
+      "publisher": "საქართველოს გარემოს დაცვისა და სოფლის მეურნეობის სამინისტრო",
+      "authority_slug": "ge-mepa",
+      "map_url": "https://portal.mepa.gov.ge/Ge/user/map/9",
+      "detail_url": "https://portal.mepa.gov.ge/Ge/User/DataDetails?geoDataId=52",
+      "catalogue_record_at": "2026-04-06T07:27:52.037000+00:00",
+      "sharing": "საჯარო",
+      "payment": "უფასო",
+      "geometry_file": null,
+      "version_label": null
+    },
+    {
+      "source_code": "MEPA51",
+      "dataset_slug": "ramsar-wetlands-georgia",
+      "dataset_type": "special_regulation_zones",
+      "name_ka": "ჭარბტენიანი ტერიტორიები",
+      "name_en": "Ramsar",
+      "layer_name": "Ramsar",
+      "publisher": "საქართველოს გარემოს დაცვისა და სოფლის მეურნეობის სამინისტრო",
+      "authority_slug": "ge-mepa",
+      "map_url": "https://portal.mepa.gov.ge/Ge/user/map/9",
+      "detail_url": "https://portal.mepa.gov.ge/Ge/User/DataDetails?geoDataId=51",
+      "catalogue_record_at": "2026-04-06T07:24:31.997000+00:00",
+      "sharing": "საჯარო",
+      "payment": "უფასო",
+      "geometry_file": null,
+      "version_label": null
+    }
+  ],
+  "export_steps": [
+    "Open the catalogue at https://portal.mepa.gov.ge/Ge/User/data and locate the identifier.",
+    "Open the detail page linked on that row. The APA17 detail page retrieved on 2026-09-25 has no geometry file link. Its only placement link is the interactive map.",
+    "The catalogue button labelled ექსპორტი exports the layer list, not the polygons.",
+    "Open the map URL for that layer. Use only an export or download control that the map itself shows. Do not guess a service URL.",
+    "Save GeoJSON in EPSG:4326 with longitude before latitude. Each feature needs a stable identifier property.",
+    "Place the file outside this snapshot or in a new snapshot version, then run php artisan spatial:import with --identifier-property and --name-property taken from the file's property keys.",
+    "The import stays draft until an administrator reviews and publishes it."
+  ],
+  "not_used": [
+    {
+      "url": "https://www.protectedplanet.net/country/GEO",
+      "role": "optional_comparison_only",
+      "used": false,
+      "reason": "Not retrieved and not used for geometry or legal conclusions."
+    }
+  ]
+}

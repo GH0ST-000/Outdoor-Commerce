@@ -12,6 +12,9 @@
 /coverage
 *.lcov
 
+# Generated from node_modules by scripts/copy-maplibre-worker.mjs
+/public/maplibre/*.mjs
+
 # Next.js
 /.next/
 /out/

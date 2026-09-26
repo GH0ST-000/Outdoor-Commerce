@@ -1,0 +1,165 @@
+{
+  "snapshot_version": "2026-09-26.1",
+  "jurisdiction": "GE",
+  "retrieved_at": "2026-09-25T21:10:00Z",
+  "review_status": "extracted_unreviewed",
+  "reviewer": null,
+  "notes": "Unreviewed extraction. Do not edit this version in place after approval. Create a new snapshot version when an official source changes.",
+  "files": [
+    {
+      "path": "coverage_gaps.json",
+      "sha256": "acdf7b31f8b405a3fc9c18b5c453dfd9ef3d288020c0acb8e18a023dd7304ff3"
+    },
+    {
+      "path": "fishing/closed_periods.json",
+      "sha256": "b3063474c25a1e0c20355411b06c2787e1331471ce7ca852605e5c5d558a9365"
+    },
+    {
+      "path": "fishing/equipment_restrictions.json",
+      "sha256": "b0e8f8f4a52fc33280eb7bdea1373f8e5b360c1c074702ab2207567526083f1b"
+    },
+    {
+      "path": "fishing/method_restrictions.json",
+      "sha256": "07fdf08366044dbff98353248e634d3fe36bec9eea981f762c55d91e04c3028c"
+    },
+    {
+      "path": "fishing/species_restrictions.json",
+      "sha256": "1d3b6581b2c3148ecfb700b4b6d6b6fe8bce766f68c269ca04c3061364905f28"
+    },
+    {
+      "path": "fishing/waterbody_restrictions.json",
+      "sha256": "f9ce3f47d39014da5974cfbdc1eed334b4f939c1466e106ba22f57a89dca7340"
+    },
+    {
+      "path": "hunting/annual_seasons/2026-2027.json",
+      "sha256": "e98818347dc48a98df41befd50b8f1bfa37e7eacb81bcf9fee76b4f0ab09fae7"
+    },
+    {
+      "path": "hunting/daily_limits.json",
+      "sha256": "fe9ce743f62e1fcad3b6b57d61eb57aa7713109bb1e339dbe8e7b736a499aa99"
+    },
+    {
+      "path": "hunting/hunting_objects.json",
+      "sha256": "21aa5a84dda349fa6a65d0115ccc1133ff72fb37b7c8f856195a13ef09006fd4"
+    },
+    {
+      "path": "hunting/hunting_periods.json",
+      "sha256": "30a8cd088bf7c9aa0ccb43b446f6c3b7fbb58a65346374e7e2f1cf3857c3d790"
+    },
+    {
+      "path": "hunting/location_restrictions.json",
+      "sha256": "50bb22a4818204650189650e717992cb5f74f343a7740ebb2c2d114cc92a6bfd"
+    },
+    {
+      "path": "hunting/method_restrictions.json",
+      "sha256": "5faa777d0465e8e2fd080892d035548b9ab3d50152032b0fc86b8d9f253e8b57"
+    },
+    {
+      "path": "hunting/migratory_bird_rules.json",
+      "sha256": "131c51c51dea0cbaa4a9445835dc7c8713ab71e3d9e48e073cea74024cc6e2ed"
+    },
+    {
+      "path": "hunting/municipality_exceptions.json",
+      "sha256": "ad5adebb79f9fd82b32e076016d03e78db218e9aec07c2a26abe5947b2d78ec1"
+    },
+    {
+      "path": "hunting/permit_requirements.json",
+      "sha256": "9b9e96dec0f5c2b44efebe95c08affa0b475c6fe66eba0e66dcc132d1a4b5773"
+    },
+    {
+      "path": "hunting/source_conflicts.json",
+      "sha256": "535e6dd724b3ef4b91977608e020dd211d51940fe06ee77a589486d29101c97d"
+    },
+    {
+      "path": "sources/documents.json",
+      "sha256": "e4da28b131c81b5bc606d2475bb01c7ecd1ff26cc1db5ec0df03c842962b54b5"
+    },
+    {
+      "path": "spatial/datasets.json",
+      "sha256": "34709a4f1e71213ef5f90eba75eac92b84e52a4597fd338e3923b833b08edba5"
+    }
+  ],
+  "retrieved_pages": [
+    {
+      "url": "https://www.matsne.gov.ge/ka/document/view/2166315?publication=12",
+      "sha256": "8869a7c2fdcc2a58ae3e614db953a9a716642362628df6e77ecfe08a4e37d3f5",
+      "bytes": 204023,
+      "http_status": 200,
+      "retrieved_at": "2026-09-25T21:10:00Z",
+      "committed": false,
+      "note": "Consolidated Order No. 95 text was present, including Annex 1. The HTML page includes portal chrome and is not committed. Structured files below are the snapshot."
+    },
+    {
+      "url": "https://www.matsne.gov.ge/ka/document/view/84040?publication=5",
+      "sha256": "ba66a1065e8543797b3159d930a41c2d8e9c83d2b0bfa25fbb8be4ae9997f282",
+      "bytes": 126597,
+      "http_status": 200,
+      "retrieved_at": "2026-09-25T21:10:00Z",
+      "committed": false,
+      "note": "Returned the original form. Consolidated view is paid. The HTML page includes portal chrome and is not committed. Structured files below are the snapshot."
+    },
+    {
+      "url": "https://www.matsne.gov.ge/ka/document/view/2187155?publication=16",
+      "sha256": "f4b2eb7499e9f432f7dbf6ae313612ad113b9edfbdb4a96a35edf27e77d89eea",
+      "bytes": 236137,
+      "http_status": 200,
+      "retrieved_at": "2026-09-25T21:10:00Z",
+      "committed": false,
+      "note": "Returned the original form. Consolidated view is paid. The HTML page includes portal chrome and is not committed. Structured files below are the snapshot."
+    },
+    {
+      "url": "https://matsne.gov.ge/ka/document/view/33352?publication=20",
+      "sha256": "9813b0289ebcba2c7978436c62b837c36a5e4c1f6c5b4ce18c28e6680562fdd7",
+      "bytes": 766861,
+      "http_status": 200,
+      "retrieved_at": "2026-09-25T21:10:00Z",
+      "committed": false,
+      "note": "Consolidated wildlife law text was present. The HTML page includes portal chrome and is not committed. Structured files below are the snapshot."
+    },
+    {
+      "url": "https://matsne.gov.ge/ka/document/view/32968?publication=23",
+      "sha256": "629955cc2d58dbb8c08d9bf7dbda2d4474babd16836d62bbf8292238dcec4e6b",
+      "bytes": 354633,
+      "http_status": 200,
+      "retrieved_at": "2026-09-25T21:10:00Z",
+      "committed": false,
+      "note": "Consolidated protected-areas law text was present. The HTML page includes portal chrome and is not committed. Structured files below are the snapshot."
+    },
+    {
+      "url": "https://mepa.gov.ge/Ge/News/Details/26537",
+      "sha256": "453fb881b98e2f6c1136656c2bbb2aa0ad6b639665a5c688352bd02b48e0a946",
+      "bytes": 1434438,
+      "http_status": 200,
+      "retrieved_at": "2026-09-25T21:10:00Z",
+      "committed": false,
+      "note": "Ministry announcement page. The HTML page includes portal chrome and is not committed. Structured files below are the snapshot."
+    },
+    {
+      "url": "https://portal.mepa.gov.ge/Ge/User/data",
+      "sha256": "029812cb2cdf97c5f67c8b839ac37c89866522bccf99be72e59bf6d7ae18acdb",
+      "bytes": 178780,
+      "http_status": 200,
+      "retrieved_at": "2026-09-25T21:10:00Z",
+      "committed": false,
+      "note": "Spatial catalogue. No geometry file. The HTML page includes portal chrome and is not committed. Structured files below are the snapshot."
+    },
+    {
+      "url": "https://portal.mepa.gov.ge/Ge/user/map/10",
+      "sha256": "857ea7f612e354ce9152234467c08625e1d39eb928b6862853b545e49f8fcd3d",
+      "bytes": 9667,
+      "http_status": 200,
+      "retrieved_at": "2026-09-25T21:10:00Z",
+      "committed": false,
+      "note": "Map shell. No geometry file. The HTML page includes portal chrome and is not committed. Structured files below are the snapshot."
+    },
+    {
+      "url": "https://portal.mepa.gov.ge/Ge/User/DataDetails?geoDataId=17",
+      "sha256": "1466a2d477bb7d7eed0760cf7a8ed9b7a5574157272cc8e71303b0662809d5bd",
+      "bytes": 9132,
+      "http_status": 200,
+      "retrieved_at": "2026-09-25T21:10:00Z",
+      "committed": false,
+      "note": "Layer metadata only. The HTML page includes portal chrome and is not committed. Structured files below are the snapshot."
+    }
+  ]
+}

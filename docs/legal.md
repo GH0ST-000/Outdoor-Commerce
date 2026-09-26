@@ -36,12 +36,14 @@ See [ADR 0019](adr/0019-versioned-legal-rules.md) and `backend/app/Domains/Legal
 - Optional Meilisearch legal discovery is **not** used for evaluation. `search:rebuild-legal` is a recovery no-op until a verified public source set exists.
 - Development authorities created through admin default to `is_fictional=true`.
 
-## Intentionally deferred (Day 27+)
+## Intentionally deferred (Day 28+)
 
-- Interactive maps, polygons, GPS, and spatial zone matching (`zone_reference` is stored only).
+- Interactive public map, clustering, GPS permission, and offline tiles.
 - Product recommendations from legal or season outcomes.
 - Email/calendar notifications.
 - Automatic publication after source changes (will never happen without human review).
+
+Day 27 spatial APIs are documented in [spatial.md](spatial.md) and [ADR 0021](adr/0021-mysql-spatial-zones.md).
 
 ## Data model (MySQL is authoritative)
 
@@ -117,6 +119,8 @@ Private legal files are **not** linked publicly. Do not `storage:link` the legal
 cd backend && PAO_DISABLE=true php artisan test --compact tests/Unit/Legal tests/Feature/Legal
 cd frontend && npm test -- src/features/legal src/features/species/tests/SpeciesPages.test.tsx src/features/admin/tests
 ```
+
+Official Georgian texts for Order No. 95, the wildlife law, the protected-areas law, and the 24 July 2026 ministry announcement are in snapshot `2026-09-26.1`. See [official Georgian data](official-georgia.md). The import stays in review. The current consolidated hunting-object list and fishing regulation were not public and were not replaced with fictional rules.
 
 ## Security
 

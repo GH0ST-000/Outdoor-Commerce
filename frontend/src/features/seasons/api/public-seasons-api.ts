@@ -21,6 +21,8 @@ export type AvailabilityResult = {
     media: { url: string | null } | null;
   };
   overall_state: AvailabilityState;
+  group?: "waterfowl" | "quail" | "snipe" | "woodcock" | "pigeons" | "other";
+  period_statements?: Array<{ source: string; text: string }>;
   mode: AvailabilityMode;
   available_windows: AvailabilityWindow[];
   closed_windows: AvailabilityWindow[];
@@ -39,7 +41,11 @@ export type AvailabilityResult = {
     unit: string | null;
     period: string;
   }[];
-  conditions: { condition_type: string; string_value: string | null }[];
+  conditions: {
+    condition_type: string;
+    operator?: string;
+    string_value: string | null;
+  }[];
   citations: {
     official_url: string | null;
     source_name: string | null;
@@ -138,7 +144,7 @@ export async function fetchAvailability(
     to: params.to,
     mode: params.mode,
     page: String(params.page ?? 1),
-    per_page: "10",
+    per_page: "50",
   });
   if (params.region) search.set("region", params.region);
   if (params.species) search.set("species", params.species);

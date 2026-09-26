@@ -14,6 +14,7 @@ use App\Domains\Legal\Models\LegalRule;
 use App\Domains\Legal\Models\LegalSeasonOccurrence;
 use App\Domains\Legal\Models\LegalSeasonOverride;
 use App\Domains\Legal\Support\SeasonDateRange;
+use App\Domains\Legal\Support\SeasonDisplayGroup;
 use DateTimeImmutable;
 use Illuminate\Support\Collection;
 
@@ -23,6 +24,7 @@ final class PeriodAvailabilityEvaluator
         private readonly AvailabilityTimelineBuilder $timeline,
         private readonly SeasonPresenter $presenter,
         private readonly LegalPublicCache $cache,
+        private readonly DisputedAnnexSeasonListing $disputedOpenings,
     ) {}
 
     /**
@@ -95,6 +97,46 @@ final class PeriodAvailabilityEvaluator
                 $results[] = $this->unknownSpecies($missing, $query, $locale);
             }
         }
+
+        $withOccurrences = $occurrences
+            ->pluck('species_id')
+            ->map(static fn (mixed $id): int => (int) $id)
+            ->all();
+        $listedIds = array_values(array_intersect(
+            array_map(static fn (mixed $id): int => (int) $id, $species->modelKeys()),
+            $withOccurrences,
+        ));
+        $disputed = $this->disputedOpenings->rows($query, $locale, $listedIds);
+        $disputedSlugs = [];
+        foreach ($disputed as $row) {
+            $slug = $row['species']['slug'] ?? null;
+            if (is_string($slug) && $slug !== '') {
+                $disputedSlugs[$slug] = true;
+            }
+        }
+        if ($disputedSlugs !== []) {
+            $results = array_values(array_filter(
+                $results,
+                static function (array $row) use ($disputedSlugs): bool {
+                    $slug = $row['species']['slug'] ?? null;
+
+                    return ! is_string($slug) || ! isset($disputedSlugs[$slug]);
+                },
+            ));
+        }
+        $results = array_merge($results, $disputed);
+        usort($results, static function (array $left, array $right): int {
+            $rank = SeasonDisplayGroup::rank((string) ($left['group'] ?? 'other'))
+                <=> SeasonDisplayGroup::rank((string) ($right['group'] ?? 'other'));
+            if ($rank !== 0) {
+                return $rank;
+            }
+
+            return strcmp(
+                (string) ($left['species']['scientific_name'] ?? ''),
+                (string) ($right['species']['scientific_name'] ?? ''),
+            );
+        });
 
         $total = count($results);
         $slice = array_slice($results, ($page - 1) * $perPage, $perPage);
@@ -262,6 +304,7 @@ final class PeriodAvailabilityEvaluator
             'species' => $this->presenter->speciesPublic($species, $locale),
             'activity_type' => $query->activityType->value,
             'overall_state' => $overall->value,
+            'group' => SeasonDisplayGroup::key($species->scientific_name),
             'requested_period' => [
                 'from' => $period->localStartDate,
                 'to' => $period->localEndDateInclusive,
@@ -271,6 +314,14 @@ final class PeriodAvailabilityEvaluator
             'available_windows' => $windows['open'],
             'closed_windows' => $windows['closed'],
             'conditional_windows' => $windows['conditional'],
+            'season_windows' => $occurrences
+                ->map(static fn (LegalSeasonOccurrence $occurrence): array => [
+                    'from' => $occurrence->local_start_date->toDateString(),
+                    'to' => $occurrence->local_end_date_inclusive->toDateString(),
+                ])
+                ->unique(static fn (array $window): string => $window['from'].'|'.$window['to'])
+                ->values()
+                ->all(),
             'unknown_windows' => $windows['unknown'],
             'conflicting_windows' => $windows['conflict'],
             'timeline' => $query->mode === AvailabilityMode::Timeline ? $windows['all'] : [],
@@ -313,6 +364,7 @@ final class PeriodAvailabilityEvaluator
             'species' => $this->presenter->speciesPublic($species, $locale),
             'activity_type' => $query->activityType->value,
             'overall_state' => CalendarAvailabilityState::Unknown->value,
+            'group' => SeasonDisplayGroup::key($species->scientific_name),
             'requested_period' => [
                 'from' => $period->localStartDate,
                 'to' => $period->localEndDateInclusive,

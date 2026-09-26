@@ -1,0 +1,30 @@
+{
+  "kind": "permit_requirements",
+  "review_status": "extracted_unreviewed",
+  "reviewer": null,
+  "records": [
+    {
+      "slug": "ge-o95-art-3-1-documents",
+      "source_document_slug": "ge-order-95",
+      "provision_reference": "order-95:article-3:paragraph-1",
+      "rule_type": "permit_requirement",
+      "effect": "require",
+      "official_text": "1. პირი, რომელიც ახორციელებს გადამფრენ ფრინველებზე ნადირობას, ვალდებულია თან იქონიოს „ბუნებრივი რესურსებით სარგებლობისათვის მოსაკრებლების შესახებ“ საქართველოს კანონით გათვალისწინებული გარემოდან გადამფრენი ფრინველების ამოღებაზე დაწესებული მოსაკრებლის გადახდის დამადასტურებელი ქვითარი (დედანი) და საქართველოს შინაგან საქმეთა სამინისტროს შესაბამისი ორგანოს მიერ გაცემული შესაბამისი სანადირო თოფის შენახვისა და ტარების უფლების დამადასტურებელი დოკუმენტი.",
+      "amount_stated_in_order": null,
+      "publish": false,
+      "notes": "The consolidated order requires the fee receipt and the firearm storage-and-carry document. It does not state the 10 GEL amount in the retrieved article 3 paragraph 1."
+    },
+    {
+      "slug": "ge-mepa-26537-fee-10-gel",
+      "source_document_slug": "ge-mepa-news-26537",
+      "provision_reference": "mepa-news-26537:body",
+      "rule_type": "permit_requirement",
+      "effect": "require",
+      "official_text": "ნადირობის უფლების მისაღებად აუცილებელია გარემოდან გადამფრენი ფრინველების ამოღებაზე დაწესებული მოსაკრებლის - 10 ლარის გადახდა. მოსაკრებლის გადახდა შესაძლებელია საქართველოს ნებისმიერ ბანკში. მიმღები ბანკი: სახელმწიფო ხაზინა, ბანკის კოდი: 220 101 222, ანგარიშის ნომერი: №200122900, ბიუჯეტის შემოსულობების სახის განმსაზღვრელი სახაზინო კოდი: 3033.",
+      "amount": "10",
+      "unit": "GEL",
+      "publish": false,
+      "notes": "The amount and treasury details come from the 24 July 2026 announcement, not from the retrieved text of Order No. 95."
+    }
+  ]
+}

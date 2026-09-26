@@ -1,0 +1,308 @@
+{
+  "language": "ka",
+  "review_status": "extracted_unreviewed",
+  "reviewer": null,
+  "retrieved_at": "2026-09-25T21:10:00Z",
+  "kind": "hunting_objects",
+  "source_document_slug": "ge-order-18",
+  "import_as_current": false,
+  "records": [
+    {
+      "group": "birds",
+      "clause": "ა)",
+      "georgian_name": "რუხი ბატი",
+      "scientific_name": "Anser anser",
+      "import_as_current": false,
+      "review_status": "historical_original_not_current",
+      "notes": "Visible only in the original 03/06/2009 publication. The 10/08/2023 consolidation was not retrieved."
+    },
+    {
+      "group": "birds",
+      "clause": "ბ)",
+      "georgian_name": "თეთრშუბლა იხვი",
+      "scientific_name": "Anas penelope",
+      "import_as_current": false,
+      "review_status": "historical_original_not_current",
+      "notes": "Visible only in the original 03/06/2009 publication. The 10/08/2023 consolidation was not retrieved."
+    },
+    {
+      "group": "birds",
+      "clause": "გ)",
+      "georgian_name": "რუხი იხვი",
+      "scientific_name": "Anas strepera",
+      "import_as_current": false,
+      "review_status": "historical_original_not_current",
+      "notes": "Visible only in the original 03/06/2009 publication. The 10/08/2023 consolidation was not retrieved."
+    },
+    {
+      "group": "birds",
+      "clause": "დ)",
+      "georgian_name": "ჭიკვარა",
+      "scientific_name": "Anas crecca",
+      "import_as_current": false,
+      "review_status": "historical_original_not_current",
+      "notes": "Visible only in the original 03/06/2009 publication. The 10/08/2023 consolidation was not retrieved."
+    },
+    {
+      "group": "birds",
+      "clause": "ე)",
+      "georgian_name": "გარეული იხვი",
+      "scientific_name": "Anas platyrhynchos",
+      "import_as_current": false,
+      "review_status": "historical_original_not_current",
+      "notes": "Visible only in the original 03/06/2009 publication. The 10/08/2023 consolidation was not retrieved."
+    },
+    {
+      "group": "birds",
+      "clause": "ვ)",
+      "georgian_name": "ბოლოსადგისა იხვი",
+      "scientific_name": "Anas acuta",
+      "import_as_current": false,
+      "review_status": "historical_original_not_current",
+      "notes": "Visible only in the original 03/06/2009 publication. The 10/08/2023 consolidation was not retrieved."
+    },
+    {
+      "group": "birds",
+      "clause": "ზ)",
+      "georgian_name": "იხვინჯა",
+      "scientific_name": "Anas querquedula",
+      "import_as_current": false,
+      "review_status": "historical_original_not_current",
+      "notes": "Visible only in the original 03/06/2009 publication. The 10/08/2023 consolidation was not retrieved."
+    },
+    {
+      "group": "birds",
+      "clause": "თ)",
+      "georgian_name": "ფართოცხვირა",
+      "scientific_name": "Anas clypeata",
+      "import_as_current": false,
+      "review_status": "historical_original_not_current",
+      "notes": "Visible only in the original 03/06/2009 publication. The 10/08/2023 consolidation was not retrieved."
+    },
+    {
+      "group": "birds",
+      "clause": "ი)",
+      "georgian_name": "ხოხობი",
+      "scientific_name": "Phasianus colchicus",
+      "import_as_current": false,
+      "review_status": "historical_original_not_current",
+      "notes": "Visible only in the original 03/06/2009 publication. The 10/08/2023 consolidation was not retrieved."
+    },
+    {
+      "group": "birds",
+      "clause": "კ)",
+      "georgian_name": "კაკაბი",
+      "scientific_name": "Alectoris graeca",
+      "import_as_current": false,
+      "review_status": "historical_original_not_current",
+      "notes": "Visible only in the original 03/06/2009 publication. The 10/08/2023 consolidation was not retrieved."
+    },
+    {
+      "group": "birds",
+      "clause": "ლ)",
+      "georgian_name": "მწყერი",
+      "scientific_name": "Coturnix coturnix",
+      "import_as_current": false,
+      "review_status": "historical_original_not_current",
+      "notes": "Visible only in the original 03/06/2009 publication. The 10/08/2023 consolidation was not retrieved."
+    },
+    {
+      "group": "birds",
+      "clause": "მ)",
+      "georgian_name": "მელოტა",
+      "scientific_name": "Fulica atra",
+      "import_as_current": false,
+      "review_status": "historical_original_not_current",
+      "notes": "Visible only in the original 03/06/2009 publication. The 10/08/2023 consolidation was not retrieved."
+    },
+    {
+      "group": "birds",
+      "clause": "ნ)",
+      "georgian_name": "წყლის ქათამი",
+      "scientific_name": "Gallinula chloropus",
+      "import_as_current": false,
+      "review_status": "historical_original_not_current",
+      "notes": "Visible only in the original 03/06/2009 publication. The 10/08/2023 consolidation was not retrieved."
+    },
+    {
+      "group": "birds",
+      "clause": "ო)",
+      "georgian_name": "ჩიბუხელა",
+      "scientific_name": "Lymnocryptes minimus",
+      "import_as_current": false,
+      "review_status": "historical_original_not_current",
+      "notes": "Visible only in the original 03/06/2009 publication. The 10/08/2023 consolidation was not retrieved."
+    },
+    {
+      "group": "birds",
+      "clause": "პ)",
+      "georgian_name": "ჩიბუხა",
+      "scientific_name": "Gallinago gallinago",
+      "import_as_current": false,
+      "review_status": "historical_original_not_current",
+      "notes": "Visible only in the original 03/06/2009 publication. The 10/08/2023 consolidation was not retrieved."
+    },
+    {
+      "group": "birds",
+      "clause": "ჟ)",
+      "georgian_name": "ტყის ქათამი",
+      "scientific_name": "Scolopax rusticola",
+      "import_as_current": false,
+      "review_status": "historical_original_not_current",
+      "notes": "Visible only in the original 03/06/2009 publication. The 10/08/2023 consolidation was not retrieved."
+    },
+    {
+      "group": "birds",
+      "clause": "რ)",
+      "georgian_name": "ქედანი",
+      "scientific_name": "Columba palumbus",
+      "import_as_current": false,
+      "review_status": "historical_original_not_current",
+      "notes": "Visible only in the original 03/06/2009 publication. The 10/08/2023 consolidation was not retrieved."
+    },
+    {
+      "group": "birds",
+      "clause": "ს)",
+      "georgian_name": "გარეული მტრედი",
+      "scientific_name": "Columba livia",
+      "import_as_current": false,
+      "review_status": "historical_original_not_current",
+      "notes": "Visible only in the original 03/06/2009 publication. The 10/08/2023 consolidation was not retrieved."
+    },
+    {
+      "group": "birds",
+      "clause": "ტ)",
+      "georgian_name": "გულიო",
+      "scientific_name": "Columba oenas",
+      "import_as_current": false,
+      "review_status": "historical_original_not_current",
+      "notes": "Visible only in the original 03/06/2009 publication. The 10/08/2023 consolidation was not retrieved."
+    },
+    {
+      "group": "birds",
+      "clause": "უ)",
+      "georgian_name": "ჩვეულებრივი გვრიტი",
+      "scientific_name": "Streptopelia turtur",
+      "import_as_current": false,
+      "review_status": "historical_original_not_current",
+      "notes": "Visible only in the original 03/06/2009 publication. The 10/08/2023 consolidation was not retrieved."
+    },
+    {
+      "group": "mammals",
+      "clause": "ა)",
+      "georgian_name": "ნუტრია",
+      "scientific_name": "Myocastor coypus",
+      "import_as_current": false,
+      "review_status": "historical_original_not_current",
+      "notes": "Visible only in the original 03/06/2009 publication. The 10/08/2023 consolidation was not retrieved."
+    },
+    {
+      "group": "mammals",
+      "clause": "ბ)",
+      "georgian_name": "კურდღელი",
+      "scientific_name": "Lepus europaeus",
+      "import_as_current": false,
+      "review_status": "historical_original_not_current",
+      "notes": "Visible only in the original 03/06/2009 publication. The 10/08/2023 consolidation was not retrieved."
+    },
+    {
+      "group": "mammals",
+      "clause": "გ)",
+      "georgian_name": "მაჩვი",
+      "scientific_name": "Martes meles",
+      "import_as_current": false,
+      "review_status": "historical_original_not_current",
+      "notes": "Visible only in the original 03/06/2009 publication. The 10/08/2023 consolidation was not retrieved."
+    },
+    {
+      "group": "mammals",
+      "clause": "დ)",
+      "georgian_name": "ტყის კვერნა",
+      "scientific_name": "Martes Martes",
+      "import_as_current": false,
+      "review_status": "historical_original_not_current",
+      "notes": "Visible only in the original 03/06/2009 publication. The 10/08/2023 consolidation was not retrieved."
+    },
+    {
+      "group": "mammals",
+      "clause": "ე)",
+      "georgian_name": "ქვის კვერნა",
+      "scientific_name": "Martes foina",
+      "import_as_current": false,
+      "review_status": "historical_original_not_current",
+      "notes": "Visible only in the original 03/06/2009 publication. The 10/08/2023 consolidation was not retrieved."
+    },
+    {
+      "group": "mammals",
+      "clause": "ვ)",
+      "georgian_name": "გელი",
+      "scientific_name": "Canis lupus",
+      "import_as_current": false,
+      "review_status": "historical_original_not_current",
+      "notes": "Visible only in the original 03/06/2009 publication. The 10/08/2023 consolidation was not retrieved."
+    },
+    {
+      "group": "mammals",
+      "clause": "ზ)",
+      "georgian_name": "ტურა",
+      "scientific_name": "Canis aureus",
+      "import_as_current": false,
+      "review_status": "historical_original_not_current",
+      "notes": "Visible only in the original 03/06/2009 publication. The 10/08/2023 consolidation was not retrieved."
+    },
+    {
+      "group": "mammals",
+      "clause": "თ)",
+      "georgian_name": "მელა",
+      "scientific_name": "Vulpes vulpes",
+      "import_as_current": false,
+      "review_status": "historical_original_not_current",
+      "notes": "Visible only in the original 03/06/2009 publication. The 10/08/2023 consolidation was not retrieved."
+    },
+    {
+      "group": "mammals",
+      "clause": "ი)",
+      "georgian_name": "ენოტისებური ძაღლი",
+      "scientific_name": "Nyctereutes procyonoides",
+      "import_as_current": false,
+      "review_status": "historical_original_not_current",
+      "notes": "Visible only in the original 03/06/2009 publication. The 10/08/2023 consolidation was not retrieved."
+    },
+    {
+      "group": "mammals",
+      "clause": "კ)",
+      "georgian_name": "ტყის კატა",
+      "scientific_name": "Felis silvestris",
+      "import_as_current": false,
+      "review_status": "historical_original_not_current",
+      "notes": "Visible only in the original 03/06/2009 publication. The 10/08/2023 consolidation was not retrieved."
+    },
+    {
+      "group": "mammals",
+      "clause": "ლ)",
+      "georgian_name": "გარეული ღორი",
+      "scientific_name": "Sus scrofa",
+      "import_as_current": false,
+      "review_status": "historical_original_not_current",
+      "notes": "Visible only in the original 03/06/2009 publication. The 10/08/2023 consolidation was not retrieved."
+    },
+    {
+      "group": "mammals",
+      "clause": "მ)",
+      "georgian_name": "შველი",
+      "scientific_name": "Capreolus capreolus",
+      "import_as_current": false,
+      "review_status": "historical_original_not_current",
+      "notes": "Visible only in the original 03/06/2009 publication. The 10/08/2023 consolidation was not retrieved."
+    },
+    {
+      "group": "mammals",
+      "clause": "ნ)",
+      "georgian_name": "ენოტი",
+      "scientific_name": "procyon lotor",
+      "import_as_current": false,
+      "review_status": "historical_original_not_current",
+      "notes": "Visible only in the original 03/06/2009 publication. The 10/08/2023 consolidation was not retrieved."
+    }
+  ]
+}

@@ -61,7 +61,7 @@ describe("season explorer", () => {
     ).toBeInTheDocument();
     expect(screen.getByLabelText(/start date/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/end date/i)).toBeInTheDocument();
-    fireEvent.click(screen.getByRole("button", { name: /fishing/i }));
+    fireEvent.click(screen.getByRole("tab", { name: /fishing/i }));
     fireEvent.click(screen.getByRole("button", { name: /show seasons/i }));
     expect(
       await screen.findByText(/no verified season records/i),
@@ -89,12 +89,15 @@ describe("season explorer", () => {
             media: null,
           },
           overall_state: "partially_open",
+          group: "waterfowl",
           mode: "any_date",
           available_windows: [
             { from: "2026-09-10", to: "2026-09-20", state: "open" },
           ],
           closed_windows: [],
-          conditional_windows: [],
+          conditional_windows: [
+            { from: "2026-09-10", to: "2026-11-10", state: "conditional" },
+          ],
           unknown_windows: [
             { from: "2026-09-01", to: "2026-09-09", state: "unknown" },
           ],
@@ -102,8 +105,21 @@ describe("season explorer", () => {
           timeline: [],
           next_opening: null,
           next_closing: null,
-          limits: [],
-          conditions: [],
+          limits: [
+            {
+              limit_type: "bag",
+              amount: "5.0000",
+              unit: "ცალი",
+              period: "day",
+            },
+          ],
+          conditions: [
+            {
+              condition_type: "region",
+              operator: "equals",
+              string_value: "დმანისი",
+            },
+          ],
           citations: [],
           last_verified_at: "2026-01-01T00:00:00+04:00",
           region_code: null,
@@ -119,6 +135,10 @@ describe("season explorer", () => {
       </TestProviders>,
     );
     expect(await screen.findByText("Fictional deer")).toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: /waterfowl/i })).toBeInTheDocument();
+    expect(screen.getByText(/conditional window/i)).toBeInTheDocument();
+    expect(screen.getByText(/only in: დმანისი/i)).toBeInTheDocument();
+    expect(screen.getByText(/daily limit: 5 ცალი/i)).toBeInTheDocument();
     expect(screen.getAllByText(/partially open/i).length).toBeGreaterThan(0);
     expect(screen.queryByText(/^open$/i)).not.toBeInTheDocument();
   });

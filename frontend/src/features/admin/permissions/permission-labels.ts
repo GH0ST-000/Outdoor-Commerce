@@ -321,6 +321,101 @@ const PERMISSION_META: Record<
     group: "content",
     summary: "Inspect projection job history",
   },
+  "spatial.sources.view": {
+    label: "View spatial sources",
+    group: "content",
+    summary: "Read geographic data sources",
+  },
+  "spatial.sources.manage": {
+    label: "Manage spatial sources",
+    group: "content",
+    summary: "Create and update geographic sources",
+  },
+  "spatial.sources.verify": {
+    label: "Verify spatial sources",
+    group: "content",
+    summary: "Mark geographic sources as verified",
+  },
+  "spatial.datasets.view": {
+    label: "View spatial datasets",
+    group: "content",
+    summary: "Browse versioned spatial datasets",
+  },
+  "spatial.datasets.manage": {
+    label: "Manage spatial datasets",
+    group: "content",
+    summary: "Create and update spatial datasets",
+  },
+  "spatial.versions.upload": {
+    label: "Upload spatial versions",
+    group: "content",
+    summary: "Store GeoJSON source files",
+  },
+  "spatial.versions.validate": {
+    label: "Validate spatial versions",
+    group: "content",
+    summary: "Check geometry and CRS before import",
+  },
+  "spatial.versions.import": {
+    label: "Import spatial versions",
+    group: "content",
+    summary: "Create draft zones from source files",
+  },
+  "spatial.versions.review": {
+    label: "Review spatial versions",
+    group: "content",
+    summary: "Submit, approve, or reject dataset versions",
+  },
+  "spatial.versions.publish": {
+    label: "Publish spatial versions",
+    group: "content",
+    summary: "Publish reviewed geometry versions",
+  },
+  "spatial.zones.view": {
+    label: "View spatial zones",
+    group: "content",
+    summary: "Read protected areas and legal zones",
+  },
+  "spatial.zones.manage": {
+    label: "Manage spatial zones",
+    group: "content",
+    summary: "Edit zone metadata",
+  },
+  "spatial.geometry.review": {
+    label: "Review zone geometry",
+    group: "content",
+    summary: "Inspect canonical boundaries",
+  },
+  "spatial.geometry.publish": {
+    label: "Publish zone geometry",
+    group: "content",
+    summary: "Publish immutable boundary versions",
+  },
+  "spatial.rules.assign": {
+    label: "Assign legal rules to zones",
+    group: "content",
+    summary: "Connect published rules to spatial zones",
+  },
+  "spatial.conflicts.view": {
+    label: "View spatial conflicts",
+    group: "content",
+    summary: "See overlapping spatial rule conflicts",
+  },
+  "spatial.conflicts.resolve": {
+    label: "Resolve spatial conflicts",
+    group: "content",
+    summary: "Record reviewed spatial precedence",
+  },
+  "spatial.preview.evaluate": {
+    label: "Preview location evaluation",
+    group: "content",
+    summary: "Run privileged coordinate evaluation",
+  },
+  "spatial.audit.view": {
+    label: "View spatial audit events",
+    group: "content",
+    summary: "Read spatial workflow history",
+  },
   "content.view": {
     label: "View content",
     group: "content",
@@ -345,6 +440,66 @@ const PERMISSION_META: Record<
     label: "Manage recommendations",
     group: "catalog",
     summary: "Change recommendation settings",
+  },
+  "recommendations.simulate": {
+    label: "Simulate recommendations",
+    group: "catalog",
+    summary: "Run recommendation simulations",
+  },
+  "recommendations.profiles.view": {
+    label: "View ranking profiles",
+    group: "catalog",
+    summary: "See recommendation ranking profiles",
+  },
+  "recommendations.profiles.manage": {
+    label: "Edit ranking profiles",
+    group: "catalog",
+    summary: "Create and edit ranking profiles",
+  },
+  "recommendations.profiles.review": {
+    label: "Review ranking profiles",
+    group: "catalog",
+    summary: "Approve ranking profiles",
+  },
+  "recommendations.profiles.publish": {
+    label: "Publish ranking profiles",
+    group: "catalog",
+    summary: "Publish ranking profiles",
+  },
+  "recommendations.assignments.view": {
+    label: "View product context mappings",
+    group: "catalog",
+    summary: "See product context assignments",
+  },
+  "recommendations.assignments.manage": {
+    label: "Map product context",
+    group: "catalog",
+    summary: "Create and remove product context assignments",
+  },
+  "recommendations.assignments.bulk_manage": {
+    label: "Bulk map product context",
+    group: "catalog",
+    summary: "Apply context assignments to many products",
+  },
+  "recommendations.merchandising.view": {
+    label: "View merchandising rules",
+    group: "catalog",
+    summary: "See recommendation merchandising rules",
+  },
+  "recommendations.merchandising.manage": {
+    label: "Manage merchandising rules",
+    group: "catalog",
+    summary: "Create bounded recommendation boosts and exclusions",
+  },
+  "recommendations.coverage.view": {
+    label: "View recommendation coverage",
+    group: "catalog",
+    summary: "See mapping coverage gaps",
+  },
+  "recommendations.audit.view": {
+    label: "View recommendation audit",
+    group: "catalog",
+    summary: "See recommendation configuration history",
   },
   "operations.view": {
     label: "View operations overview",

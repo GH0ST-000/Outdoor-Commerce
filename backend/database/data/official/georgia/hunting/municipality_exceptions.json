@@ -1,0 +1,17 @@
+{
+  "kind": "municipality_exceptions",
+  "review_status": "extracted_unreviewed",
+  "reviewer": null,
+  "source_document_slug": "ge-order-95",
+  "source_url": "https://www.matsne.gov.ge/ka/document/view/2166315?publication=12",
+  "official_names": [
+    "ახალქალაქი",
+    "ნინოწმინდა",
+    "წალკა",
+    "დმანისი"
+  ],
+  "official_code": null,
+  "notes": "The annex names these municipalities. No official municipality-code or boundary geometry was in the retrieved text. Local slug fragments are not official codes.",
+  "geometry_status": "missing",
+  "missing_geometry_means": "incomplete_coverage"
+}

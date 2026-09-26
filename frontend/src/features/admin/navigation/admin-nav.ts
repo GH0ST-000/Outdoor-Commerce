@@ -114,6 +114,20 @@ export const ADMIN_NAV_ITEMS: readonly AdminNavItem[] = [
     section: "legal",
   },
   {
+    id: "spatial",
+    label: "Spatial zones",
+    href: "/admin/spatial",
+    permission: PERMISSIONS.SPATIAL_DATASETS_VIEW,
+    section: "legal",
+  },
+  {
+    id: "recommendations",
+    label: "Recommendations",
+    href: "/admin/recommendations",
+    permission: PERMISSIONS.RECOMMENDATIONS_VIEW,
+    section: "catalog",
+  },
+  {
     id: "users",
     label: "Users",
     href: "/admin/users",

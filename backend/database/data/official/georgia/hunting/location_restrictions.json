@@ -1,0 +1,70 @@
+{
+  "kind": "location_restrictions",
+  "review_status": "extracted_unreviewed",
+  "reviewer": null,
+  "records": [
+    {
+      "slug": "ge-o95-art-3-7-protected-and-city-locations",
+      "source_document_slug": "ge-order-95",
+      "provision_reference": "order-95:article-3:paragraph-7",
+      "rule_type": "location_restriction",
+      "effect": "prohibit",
+      "official_text": "7. ნადირობა აკრძალულია, სახელმწიფო ნაკრძალებში და ეროვნულ პარკებში და მათ გარშემო 500-მეტრიან ზონაში, ასევე საქართველოს ქალაქების ადმინისტრაციულ საზღვრებში.",
+      "categories": [
+        {
+          "label_ka": "სახელმწიფო ნაკრძალი",
+          "buffer_meters": 500,
+          "buffer_status": "not_generated",
+          "geometry_status": "missing_canonical_geometry"
+        },
+        {
+          "label_ka": "ეროვნული პარკი",
+          "buffer_meters": 500,
+          "buffer_status": "not_generated",
+          "geometry_status": "missing_canonical_geometry"
+        },
+        {
+          "label_ka": "ქალაქის ადმინისტრაციული საზღვარი",
+          "buffer_meters": null,
+          "buffer_status": "not_applicable",
+          "geometry_status": "missing_official_city_boundaries"
+        }
+      ],
+      "publish": false,
+      "notes": "Every protected-area category is not prohibited by this paragraph. A buffer is not generated from display geometry."
+    },
+    {
+      "slug": "ge-mepa-26537-location-statement",
+      "source_document_slug": "ge-mepa-news-26537",
+      "provision_reference": "mepa-news-26537:body",
+      "rule_type": "location_restriction",
+      "effect": "prohibit",
+      "official_text": "ნადირობა აკრძალულია საქართველოს კანონმდებლობით განსაზღვრულ ტერიტორიებზე, მათ შორის: ქალაქების ადმინისტრაციულ საზღვრებში, სახელმწიფო ნაკრძალებში, ეროვნულ პარკებში, ნუგზარ ზაზანაშვილის სახელობის სამუხის მრავალმხრივი გამოყენების ტერიტორიაზე, ასევე სახელმწიფო ნაკრძალების გარშემო 500-მეტრიან და ეროვნული პარკების გარშემო 250-მეტრიან ზონებში. ნადირობა აკრძალულია ასევე სსიპ ველური ბუნების ეროვნული სააგენტოს მართვასა და სარგებლობაში არსებულ საშენი მეურნეობების ტერიტორიებზე.",
+      "categories": [
+        {
+          "label_ka": "სახელმწიფო ნაკრძალი",
+          "buffer_meters": 500,
+          "buffer_status": "not_generated"
+        },
+        {
+          "label_ka": "ეროვნული პარკი",
+          "buffer_meters": 250,
+          "buffer_status": "not_generated"
+        },
+        {
+          "label_ka": "ნუგზარ ზაზანაშვილის სახელობის სამუხის მრავალმხრივი გამოყენების ტერიტორია",
+          "buffer_meters": null,
+          "buffer_status": "not_applicable",
+          "geometry_status": "missing"
+        },
+        {
+          "label_ka": "სსიპ ველური ბუნების ეროვნული სააგენტოს საშენი მეურნეობები",
+          "buffer_meters": null,
+          "geometry_status": "missing"
+        }
+      ],
+      "publish": false,
+      "notes": "This sentence is from the 24 July 2026 ministry announcement. The 250-meter national-park buffer conflicts with Order No. 95 article 3 paragraph 7."
+    }
+  ]
+}
