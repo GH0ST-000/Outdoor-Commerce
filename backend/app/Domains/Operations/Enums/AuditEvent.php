@@ -163,4 +163,34 @@ enum AuditEvent: string
     case LegalSeasonOverrideApproved = 'legal.season_override.approved';
     case LegalSeasonOverridePublished = 'legal.season_override.published';
     case LegalSeasonOverrideRejected = 'legal.season_override.rejected';
+
+    case SpatialSourceCreated = 'spatial.source.created';
+    case SpatialSourceUpdated = 'spatial.source.updated';
+    case SpatialSourceVerified = 'spatial.source.verified';
+    case SpatialSourceRejected = 'spatial.source.rejected';
+    case SpatialDatasetCreated = 'spatial.dataset.created';
+    case SpatialDatasetUpdated = 'spatial.dataset.updated';
+    case SpatialDatasetVersionUploaded = 'spatial.dataset_version.uploaded';
+    case SpatialPropertyMappingSaved = 'spatial.dataset_version.mapped';
+    case SpatialImportStarted = 'spatial.import.started';
+    case SpatialDatasetVersionSubmittedReview = 'spatial.dataset_version.submitted_review';
+    case SpatialDatasetVersionApproved = 'spatial.dataset_version.approved';
+    case SpatialDatasetVersionRejected = 'spatial.dataset_version.rejected';
+    case SpatialDatasetVersionPublished = 'spatial.dataset_version.published';
+    case SpatialRuleAssigned = 'spatial.rule.assigned';
+    case SpatialSourceFileDownloaded = 'spatial.source_file.downloaded';
+
+    case RecommendationTaxonomySaved = 'recommendation.taxonomy.saved';
+    case RecommendationAssignmentSaved = 'recommendation.assignment.saved';
+    case RecommendationAssignmentRemoved = 'recommendation.assignment.removed';
+    case RecommendationBulkAssignmentCompleted = 'recommendation.assignment.bulk_completed';
+    case RecommendationProfileCreated = 'recommendation.profile.created';
+    case RecommendationProfileUpdated = 'recommendation.profile.updated';
+    case RecommendationProfileSubmitted = 'recommendation.profile.submitted';
+    case RecommendationProfileApproved = 'recommendation.profile.approved';
+    case RecommendationProfilePublished = 'recommendation.profile.published';
+    case RecommendationProfileSuperseded = 'recommendation.profile.superseded';
+    case RecommendationMerchandisingSaved = 'recommendation.merchandising.saved';
+    case RecommendationSimulated = 'recommendation.simulated';
+    case RecommendationReindexed = 'recommendation.reindexed';
 }

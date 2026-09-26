@@ -5,6 +5,7 @@ import type {
   SpeciesLocale,
 } from "@/features/species/types/species-types";
 import { SpeciesLegalOverview } from "@/features/legal/components/SpeciesLegalOverview";
+import { RecommendationSection } from "@/features/recommendations/components/RecommendationSection";
 import { SpeciesSeasonSection } from "@/features/seasons/components/SpeciesSeasonSection";
 
 const copy = {
@@ -324,6 +325,19 @@ export function SpeciesDetailView({
           <SpeciesLegalOverview
             locale={locale}
             legal={species.legal_information}
+          />
+          <RecommendationSection
+            request={{
+              placement: "species_detail",
+              locale,
+              speciesSlug: species.slug,
+              activity:
+                species.activity_type === "fishing"
+                  ? "fishing"
+                  : species.activity_type === "hunting"
+                    ? "hunting"
+                    : null,
+            }}
           />
         </div>
       </div>

@@ -12,6 +12,14 @@ const publicSchema = z.object({
   NEXT_PUBLIC_API_URL: z.string().url().optional(),
   NEXT_PUBLIC_BACKEND_URL: z.string().url().optional(),
   NEXT_PUBLIC_CART_ENABLED: z.string().optional(),
+  NEXT_PUBLIC_MAP_STYLE_URL: z.string().url().optional(),
+  NEXT_PUBLIC_MAP_TOKEN: z.string().min(1).optional(),
+  NEXT_PUBLIC_MAP_CENTER_LNG: z.string().optional(),
+  NEXT_PUBLIC_MAP_CENTER_LAT: z.string().optional(),
+  NEXT_PUBLIC_MAP_ZOOM: z.string().optional(),
+  NEXT_PUBLIC_MAP_MIN_ZOOM: z.string().optional(),
+  NEXT_PUBLIC_MAP_MAX_ZOOM: z.string().optional(),
+  NEXT_PUBLIC_MAP_BOUNDS: z.string().optional(),
 });
 
 export type ServerEnv = z.infer<typeof serverSchema>;
@@ -30,7 +38,24 @@ export function getPublicEnv(): PublicEnv {
     NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
     NEXT_PUBLIC_BACKEND_URL: process.env.NEXT_PUBLIC_BACKEND_URL,
     NEXT_PUBLIC_CART_ENABLED: process.env.NEXT_PUBLIC_CART_ENABLED,
+    NEXT_PUBLIC_MAP_STYLE_URL: blankToUndefined(
+      process.env.NEXT_PUBLIC_MAP_STYLE_URL,
+    ),
+    NEXT_PUBLIC_MAP_TOKEN: blankToUndefined(process.env.NEXT_PUBLIC_MAP_TOKEN),
+    NEXT_PUBLIC_MAP_CENTER_LNG: process.env.NEXT_PUBLIC_MAP_CENTER_LNG,
+    NEXT_PUBLIC_MAP_CENTER_LAT: process.env.NEXT_PUBLIC_MAP_CENTER_LAT,
+    NEXT_PUBLIC_MAP_ZOOM: process.env.NEXT_PUBLIC_MAP_ZOOM,
+    NEXT_PUBLIC_MAP_MIN_ZOOM: process.env.NEXT_PUBLIC_MAP_MIN_ZOOM,
+    NEXT_PUBLIC_MAP_MAX_ZOOM: process.env.NEXT_PUBLIC_MAP_MAX_ZOOM,
+    NEXT_PUBLIC_MAP_BOUNDS: process.env.NEXT_PUBLIC_MAP_BOUNDS,
   });
+}
+
+function blankToUndefined(value: string | undefined): string | undefined {
+  if (value === undefined || value.trim() === "") {
+    return undefined;
+  }
+  return value;
 }
 
 const DEFAULT_API_BASE_URL = "http://localhost:8000/api";

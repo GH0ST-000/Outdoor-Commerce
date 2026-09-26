@@ -1,0 +1,31 @@
+{
+  "kind": "official_geometry",
+  "source_code": "APA17",
+  "review_status": "extracted_unreviewed",
+  "retrieved_at": "2026-09-26T02:40:00Z",
+  "catalogue_url": "https://portal.mepa.gov.ge/Ge/User/data",
+  "map_page": "https://portal.mepa.gov.ge/Ge/user/map/10",
+  "web_map_item": "ddef39fcf44a43b986b396863fe06327",
+  "feature_service": "https://gisserver.mepa.gov.ge/arcgis/rest/services/APA/საქართველოს_დაცული_ტერიტორიები/FeatureServer/1",
+  "layer_name": "PA_18.10.2023",
+  "out_srid": 4326,
+  "feature_count": 100,
+  "geometry_types": {
+    "MultiPolygon": 34,
+    "Polygon": 66
+  },
+  "zone_type_mapping": {
+    "Nature Reserve": "strict_nature_reserve",
+    "Managed Reserve": "managed_reserve",
+    "National Park": "national_park",
+    "Natural Monument": "natural_monument",
+    "Protected Landscape": "protected_area",
+    "Multiple Use Area": "protected_area"
+  },
+  "name_property": "nameeng",
+  "identifier_property": "objectid",
+  "checksum_sha256": "89fbfd8cca5495782679cf85eed84ce953772f0dbb44b9957081252b13339be1",
+  "file": "apa17-protected-areas.geojson",
+  "legal_effect": "none",
+  "note": "Boundaries only. Categories are stored as zone types. No hunting or fishing prohibition is assigned."
+}

@@ -1,0 +1,47 @@
+{
+  "kind": "coverage_gaps",
+  "review_status": "extracted_unreviewed",
+  "reviewer": null,
+  "records": [
+    {
+      "code": "order_18_current_list",
+      "effect": "unknown",
+      "detail": "Current consolidated hunting-object list (Order No. 18, publication 10/08/2023) was not public."
+    },
+    {
+      "code": "fishing_current_regulation",
+      "effect": "unknown",
+      "detail": "Current consolidated fishing regulation (22/06/2026) was not public. Commercial and recreational rules were not extracted."
+    },
+    {
+      "code": "protected_area_geometry",
+      "effect": "unknown",
+      "detail": "APA17, APA29, MEPA51, and MEPA52 have no downloaded GeoJSON."
+    },
+    {
+      "code": "city_administrative_boundaries",
+      "effect": "unknown",
+      "detail": "Order No. 95 prohibits hunting inside city administrative boundaries. Official city geometry was not retrieved, so this does not become permission outside a known boundary."
+    },
+    {
+      "code": "municipality_boundaries",
+      "effect": "unknown",
+      "detail": "Akhalkalaki, Ninotsminda, Tsalka, and Dmanisi are named in Annex 1. Their boundary geometry was not retrieved."
+    },
+    {
+      "code": "legal_buffers",
+      "effect": "unknown",
+      "detail": "500-meter and 250-meter buffers are legal distances in the sources. No buffer geometry was generated."
+    },
+    {
+      "code": "english_species_names",
+      "effect": "not_displayed_as_authoritative",
+      "detail": "The retrieved order gives Georgian and scientific names. English common names were not in the source and were not invented."
+    },
+    {
+      "code": "august_opening_rule",
+      "effect": "conflict",
+      "detail": "Third Saturday in the consolidated order versus fourth Saturday and 22 August 2026 in the ministry announcement."
+    }
+  ]
+}

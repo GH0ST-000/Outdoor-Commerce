@@ -261,6 +261,9 @@ export type StorefrontCopy = {
     modeEntire: string;
     modeTimeline: string;
     modeHelp: string;
+    tabPeriod: string;
+    tabPlace: string;
+    tabMode: string;
     thisWeek: string;
     next7: string;
     thisMonth: string;
@@ -281,8 +284,25 @@ export type StorefrontCopy = {
     lastVerified: string;
     officialSource: string;
     openWindow: string;
+    conditionalWindow: string;
+    dailyLimit: string;
+    onlyIn: string;
+    excluding: string;
     nextOpen: string;
     nextClose: string;
+    conflictNote: string;
+    groups: {
+      waterfowl: string;
+      quail: string;
+      snipe: string;
+      woodcock: string;
+      pigeons: string;
+      other: string;
+    };
+    periodSources: {
+      order_95: string;
+      mepa_2026: string;
+    };
     resultsCount: string;
     timelineLabel: string;
     regionHint: string;

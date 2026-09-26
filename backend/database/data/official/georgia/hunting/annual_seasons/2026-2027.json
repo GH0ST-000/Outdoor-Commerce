@@ -1,0 +1,23 @@
+{
+  "language": "ka",
+  "review_status": "in_review",
+  "reviewer": null,
+  "retrieved_at": "2026-09-25T21:10:00Z",
+  "kind": "annual_season",
+  "slug": "ge-mepa-26537-2026-2027-window",
+  "source_document_slug": "ge-mepa-news-26537",
+  "provision_reference": "mepa-news-26537:body",
+  "rule_type": "seasonal_restriction",
+  "effect": "allow",
+  "season_type": "special_opening",
+  "schedule_type": "fixed_range",
+  "start_date": "2026-08-22",
+  "end_date": "2027-03-01",
+  "end_bound_text": "2027 წლის 1 მარტამდე",
+  "crosses_calendar_year": true,
+  "creates_season_definition": false,
+  "species_scientific_name": null,
+  "official_text": "გადამფრენ ფრინველებზე ნადირობის სეზონი აგვისტოს მეოთხე შაბათს გაიხსნება. გადამფრენ ფრინველებზე ნადირობა ნებადართული იქნება 2026 წლის 22 აგვისტოდან 2027 წლის 1 მარტამდე.",
+  "publish": false,
+  "notes": "22 August 2026 is a Saturday and is the fourth Saturday of August 2026. The announcement calls it the fourth Saturday. Order No. 95 article 3 paragraph 2 and the annex rows for snipe, quail, and pigeons say the third Saturday. The fixed dates stay in review and do not get a published occurrence."
+}

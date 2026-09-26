@@ -78,12 +78,44 @@ enum Permission: string
     case LegalCalendarCoverage = 'legal.calendar.coverage';
     case LegalCalendarGenerationRunsView = 'legal.calendar.generation_runs.view';
 
+    case SpatialSourcesView = 'spatial.sources.view';
+    case SpatialSourcesManage = 'spatial.sources.manage';
+    case SpatialSourcesVerify = 'spatial.sources.verify';
+    case SpatialDatasetsView = 'spatial.datasets.view';
+    case SpatialDatasetsManage = 'spatial.datasets.manage';
+    case SpatialVersionsUpload = 'spatial.versions.upload';
+    case SpatialVersionsValidate = 'spatial.versions.validate';
+    case SpatialVersionsImport = 'spatial.versions.import';
+    case SpatialVersionsReview = 'spatial.versions.review';
+    case SpatialVersionsPublish = 'spatial.versions.publish';
+    case SpatialZonesView = 'spatial.zones.view';
+    case SpatialZonesManage = 'spatial.zones.manage';
+    case SpatialGeometryReview = 'spatial.geometry.review';
+    case SpatialGeometryPublish = 'spatial.geometry.publish';
+    case SpatialRulesAssign = 'spatial.rules.assign';
+    case SpatialConflictsView = 'spatial.conflicts.view';
+    case SpatialConflictsResolve = 'spatial.conflicts.resolve';
+    case SpatialPreviewEvaluate = 'spatial.preview.evaluate';
+    case SpatialAuditView = 'spatial.audit.view';
+
     case ContentView = 'content.view';
     case ContentManage = 'content.manage';
     case ContentPublish = 'content.publish';
 
     case RecommendationsView = 'recommendations.view';
     case RecommendationsManage = 'recommendations.manage';
+    case RecommendationsSimulate = 'recommendations.simulate';
+    case RecommendationsProfilesView = 'recommendations.profiles.view';
+    case RecommendationsProfilesManage = 'recommendations.profiles.manage';
+    case RecommendationsProfilesReview = 'recommendations.profiles.review';
+    case RecommendationsProfilesPublish = 'recommendations.profiles.publish';
+    case RecommendationsAssignmentsView = 'recommendations.assignments.view';
+    case RecommendationsAssignmentsManage = 'recommendations.assignments.manage';
+    case RecommendationsAssignmentsBulkManage = 'recommendations.assignments.bulk_manage';
+    case RecommendationsMerchandisingView = 'recommendations.merchandising.view';
+    case RecommendationsMerchandisingManage = 'recommendations.merchandising.manage';
+    case RecommendationsCoverageView = 'recommendations.coverage.view';
+    case RecommendationsAuditView = 'recommendations.audit.view';
 
     case OperationsView = 'operations.view';
 

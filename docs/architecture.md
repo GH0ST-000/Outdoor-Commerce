@@ -36,6 +36,12 @@ See also:
 - [Legal information (Day 25)](legal.md)
 - [ADR 0018: Separation of biological species knowledge from legal hunting and fishing rules](adr/0018-species-facts-vs-legal-rules.md)
 - [ADR 0019: Versioned official legal sources and deterministic rule evaluation](adr/0019-versioned-legal-rules.md)
+- [ADR 0020: Season calendar projections](adr/0020-season-calendar-projections.md)
+- [Spatial zones (Day 27)](spatial.md)
+- [Public legal map (Day 28)](map.md)
+- [ADR 0021: MySQL spatial zones with SRID 4326](adr/0021-mysql-spatial-zones.md)
+- [Contextual recommendations (Day 30)](recommendations.md)
+- [ADR 0023: Deterministic contextual recommendations](adr/0023-deterministic-contextual-recommendations.md)
 - Per-module notes under `backend/app/Domains/*/README.md`
 
 ## Modular monolith definition
@@ -62,9 +68,9 @@ See also:
 | Payments | Payment intents, callbacks, reconciliation | Order-item composition |
 | Shipping | Shipments, pickup, tracking, aggregate fulfillment | Inventory reservation rules, payment capture |
 | Hunting | Species knowledge (Day 24 biological facts) | Legal permission, seasons, maps |
-| Legal | Official sources, versioned documents, structured rules, evaluation (Day 25) | Species biology, calendars, geospatial polygons |
-| Geography | Zones, polygons, spatial queries | Legal interpretation, product ranking |
-| Recommendations | Contextual ranking of products | Legal permission decisions |
+| Legal | Official sources, versioned documents, structured rules, seasons, location evaluation (Days 25–27) | Species biology, geospatial storage |
+| Geography | Versioned zones, canonical polygons, spatial queries (Day 27) | Legal interpretation. The public map is a storefront client. |
+| Recommendations | Contextual product ranking from published profiles (Day 30) | Legal permission decisions |
 | Content | CMS-like pages, articles, editorial blocks | Product canonical data |
 | Notifications | Outbound email/SMS/push orchestration | Business decision of when an order exists |
 | Operations | Admin/ops tooling, audits, support workflows | Customer storefront cart/checkout |

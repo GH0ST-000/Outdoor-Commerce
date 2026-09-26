@@ -30,7 +30,9 @@ use App\Http\Controllers\Api\V1\Admin\Products\AdminProductController;
 use App\Http\Controllers\Api\V1\Admin\Products\AdminProductVariantAxesController;
 use App\Http\Controllers\Api\V1\Admin\Products\AdminProductVariantController;
 use App\Http\Controllers\Api\V1\Admin\Products\AdminProductVariantGenerationController;
+use App\Http\Controllers\Api\V1\Admin\Recommendations\AdminRecommendationController;
 use App\Http\Controllers\Api\V1\Admin\Shipping\AdminFulfillmentController;
+use App\Http\Controllers\Api\V1\Admin\Spatial\AdminSpatialController;
 use App\Http\Controllers\Api\V1\Admin\Species\AdminSpeciesController;
 use App\Http\Controllers\Api\V1\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Api\V1\Auth\CurrentUserController;
@@ -52,9 +54,11 @@ use App\Http\Controllers\Api\V1\Payments\PaymentWebhookController;
 use App\Http\Controllers\Api\V1\Payments\PublicPaymentAttemptController;
 use App\Http\Controllers\Api\V1\Payments\PublicPaymentMethodController;
 use App\Http\Controllers\Api\V1\Payments\TestPaymentSimulateController;
+use App\Http\Controllers\Api\V1\Recommendations\PublicRecommendationController;
 use App\Http\Controllers\Api\V1\Search\PublicSearchController;
 use App\Http\Controllers\Api\V1\Search\PublicSearchSuggestionController;
 use App\Http\Controllers\Api\V1\Shipping\ShipmentWebhookController;
+use App\Http\Controllers\Api\V1\Spatial\PublicSpatialController;
 use App\Http\Controllers\Api\V1\Species\PublicSpeciesController;
 use App\Http\Middleware\EnsureAdminAccess;
 use App\Http\Middleware\EnsureHasPermission;
@@ -120,6 +124,25 @@ Route::prefix('v1/outdoor')->group(function (): void {
         ->middleware('throttle:legal.calendar');
     Route::get('/season-transitions', [PublicOutdoorController::class, 'transitions'])
         ->middleware('throttle:legal.calendar');
+});
+
+Route::prefix('v1/spatial')->group(function (): void {
+    Route::get('/search', [PublicSpatialController::class, 'search'])
+        ->middleware('throttle:spatial.public');
+    Route::get('/zones', [PublicSpatialController::class, 'index'])
+        ->middleware('throttle:spatial.public');
+    Route::get('/zones/{publicId}', [PublicSpatialController::class, 'show'])
+        ->middleware('throttle:spatial.public')
+        ->where('publicId', '[0-9a-fA-F-]{36}');
+    Route::get('/lookup', [PublicSpatialController::class, 'lookup'])
+        ->middleware('throttle:spatial.lookup');
+    Route::get('/evaluate', [PublicSpatialController::class, 'evaluate'])
+        ->middleware('throttle:spatial.evaluate');
+});
+
+Route::prefix('v1/recommendations')->group(function (): void {
+    Route::post('/contextual', [PublicRecommendationController::class, 'store'])
+        ->middleware('throttle:recommendations.public');
 });
 
 Route::prefix('v1/search')->group(function (): void {
@@ -777,4 +800,140 @@ Route::prefix('v1/admin')
             ->middleware([EnsureHasPermission::class.':legal.calendar.preview', 'throttle:admin.mutations']);
         Route::get('/legal/calendar/coverage', [AdminLegalSeasonController::class, 'coverage'])
             ->middleware(EnsureHasPermission::class.':legal.calendar.coverage');
+
+        Route::get('/spatial/dashboard', [AdminSpatialController::class, 'dashboard'])
+            ->middleware(EnsureHasPermission::class.':spatial.datasets.view');
+        Route::get('/spatial/coverage', [AdminSpatialController::class, 'coverage'])
+            ->middleware(EnsureHasPermission::class.':spatial.datasets.view');
+        Route::get('/spatial/sources', [AdminSpatialController::class, 'sources'])
+            ->middleware(EnsureHasPermission::class.':spatial.sources.view');
+        Route::post('/spatial/sources', [AdminSpatialController::class, 'storeSource'])
+            ->middleware([EnsureHasPermission::class.':spatial.sources.manage', 'throttle:admin.mutations']);
+        Route::get('/spatial/sources/{source}', [AdminSpatialController::class, 'showSource'])
+            ->middleware(EnsureHasPermission::class.':spatial.sources.view')
+            ->where('source', '[0-9a-fA-F-]{36}');
+        Route::patch('/spatial/sources/{source}', [AdminSpatialController::class, 'updateSource'])
+            ->middleware([EnsureHasPermission::class.':spatial.sources.manage', 'throttle:admin.mutations'])
+            ->where('source', '[0-9a-fA-F-]{36}');
+        Route::post('/spatial/sources/{source}/verify', [AdminSpatialController::class, 'verifySource'])
+            ->middleware([EnsureHasPermission::class.':spatial.sources.verify', 'throttle:admin.mutations'])
+            ->where('source', '[0-9a-fA-F-]{36}');
+        Route::get('/spatial/datasets', [AdminSpatialController::class, 'datasets'])
+            ->middleware(EnsureHasPermission::class.':spatial.datasets.view');
+        Route::post('/spatial/datasets', [AdminSpatialController::class, 'storeDataset'])
+            ->middleware([EnsureHasPermission::class.':spatial.datasets.manage', 'throttle:admin.mutations']);
+        Route::get('/spatial/datasets/{dataset}', [AdminSpatialController::class, 'showDataset'])
+            ->middleware(EnsureHasPermission::class.':spatial.datasets.view')
+            ->where('dataset', '[0-9a-fA-F-]{36}');
+        Route::patch('/spatial/datasets/{dataset}', [AdminSpatialController::class, 'updateDataset'])
+            ->middleware([EnsureHasPermission::class.':spatial.datasets.manage', 'throttle:admin.mutations'])
+            ->where('dataset', '[0-9a-fA-F-]{36}');
+        Route::get('/spatial/datasets/{dataset}/versions', [AdminSpatialController::class, 'versions'])
+            ->middleware(EnsureHasPermission::class.':spatial.datasets.view')
+            ->where('dataset', '[0-9a-fA-F-]{36}');
+        Route::post('/spatial/datasets/{dataset}/versions', [AdminSpatialController::class, 'storeVersion'])
+            ->middleware([EnsureHasPermission::class.':spatial.versions.upload', 'throttle:admin.mutations'])
+            ->where('dataset', '[0-9a-fA-F-]{36}');
+        Route::get('/spatial/dataset-versions/{version}', [AdminSpatialController::class, 'showVersion'])
+            ->middleware(EnsureHasPermission::class.':spatial.datasets.view')
+            ->where('version', '[0-9a-fA-F-]{36}');
+        Route::get('/spatial/dataset-versions/{version}/download', [AdminSpatialController::class, 'downloadVersion'])
+            ->middleware([EnsureHasPermission::class.':spatial.datasets.view', 'throttle:spatial.admin-download'])
+            ->where('version', '[0-9a-fA-F-]{36}');
+        Route::get('/spatial/dataset-versions/{version}/preview', [AdminSpatialController::class, 'previewVersion'])
+            ->middleware(EnsureHasPermission::class.':spatial.versions.validate')
+            ->where('version', '[0-9a-fA-F-]{36}');
+        Route::post('/spatial/dataset-versions/{version}/validate', [AdminSpatialController::class, 'validateVersion'])
+            ->middleware([EnsureHasPermission::class.':spatial.versions.validate', 'throttle:admin.mutations'])
+            ->where('version', '[0-9a-fA-F-]{36}');
+        Route::post('/spatial/dataset-versions/{version}/map', [AdminSpatialController::class, 'mapVersion'])
+            ->middleware([EnsureHasPermission::class.':spatial.versions.import', 'throttle:admin.mutations'])
+            ->where('version', '[0-9a-fA-F-]{36}');
+        Route::post('/spatial/dataset-versions/{version}/import', [AdminSpatialController::class, 'importVersion'])
+            ->middleware([EnsureHasPermission::class.':spatial.versions.import', 'throttle:admin.mutations'])
+            ->where('version', '[0-9a-fA-F-]{36}');
+        Route::post('/spatial/dataset-versions/{version}/submit-review', [AdminSpatialController::class, 'submitVersion'])
+            ->middleware([EnsureHasPermission::class.':spatial.versions.review', 'throttle:admin.mutations'])
+            ->where('version', '[0-9a-fA-F-]{36}');
+        Route::post('/spatial/dataset-versions/{version}/approve', [AdminSpatialController::class, 'approveVersion'])
+            ->middleware([EnsureHasPermission::class.':spatial.versions.review', 'throttle:admin.mutations'])
+            ->where('version', '[0-9a-fA-F-]{36}');
+        Route::post('/spatial/dataset-versions/{version}/publish', [AdminSpatialController::class, 'publishVersion'])
+            ->middleware([EnsureHasPermission::class.':spatial.versions.publish', 'throttle:admin.mutations'])
+            ->where('version', '[0-9a-fA-F-]{36}');
+        Route::post('/spatial/dataset-versions/{version}/reject', [AdminSpatialController::class, 'rejectVersion'])
+            ->middleware([EnsureHasPermission::class.':spatial.versions.review', 'throttle:admin.mutations'])
+            ->where('version', '[0-9a-fA-F-]{36}');
+        Route::get('/spatial/zones', [AdminSpatialController::class, 'zones'])
+            ->middleware(EnsureHasPermission::class.':spatial.zones.view');
+        Route::get('/spatial/zones/{zone}', [AdminSpatialController::class, 'showZone'])
+            ->middleware(EnsureHasPermission::class.':spatial.zones.view')
+            ->where('zone', '[0-9a-fA-F-]{36}');
+        Route::get('/spatial/zones/{zone}/geometry-versions', [AdminSpatialController::class, 'geometryVersions'])
+            ->middleware(EnsureHasPermission::class.':spatial.zones.view')
+            ->where('zone', '[0-9a-fA-F-]{36}');
+        Route::get('/spatial/zones/{zone}/legal-rules', [AdminSpatialController::class, 'zoneRules'])
+            ->middleware(EnsureHasPermission::class.':spatial.zones.view')
+            ->where('zone', '[0-9a-fA-F-]{36}');
+        Route::post('/spatial/zones/{zone}/legal-rules', [AdminSpatialController::class, 'assignRule'])
+            ->middleware([EnsureHasPermission::class.':spatial.rules.assign', 'throttle:admin.mutations'])
+            ->where('zone', '[0-9a-fA-F-]{36}');
+        Route::get('/spatial/imports', [AdminSpatialController::class, 'imports'])
+            ->middleware(EnsureHasPermission::class.':spatial.datasets.view');
+        Route::get('/spatial/imports/{import}', [AdminSpatialController::class, 'showImport'])
+            ->middleware(EnsureHasPermission::class.':spatial.datasets.view')
+            ->where('import', '[0-9a-fA-F-]{36}');
+        Route::get('/spatial/imports/{import}/errors', [AdminSpatialController::class, 'importErrors'])
+            ->middleware(EnsureHasPermission::class.':spatial.datasets.view')
+            ->where('import', '[0-9a-fA-F-]{36}');
+        Route::get('/spatial/conflicts', [AdminSpatialController::class, 'conflicts'])
+            ->middleware(EnsureHasPermission::class.':spatial.conflicts.view');
+        Route::post('/spatial/evaluate-preview', [AdminSpatialController::class, 'evaluatePreview'])
+            ->middleware([EnsureHasPermission::class.':spatial.preview.evaluate', 'throttle:admin.mutations']);
+        Route::get('/spatial/lookup-preview', [AdminSpatialController::class, 'lookupPreview'])
+            ->middleware(EnsureHasPermission::class.':spatial.preview.evaluate');
+
+        Route::get('/recommendations/profiles', [AdminRecommendationController::class, 'profiles'])
+            ->middleware(EnsureHasPermission::class.':recommendations.profiles.view');
+        Route::post('/recommendations/profiles', [AdminRecommendationController::class, 'storeProfile'])
+            ->middleware([EnsureHasPermission::class.':recommendations.profiles.manage', 'throttle:admin.mutations']);
+        Route::get('/recommendations/profiles/{profile}', [AdminRecommendationController::class, 'showProfile'])
+            ->middleware(EnsureHasPermission::class.':recommendations.profiles.view')
+            ->where('profile', '[0-9a-fA-F-]{36}');
+        Route::patch('/recommendations/profiles/{profile}', [AdminRecommendationController::class, 'updateProfile'])
+            ->middleware([EnsureHasPermission::class.':recommendations.profiles.manage', 'throttle:admin.mutations'])
+            ->where('profile', '[0-9a-fA-F-]{36}');
+        Route::post('/recommendations/profiles/{profile}/submit-review', [AdminRecommendationController::class, 'submit'])
+            ->middleware([EnsureHasPermission::class.':recommendations.profiles.manage', 'throttle:admin.mutations'])
+            ->where('profile', '[0-9a-fA-F-]{36}');
+        Route::post('/recommendations/profiles/{profile}/approve', [AdminRecommendationController::class, 'approve'])
+            ->middleware([EnsureHasPermission::class.':recommendations.profiles.review', 'throttle:admin.mutations'])
+            ->where('profile', '[0-9a-fA-F-]{36}');
+        Route::post('/recommendations/profiles/{profile}/publish', [AdminRecommendationController::class, 'publish'])
+            ->middleware([EnsureHasPermission::class.':recommendations.profiles.publish', 'throttle:admin.mutations'])
+            ->where('profile', '[0-9a-fA-F-]{36}');
+        Route::post('/recommendations/profiles/{profile}/supersede', [AdminRecommendationController::class, 'supersede'])
+            ->middleware([EnsureHasPermission::class.':recommendations.profiles.publish', 'throttle:admin.mutations'])
+            ->where('profile', '[0-9a-fA-F-]{36}');
+        Route::get('/recommendations/coverage', [AdminRecommendationController::class, 'coverage'])
+            ->middleware(EnsureHasPermission::class.':recommendations.coverage.view');
+        Route::get('/recommendations/merchandising-rules', [AdminRecommendationController::class, 'merchandising'])
+            ->middleware(EnsureHasPermission::class.':recommendations.merchandising.view');
+        Route::post('/recommendations/merchandising-rules', [AdminRecommendationController::class, 'storeMerchandising'])
+            ->middleware([EnsureHasPermission::class.':recommendations.merchandising.manage', 'throttle:admin.mutations']);
+        Route::post('/recommendations/simulate', [AdminRecommendationController::class, 'simulate'])
+            ->middleware([EnsureHasPermission::class.':recommendations.simulate', 'throttle:recommendations.simulate']);
+        Route::post('/recommendations/bulk-assignments', [AdminRecommendationController::class, 'bulkAssign'])
+            ->middleware([EnsureHasPermission::class.':recommendations.assignments.bulk_manage', 'throttle:admin.mutations']);
+        Route::get('/recommendations/terms', [AdminRecommendationController::class, 'terms'])
+            ->middleware(EnsureHasPermission::class.':recommendations.assignments.view');
+        Route::post('/recommendations/terms', [AdminRecommendationController::class, 'storeTerm'])
+            ->middleware([EnsureHasPermission::class.':recommendations.assignments.manage', 'throttle:admin.mutations']);
+        Route::get('/products/{product}/context-assignments', [AdminRecommendationController::class, 'assignments'])
+            ->middleware(EnsureHasPermission::class.':recommendations.assignments.view');
+        Route::post('/products/{product}/context-assignments', [AdminRecommendationController::class, 'storeAssignment'])
+            ->middleware([EnsureHasPermission::class.':recommendations.assignments.manage', 'throttle:admin.mutations']);
+        Route::delete('/products/{product}/context-assignments/{assignment}', [AdminRecommendationController::class, 'destroyAssignment'])
+            ->middleware([EnsureHasPermission::class.':recommendations.assignments.manage', 'throttle:admin.mutations'])
+            ->where('assignment', '[0-9a-fA-F-]{36}');
     });

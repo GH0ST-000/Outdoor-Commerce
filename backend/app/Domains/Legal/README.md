@@ -2,7 +2,7 @@
 
 Day 25 owns official legal sources, immutable document versions, provisions, structured rules, conflict detection, and point-in-time evaluation.
 
-Day 26 extends this module with season definitions, derived occurrences, overrides, and period availability. Biological species facts remain in Hunting. Maps remain later. See [ADR 0019](../../../../docs/adr/0019-versioned-legal-rules.md), [ADR 0020](../../../../docs/adr/0020-season-calendar-projections.md), [docs/legal.md](../../../../docs/legal.md), and [docs/legal-calendar.md](../../../../docs/legal-calendar.md).
+Day 26 extends this module with season definitions, derived occurrences, overrides, and period availability. Day 27 adds location evaluation (`SpatialLegalEvaluator`) using Geography spatial queries. Biological species facts remain in Hunting. The public map remains Day 28. See [ADR 0019](../../../../docs/adr/0019-versioned-legal-rules.md), [ADR 0020](../../../../docs/adr/0020-season-calendar-projections.md), [ADR 0021](../../../../docs/adr/0021-mysql-spatial-zones.md), [docs/legal.md](../../../../docs/legal.md), [docs/legal-calendar.md](../../../../docs/legal-calendar.md), and [docs/spatial.md](../../../../docs/spatial.md).
 
 ## Rules
 

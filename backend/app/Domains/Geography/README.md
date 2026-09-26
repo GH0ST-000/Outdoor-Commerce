@@ -1,31 +1,30 @@
 # Geography module
 
-## Responsibility
+Day 27 owns versioned spatial sources, datasets, zones, canonical MULTIPOLYGON geometry (SRID 4326), GeoJSON import, and spatial queries.
 
-Zones, polygons, and spatial queries.
+Legal interpretation of hunting or fishing permission stays in Legal (`SpatialLegalEvaluator`). The public interactive map is Day 28.
 
-## Data owned
+See [ADR 0021](../../../../docs/adr/0021-mysql-spatial-zones.md) and [docs/spatial.md](../../../../docs/spatial.md).
 
-Geographic zones and spatial indexes.
+## Rules
+
+- MySQL is authoritative. Redis is a cache only.
+- Canonical geometry is MULTIPOLYGON SRID 4326, longitude then latitude.
+- Published geometry versions are immutable.
+- Display geometry must never replace canonical geometry for evaluation (simplification is deferred).
+- Files live on the private `spatial_private` disk.
+- Missing spatial evidence is not permission.
 
 ## Public contracts
 
-Spatial lookup contracts for Hunting/Shipping.
+Enums, Models, Queries, DTOs.
 
-Classes under `Contracts/`, and any Action/Query/DTO explicitly listed here as public, are the only approved entry points for other modules.
-
-## Events this module may publish
-
-ZoneUpdated (example for later).
+`FindZonesContainingPointQuery` is the approved lookup entry point for Legal.
 
 ## May depend on
 
-Shared.
+Shared; Legal Models/Enums (source and rule foreign keys).
 
 ## Explicitly outside this module
 
-Legal interpretation of hunting permission; recommendation ranking.
-
-## Structure
-
-Follow the standard module layout documented in `docs/architecture.md` when implementing features. Day 2 ships boundaries only—no business behavior yet.
+Legal conclusions; product ranking; the public interactive map.

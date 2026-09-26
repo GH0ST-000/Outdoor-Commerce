@@ -21,7 +21,7 @@ final class SeasonPresenter
     public function speciesPublic(Species $species, string $locale): array
     {
         $species->loadMissing('translations');
-        $translation = $species->translation($locale);
+        $translation = $species->translation($locale) ?? $species->translation('ka');
 
         return [
             'id' => $species->public_id,

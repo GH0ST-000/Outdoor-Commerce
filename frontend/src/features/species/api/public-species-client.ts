@@ -69,8 +69,9 @@ export async function getPublicSpeciesList(
 ): Promise<SpeciesListResponse> {
   const qs = speciesQueryToSearchParams(query);
   const separator = qs ? "&" : "?";
+  const perPage = query.per_page ?? 10;
   const response = await speciesFetch(
-    `/v1/species${qs}${separator}locale=${locale}&per_page=10`,
+    `/v1/species${qs}${separator}locale=${locale}&per_page=${perPage}`,
     locale,
     { next: { revalidate: 60, tags: ["public-species"] } },
   );

@@ -149,4 +149,5 @@ export type SpeciesQuery = {
   conservation_status?: string;
   sort: string;
   page: number;
+  per_page?: number;
 };

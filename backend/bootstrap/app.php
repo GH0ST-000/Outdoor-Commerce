@@ -9,6 +9,7 @@ use App\Domains\Catalog\PublicApi\Services\PublicCatalogContextFactory;
 use App\Domains\Catalog\Search\Exceptions\SearchUnavailableException;
 use App\Domains\Checkout\Exceptions\CheckoutException;
 use App\Domains\Checkout\Exceptions\CheckoutIdempotencyConflictException;
+use App\Domains\Geography\Exceptions\SpatialException;
 use App\Domains\Hunting\Exceptions\SpeciesException;
 use App\Domains\Identity\Exceptions\AuthenticationFailedException;
 use App\Domains\Identity\Exceptions\LastActiveAdminException;
@@ -19,6 +20,7 @@ use App\Domains\Orders\Exceptions\OrderIdempotencyConflictException;
 use App\Domains\Payments\Exceptions\PaymentException;
 use App\Domains\Payments\Exceptions\PaymentIdempotencyConflictException;
 use App\Domains\Pricing\Exceptions\PricingStateConflictException;
+use App\Domains\Recommendations\Exceptions\RecommendationException;
 use App\Domains\Shared\Exceptions\DomainException;
 use App\Domains\Shared\Exceptions\ProvidesErrorDetails;
 use App\Domains\Shared\Support\CorrelationId;
@@ -223,7 +225,31 @@ return Application::configure(basePath: dirname(__DIR__))
             }
         });
 
+        $exceptions->render(function (RecommendationException $e, Request $request) {
+            if ($request->is('api/*') || $request->expectsJson()) {
+                return ApiErrorResponse::make(
+                    $request,
+                    $e->errorCode(),
+                    $e->getMessage(),
+                    $e->httpStatus(),
+                    $e->errorDetails() !== [] ? $e->errorDetails() : null,
+                );
+            }
+        });
+
         $exceptions->render(function (LegalException $e, Request $request) {
+            if ($request->is('api/*') || $request->expectsJson()) {
+                return ApiErrorResponse::make(
+                    $request,
+                    $e->errorCode(),
+                    $e->getMessage(),
+                    $e->httpStatus(),
+                    $e->errorDetails() !== [] ? $e->errorDetails() : null,
+                );
+            }
+        });
+
+        $exceptions->render(function (SpatialException $e, Request $request) {
             if ($request->is('api/*') || $request->expectsJson()) {
                 return ApiErrorResponse::make(
                     $request,

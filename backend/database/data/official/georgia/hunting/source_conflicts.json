@@ -1,0 +1,25 @@
+{
+  "kind": "source_conflicts",
+  "review_status": "conflict_open",
+  "reviewer": null,
+  "records": [
+    {
+      "key": "august-opening-saturday",
+      "first_slug": "ge-o95-art-3-2-opening-window",
+      "second_slug": "ge-mepa-26537-2026-2027-window",
+      "conflict_type": "temporal_overlap",
+      "severity": "high",
+      "status": "open",
+      "evidence": "Order No. 95 consolidated publication 07/08/2024, article 3 paragraph 2, says აგვისტოს მესამე შაბათიდან. The same ordinal is repeated in Annex 1 for Gallinago gallinago, Coturnix coturnix, Columba palumbus, Columba livia, Columba oenas, and Streptopelia turtur. MEPA news 26537 dated 24/07/2026 says აგვისტოს მეოთხე შაბათს and gives 22 August 2026 through 1 March 2027. 22 August 2026 is the fourth Saturday of that month. Neither formulation is published."
+    },
+    {
+      "key": "national-park-buffer-distance",
+      "first_slug": "ge-o95-art-3-7-protected-and-city-locations",
+      "second_slug": "ge-mepa-26537-location-statement",
+      "conflict_type": "citation_conflict",
+      "severity": "high",
+      "status": "open",
+      "evidence": "Order No. 95 article 3 paragraph 7 prohibits hunting in state reserves and national parks and in their surrounding 500-meter zone. MEPA news 26537 says 500 meters around state reserves and 250 meters around national parks. No buffer polygon is generated."
+    }
+  ]
+}

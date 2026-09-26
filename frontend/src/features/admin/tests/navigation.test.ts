@@ -21,6 +21,8 @@ describe("admin navigation", () => {
       "promotions",
       "species",
       "legal",
+      "spatial",
+      "recommendations",
       "users",
       "roles",
       "audit-logs",

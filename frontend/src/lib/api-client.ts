@@ -233,6 +233,48 @@ export async function apiRequest<T>(
   return (await response.json()) as T;
 }
 
+export type ApiGetResult<T> = {
+  data: T | null;
+  etag: string | null;
+  status: number;
+};
+
+/** GET with ETag support. A 304 leaves data null so callers can keep the previous payload. */
+export async function apiGet<T>(
+  path: string,
+  options: RequestOptions & { ifNoneMatch?: string } = {},
+): Promise<ApiGetResult<T>> {
+  const headers: Record<string, string> = {
+    Accept: "application/json",
+    "X-Requested-With": "XMLHttpRequest",
+    ...(options.headers ?? {}),
+  };
+  if (options.ifNoneMatch) {
+    headers["If-None-Match"] = options.ifNoneMatch;
+  }
+
+  const response = await fetch(`${getApiBaseUrl()}${path}`, {
+    method: "GET",
+    credentials: "include",
+    headers,
+    signal: options.signal,
+  });
+
+  if (response.status === 304) {
+    return { data: null, etag: response.headers.get("ETag"), status: 304 };
+  }
+
+  if (!response.ok) {
+    throw await parseError(response);
+  }
+
+  return {
+    data: (await response.json()) as T,
+    etag: response.headers.get("ETag"),
+    status: response.status,
+  };
+}
+
 /**
  * Multipart mutation (upload). Does not set Content-Type so the browser adds the
  * boundary. JSON Accept header is still sent for Laravel error envelopes.
