@@ -38,27 +38,50 @@ const places = [
 describe("season scope", () => {
   it("paints only the four municipalities named for the September window", () => {
     const scope = seasonScopeCollection(places, "conditional", [
-      { condition_type: "region", operator: "equals", string_value: "ახალქალაქი" },
-      { condition_type: "region", operator: "equals", string_value: "ნინოწმინდა" },
+      {
+        condition_type: "region",
+        operator: "equals",
+        string_value: "ახალქალაქი",
+      },
+      {
+        condition_type: "region",
+        operator: "equals",
+        string_value: "ნინოწმინდა",
+      },
       { condition_type: "region", operator: "equals", string_value: "წალკა" },
       { condition_type: "region", operator: "equals", string_value: "დმანისი" },
     ]);
-    expect(scope.features.map((feature) => feature.properties?.name_en)).toEqual([
-      "Akhalkalaki",
-      "Ninotsminda",
-      "Tsalka",
-      "Dmanisi",
-    ]);
+    expect(
+      scope.features.map((feature) => feature.properties?.name_en),
+    ).toEqual(["Akhalkalaki", "Ninotsminda", "Tsalka", "Dmanisi"]);
   });
 
   it("paints the rest of the municipalities when those four are excluded", () => {
     const scope = seasonScopeCollection(places, "conditional", [
-      { condition_type: "region", operator: "not_equals", string_value: "ახალქალაქი" },
-      { condition_type: "region", operator: "not_equals", string_value: "ნინოწმინდა" },
-      { condition_type: "region", operator: "not_equals", string_value: "წალკა" },
-      { condition_type: "region", operator: "not_equals", string_value: "დმანისი" },
+      {
+        condition_type: "region",
+        operator: "not_equals",
+        string_value: "ახალქალაქი",
+      },
+      {
+        condition_type: "region",
+        operator: "not_equals",
+        string_value: "ნინოწმინდა",
+      },
+      {
+        condition_type: "region",
+        operator: "not_equals",
+        string_value: "წალკა",
+      },
+      {
+        condition_type: "region",
+        operator: "not_equals",
+        string_value: "დმანისი",
+      },
     ]);
-    expect(scope.features.map((feature) => feature.properties?.name_en)).toEqual(["Gori"]);
+    expect(
+      scope.features.map((feature) => feature.properties?.name_en),
+    ).toEqual(["Gori"]);
   });
 
   it("uses the municipality outline as the camera bounds", () => {

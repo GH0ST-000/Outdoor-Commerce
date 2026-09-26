@@ -8,7 +8,10 @@ import {
   paintForLegalState,
   protectedCategoryPaint,
 } from "@/features/map/lib/cartography";
-import { styleUrlWithToken, type MapConfig } from "@/features/map/lib/map-config";
+import {
+  styleUrlWithToken,
+  type MapConfig,
+} from "@/features/map/lib/map-config";
 import { featureCollectionBbox } from "@/features/map/lib/season-scope";
 import "maplibre-gl/dist/maplibre-gl.css";
 
@@ -24,18 +27,35 @@ type Props = {
   selectedId: string | null;
   hoverId: string | null;
   point: { longitude: number; latitude: number } | null;
-  user: { longitude: number; latitude: number; radius: GeoJSON.Polygon | null } | null;
+  user: {
+    longitude: number;
+    latitude: number;
+    radius: GeoJSON.Polygon | null;
+  } | null;
   boundary: GeoJSON.Polygon | null;
   hiddenLayers: string[];
   seasonScope?: GeoJSON.FeatureCollection;
   onReady?: (map: MapLibreMap) => void;
-  onMoveEnd?: (view: { west: number; south: number; east: number; north: number; zoom: number; lng: number; lat: number }) => void;
+  onMoveEnd?: (view: {
+    west: number;
+    south: number;
+    east: number;
+    north: number;
+    zoom: number;
+    lng: number;
+    lat: number;
+  }) => void;
   onClick?: (event: MapFeatureClick) => void;
-  onHover?: (hover: { id: string; name: string; x: number; y: number } | null) => void;
+  onHover?: (
+    hover: { id: string; name: string; x: number; y: number } | null,
+  ) => void;
   onError?: () => void;
 };
 
-const EMPTY: GeoJSON.FeatureCollection = { type: "FeatureCollection", features: [] };
+const EMPTY: GeoJSON.FeatureCollection = {
+  type: "FeatureCollection",
+  features: [],
+};
 
 function pointCollection(
   point: { longitude: number; latitude: number } | null,
@@ -47,13 +67,18 @@ function pointCollection(
       {
         type: "Feature",
         properties: {},
-        geometry: { type: "Point", coordinates: [point.longitude, point.latitude] },
+        geometry: {
+          type: "Point",
+          coordinates: [point.longitude, point.latitude],
+        },
       },
     ],
   };
 }
 
-function polygonCollection(polygon: GeoJSON.Polygon | null): GeoJSON.FeatureCollection {
+function polygonCollection(
+  polygon: GeoJSON.Polygon | null,
+): GeoJSON.FeatureCollection {
   if (!polygon) return EMPTY;
   return {
     type: "FeatureCollection",
@@ -76,93 +101,104 @@ export function MapCanvas(props: Props) {
     let disposed = false;
     let map: MapLibreMap | null = null;
 
-    void import("maplibre-gl").then((maplibre) => {
-      if (disposed || !containerRef.current) return;
-      const reduced =
-        typeof window.matchMedia === "function" &&
-        window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-      map = new maplibre.Map({
-        container: containerRef.current,
-        style: styleUrlWithToken(props.config.styleUrl!, props.config.token),
-        center: props.config.center,
-        zoom: props.config.zoom,
-        minZoom: props.config.minZoom,
-        maxZoom: props.config.maxZoom,
-        maxBounds: props.config.bounds,
-        attributionControl: { compact: true },
-        fadeDuration: reduced ? 0 : 300,
-        refreshExpiredTiles: false,
-      });
-      map.addControl(new maplibre.NavigationControl({ showCompass: false }), "bottom-right");
-      mapRef.current = map;
-      const ensure = () => {
-        if (!map || !map.isStyleLoaded()) return;
-        installLayers(map);
-        sync(map, propsRef.current, fittedScope);
-      };
-      const ready = () => {
-        ensure();
-        try {
-          propsRef.current.onReady?.(map!);
-        } catch {
-          // The camera is not readable until the style has settled.
-        }
-      };
-      map.on("load", ready);
-      map.on("style.load", ready);
-      map.on("error", (event) => {
-        const message = event.error instanceof Error ? event.error.message : "";
-        if (event.sourceId || event.tile || /tile|ajax|failed to fetch|network/i.test(message)) return;
-        if (/does not exist in the map's style/i.test(message)) return;
-        propsRef.current.onError?.();
-      });
-      map.on("moveend", () => {
-        if (!map) return;
-        const bounds = map.getBounds();
-        const center = map.getCenter();
-        propsRef.current.onMoveEnd?.({
-          west: bounds.getWest(),
-          south: bounds.getSouth(),
-          east: bounds.getEast(),
-          north: bounds.getNorth(),
-          zoom: map.getZoom(),
-          lng: center.lng,
-          lat: center.lat,
+    void import("maplibre-gl")
+      .then((maplibre) => {
+        if (disposed || !containerRef.current) return;
+        const reduced =
+          typeof window.matchMedia === "function" &&
+          window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        map = new maplibre.Map({
+          container: containerRef.current,
+          style: styleUrlWithToken(props.config.styleUrl!, props.config.token),
+          center: props.config.center,
+          zoom: props.config.zoom,
+          minZoom: props.config.minZoom,
+          maxZoom: props.config.maxZoom,
+          maxBounds: props.config.bounds,
+          attributionControl: { compact: true },
+          fadeDuration: reduced ? 0 : 300,
+          refreshExpiredTiles: false,
         });
-      });
-      map.on("mousemove", (event) => {
-        if (!map) return;
-        const hits = renderedFills(map, event.point);
-        const id = hits[0]?.properties?.id;
-        const name = hits[0]?.properties?.name;
-        propsRef.current.onHover?.(
-          typeof id === "string"
-            ? {
-                id,
-                name: typeof name === "string" ? name : id,
-                x: event.point.x,
-                y: event.point.y,
-              }
-            : null,
+        map.addControl(
+          new maplibre.NavigationControl({ showCompass: false }),
+          "bottom-right",
         );
-      });
-      map.on("click", (event) => {
-        if (!map) return;
-        const hits = renderedFills(map, event.point);
-        const ids = [
-          ...new Set(
-            hits
-              .map((feature) => feature.properties?.id)
-              .filter((id): id is string => typeof id === "string"),
-          ),
-        ];
-        propsRef.current.onClick?.({
-          ids,
-          longitude: event.lngLat.lng,
-          latitude: event.lngLat.lat,
+        mapRef.current = map;
+        const ensure = () => {
+          if (!map || !map.isStyleLoaded()) return;
+          installLayers(map);
+          sync(map, propsRef.current, fittedScope);
+        };
+        const ready = () => {
+          ensure();
+          try {
+            propsRef.current.onReady?.(map!);
+          } catch {
+            // The camera is not readable until the style has settled.
+          }
+        };
+        map.on("load", ready);
+        map.on("style.load", ready);
+        map.on("error", (event) => {
+          const message =
+            event.error instanceof Error ? event.error.message : "";
+          if (
+            event.sourceId ||
+            event.tile ||
+            /tile|ajax|failed to fetch|network/i.test(message)
+          )
+            return;
+          if (/does not exist in the map's style/i.test(message)) return;
+          propsRef.current.onError?.();
         });
-      });
-    }).catch(() => propsRef.current.onError?.());
+        map.on("moveend", () => {
+          if (!map) return;
+          const bounds = map.getBounds();
+          const center = map.getCenter();
+          propsRef.current.onMoveEnd?.({
+            west: bounds.getWest(),
+            south: bounds.getSouth(),
+            east: bounds.getEast(),
+            north: bounds.getNorth(),
+            zoom: map.getZoom(),
+            lng: center.lng,
+            lat: center.lat,
+          });
+        });
+        map.on("mousemove", (event) => {
+          if (!map) return;
+          const hits = renderedFills(map, event.point);
+          const id = hits[0]?.properties?.id;
+          const name = hits[0]?.properties?.name;
+          propsRef.current.onHover?.(
+            typeof id === "string"
+              ? {
+                  id,
+                  name: typeof name === "string" ? name : id,
+                  x: event.point.x,
+                  y: event.point.y,
+                }
+              : null,
+          );
+        });
+        map.on("click", (event) => {
+          if (!map) return;
+          const hits = renderedFills(map, event.point);
+          const ids = [
+            ...new Set(
+              hits
+                .map((feature) => feature.properties?.id)
+                .filter((id): id is string => typeof id === "string"),
+            ),
+          ];
+          propsRef.current.onClick?.({
+            ids,
+            longitude: event.lngLat.lng,
+            latitude: event.lngLat.lat,
+          });
+        });
+      })
+      .catch(() => propsRef.current.onError?.());
 
     const observer = new ResizeObserver(() => map?.resize());
     observer.observe(node);
@@ -181,7 +217,16 @@ export function MapCanvas(props: Props) {
     const map = mapRef.current;
     if (!map || !map.isStyleLoaded()) return;
     sync(map, props, fittedScope);
-  }, [props.seasonScope, props.data, props.point, props.user, props.boundary, props.hoverId, props.selectedId, props.hiddenLayers]);
+  }, [
+    props.seasonScope,
+    props.data,
+    props.point,
+    props.user,
+    props.boundary,
+    props.hoverId,
+    props.selectedId,
+    props.hiddenLayers,
+  ]);
 
   return (
     <div
@@ -205,7 +250,11 @@ function renderedFills(map: MapLibreMap, point: { x: number; y: number }) {
   }
 }
 
-function setSource(map: MapLibreMap, id: string, data: GeoJSON.FeatureCollection) {
+function setSource(
+  map: MapLibreMap,
+  id: string,
+  data: GeoJSON.FeatureCollection,
+) {
   const source = map.getSource(id) as GeoJSONSource | undefined;
   if (source) {
     source.setData(data);
@@ -216,7 +265,9 @@ function setSource(map: MapLibreMap, id: string, data: GeoJSON.FeatureCollection
 
 function installLayers(map: MapLibreMap) {
   if (map.getSource(LEGAL_SOURCE_ID)) return;
-  const before = map.getStyle().layers?.find((layer) => layer.type === "symbol")?.id;
+  const before = map
+    .getStyle()
+    .layers?.find((layer) => layer.type === "symbol")?.id;
   setSource(map, LEGAL_SOURCE_ID, EMPTY);
   setSource(map, "season-scope", EMPTY);
   setSource(map, "selected-point", EMPTY);
@@ -261,7 +312,12 @@ function installLayers(map: MapLibreMap) {
           filter: spec.filter as never,
           paint: {
             "fill-color": paintExpression("fill") as never,
-            "fill-opacity": spec.layer === "admin" ? 0.08 : spec.layer === "protected" ? 0.55 : 0.35,
+            "fill-opacity":
+              spec.layer === "admin"
+                ? 0.08
+                : spec.layer === "protected"
+                  ? 0.55
+                  : 0.35,
           },
         },
         before,
@@ -278,7 +334,12 @@ function installLayers(map: MapLibreMap) {
               spec.layer === "admin"
                 ? mapPalette.admin.line
                 : (paintExpression("line") as never),
-            "line-width": spec.layer === "admin" ? 1.25 : spec.layer === "protected" ? 2.5 : 1.5,
+            "line-width":
+              spec.layer === "admin"
+                ? 1.25
+                : spec.layer === "protected"
+                  ? 2.5
+                  : 1.5,
             "line-dasharray": spec.layer === "admin" ? [4, 2] : [1, 0],
           },
         },
@@ -326,7 +387,11 @@ function installLayers(map: MapLibreMap) {
     id: "boundary-warning",
     type: "line",
     source: "boundary-warning",
-    paint: { "line-color": mapPalette.conflict.line, "line-width": 2, "line-dasharray": [1, 1] },
+    paint: {
+      "line-color": mapPalette.conflict.line,
+      "line-width": 2,
+      "line-dasharray": [1, 1],
+    },
   });
   map.addLayer({
     id: "user-accuracy",
@@ -358,7 +423,10 @@ function installLayers(map: MapLibreMap) {
   });
 }
 
-function fitSeasonScope(map: MapLibreMap, scope: GeoJSON.FeatureCollection | undefined) {
+function fitSeasonScope(
+  map: MapLibreMap,
+  scope: GeoJSON.FeatureCollection | undefined,
+) {
   if (!scope || scope.features.length === 0) return;
   const bbox = featureCollectionBbox(scope);
   if (!bbox) return;
@@ -383,7 +451,11 @@ function fitSeasonScope(map: MapLibreMap, scope: GeoJSON.FeatureCollection | und
   );
 }
 
-function sync(map: MapLibreMap, props: Props, fittedScope?: { current: string }) {
+function sync(
+  map: MapLibreMap,
+  props: Props,
+  fittedScope?: { current: string },
+) {
   if (!map.getSource(LEGAL_SOURCE_ID)) return;
   setSource(map, LEGAL_SOURCE_ID, props.data);
   setSource(map, "season-scope", props.seasonScope ?? EMPTY);
@@ -406,13 +478,25 @@ function sync(map: MapLibreMap, props: Props, fittedScope?: { current: string })
         : null,
     ),
   );
-  setSource(map, "user-accuracy", polygonCollection(props.user?.radius ?? null));
+  setSource(
+    map,
+    "user-accuracy",
+    polygonCollection(props.user?.radius ?? null),
+  );
   setSource(map, "boundary-warning", polygonCollection(props.boundary));
   if (map.getLayer("zone-line-hover")) {
-    map.setFilter("zone-line-hover", ["==", ["get", "id"], props.hoverId ?? ""]);
+    map.setFilter("zone-line-hover", [
+      "==",
+      ["get", "id"],
+      props.hoverId ?? "",
+    ]);
   }
   if (map.getLayer("zone-line-selected")) {
-    map.setFilter("zone-line-selected", ["==", ["get", "id"], props.selectedId ?? ""]);
+    map.setFilter("zone-line-selected", [
+      "==",
+      ["get", "id"],
+      props.selectedId ?? "",
+    ]);
   }
   for (const spec of categoryLayerSpecs()) {
     if (!map.getLayer(spec.id)) continue;

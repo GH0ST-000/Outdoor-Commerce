@@ -6,8 +6,17 @@ import { orderedLayerIds } from "@/features/map/lib/layers";
 const created: MockMap[] = [];
 
 class MockMap {
-  handlers: Record<string, (event?: { point: { x: number; y: number }; lngLat: { lng: number; lat: number } }) => void> = {};
-  sources: Record<string, { data?: unknown; setData: (data: unknown) => void }> = {};
+  handlers: Record<
+    string,
+    (event?: {
+      point: { x: number; y: number };
+      lngLat: { lng: number; lat: number };
+    }) => void
+  > = {};
+  sources: Record<
+    string,
+    { data?: unknown; setData: (data: unknown) => void }
+  > = {};
   layers: string[] = [];
   removed = false;
   constructor() {
@@ -19,7 +28,12 @@ class MockMap {
   }
   addControl() {}
   addSource(id: string, spec: { data?: unknown }) {
-    this.sources[id] = { data: spec.data, setData: (data) => { this.sources[id].data = data; } };
+    this.sources[id] = {
+      data: spec.data,
+      setData: (data) => {
+        this.sources[id].data = data;
+      },
+    };
   }
   getSource(id: string) {
     return this.sources[id];
@@ -39,7 +53,12 @@ class MockMap {
     return [{ properties: { id: "zone-a" } }, { properties: { id: "zone-b" } }];
   }
   getBounds() {
-    return { getWest: () => 43, getSouth: () => 41, getEast: () => 45, getNorth: () => 43 };
+    return {
+      getWest: () => 43,
+      getSouth: () => 41,
+      getEast: () => 45,
+      getNorth: () => 43,
+    };
   }
   getCenter() {
     return { lng: 44, lat: 42 };
@@ -87,10 +106,24 @@ describe("map canvas", () => {
     );
     await vi.waitFor(() => expect(created).toHaveLength(1));
     const map = created[0];
-    expect(map.layers.slice(0, 2)).toEqual(["zone-fill-admin", "zone-line-admin"]);
-    expect(map.layers).toEqual(expect.arrayContaining(orderedLayerIds().filter((id) => id.startsWith("zone-"))));
-    map.handlers.click?.({ point: { x: 1, y: 1 }, lngLat: { lng: 44.2, lat: 41.7 } });
-    expect(onClick).toHaveBeenCalledWith({ ids: ["zone-a", "zone-b"], longitude: 44.2, latitude: 41.7 });
+    expect(map.layers.slice(0, 2)).toEqual([
+      "zone-fill-admin",
+      "zone-line-admin",
+    ]);
+    expect(map.layers).toEqual(
+      expect.arrayContaining(
+        orderedLayerIds().filter((id) => id.startsWith("zone-")),
+      ),
+    );
+    map.handlers.click?.({
+      point: { x: 1, y: 1 },
+      lngLat: { lng: 44.2, lat: 41.7 },
+    });
+    expect(onClick).toHaveBeenCalledWith({
+      ids: ["zone-a", "zone-b"],
+      longitude: 44.2,
+      latitude: 41.7,
+    });
     view.unmount();
     expect(map.removed).toBe(true);
     expect(created).toHaveLength(1);

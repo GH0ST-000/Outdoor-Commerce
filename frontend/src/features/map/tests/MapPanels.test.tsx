@@ -9,10 +9,18 @@ import {
   ResultsList,
   ShareDialog,
 } from "@/features/map/components/MapPanels";
-import type { SpatialEvaluation, ViewportFeature } from "@/features/spatial/types/spatial-types";
+import type {
+  SpatialEvaluation,
+  ViewportFeature,
+} from "@/features/spatial/types/spatial-types";
 
 const evaluation: SpatialEvaluation = {
-  coordinate: { longitude: 44.5, latitude: 41.5, srid: 4326, coordinate_order: "longitude,latitude" },
+  coordinate: {
+    longitude: 44.5,
+    latitude: 41.5,
+    srid: 4326,
+    coordinate_order: "longitude,latitude",
+  },
   outcome: "unknown",
   boundary_warning: true,
   on_boundary: false,
@@ -21,7 +29,13 @@ const evaluation: SpatialEvaluation = {
   applied_rules: [],
   conditions: [{ type: "permit", value: "required" }],
   limits: [],
-  citations: [{ source_name: "Official gazette", reference_code: "Art. 1", excerpt: "Quoted text" }],
+  citations: [
+    {
+      source_name: "Official gazette",
+      reference_code: "Art. 1",
+      excerpt: "Quoted text",
+    },
+  ],
   disclaimer: "Not legal advice",
 };
 
@@ -56,9 +70,7 @@ describe("map panels", () => {
                 },
                 overall_state: "conditional",
                 conditional_windows: [{ from: "2026-09-26", to: "2026-09-26" }],
-                conditions: [
-                  { operator: "equals", string_value: "დმანისი" },
-                ],
+                conditions: [{ operator: "equals", string_value: "დმანისი" }],
                 limits: [{ amount: "2.0000", unit: "ცალი" }],
               },
             ],
@@ -72,18 +84,30 @@ describe("map panels", () => {
     expect(screen.getByText(/კუდსადგისა იხვი/)).toBeInTheDocument();
     expect(screen.getByText(/მხოლოდ: დმანისი/)).toBeInTheDocument();
     expect(screen.getByText(/დღიური ლიმიტი: 2 ცალი/)).toBeInTheDocument();
-    expect(screen.getByText(/არჩეულ წერტილზე ნებართვა არ არის/)).toBeInTheDocument();
+    expect(
+      screen.getByText(/არჩეულ წერტილზე ნებართვა არ არის/),
+    ).toBeInTheDocument();
   });
 
   it("toggles layers and switches list selection", async () => {
     const user = userEvent.setup();
     const onChange = vi.fn();
     const copy = getMapCopy("en");
-    render(<LayerControl copy={copy} layers={["protected"]} counts={{ protected: 2 }} onChange={onChange} />);
+    render(
+      <LayerControl
+        copy={copy}
+        layers={["protected"]}
+        counts={{ protected: 2 }}
+        onChange={onChange}
+      />,
+    );
     await user.click(screen.getByRole("checkbox", { name: "Protected areas" }));
     expect(onChange).toHaveBeenCalledWith([]);
     render(<MapLegend copy={copy} />);
-    expect(screen.getByRole("region", { name: "Legend" }) || screen.getByRole("heading", { name: "Legend" })).toBeTruthy();
+    expect(
+      screen.getByRole("region", { name: "Legend" }) ||
+        screen.getByRole("heading", { name: "Legend" }),
+    ).toBeTruthy();
   });
 
   it("selects a zone from the list and confirms a point share", async () => {
@@ -126,7 +150,9 @@ describe("map panels", () => {
         onConfirm={onConfirm}
       />,
     );
-    expect(screen.getByRole("dialog")).toHaveTextContent("selected coordinates");
+    expect(screen.getByRole("dialog")).toHaveTextContent(
+      "selected coordinates",
+    );
     await user.click(screen.getByRole("button", { name: "Copy point link" }));
     expect(onConfirm).toHaveBeenCalled();
   });

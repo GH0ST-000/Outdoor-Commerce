@@ -2,7 +2,10 @@
 
 import { useId, useState } from "react";
 import type { MapCopy } from "@/features/map/copy/map-copy";
-import { formatAttribution, isSafeHttpUrl } from "@/features/map/lib/attribution";
+import {
+  formatAttribution,
+  isSafeHttpUrl,
+} from "@/features/map/lib/attribution";
 import {
   LAYER_ORDER,
   PROTECTED_CATEGORY_ORDER,
@@ -10,11 +13,21 @@ import {
   protectedCategoryPaint,
   type LayerId,
 } from "@/features/map/lib/cartography";
-import type { ViewportFeature, SpatialEvaluation, ZoneDetails } from "@/features/spatial/types/spatial-types";
+import type {
+  ViewportFeature,
+  SpatialEvaluation,
+  ZoneDetails,
+} from "@/features/spatial/types/spatial-types";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
-export function OutcomeMark({ outcome, label }: { outcome: string; label: string }) {
+export function OutcomeMark({
+  outcome,
+  label,
+}: {
+  outcome: string;
+  label: string;
+}) {
   const paint = paintForLegalState(outcome);
   return (
     <span className="inline-flex items-center gap-2 text-sm font-semibold">
@@ -50,7 +63,10 @@ export function LayerControl({
       {LAYER_ORDER.map((layer) => {
         const checked = layers.includes(layer);
         return (
-          <label key={layer} className="flex min-h-11 items-center justify-between gap-3 text-sm">
+          <label
+            key={layer}
+            className="flex min-h-11 items-center justify-between gap-3 text-sm"
+          >
             <span>
               <span className="font-medium">{copy.layerNames[layer]}</span>
               <span className="mt-0.5 block text-xs text-muted-foreground">
@@ -65,7 +81,9 @@ export function LayerControl({
               aria-label={copy.layerNames[layer]}
               onChange={() => {
                 onChange(
-                  checked ? layers.filter((item) => item !== layer) : [...layers, layer],
+                  checked
+                    ? layers.filter((item) => item !== layer)
+                    : [...layers, layer],
                 );
               }}
             />
@@ -73,7 +91,12 @@ export function LayerControl({
         );
       })}
       <div className="flex gap-2">
-        <Button type="button" size="sm" variant="outline" onClick={() => onChange([...LAYER_ORDER])}>
+        <Button
+          type="button"
+          size="sm"
+          variant="outline"
+          onClick={() => onChange([...LAYER_ORDER])}
+        >
           {copy.showAll}
         </Button>
         <Button
@@ -89,19 +112,28 @@ export function LayerControl({
   );
 }
 
-export function MapLegend({ copy, collapsed = false }: { copy: MapCopy; collapsed?: boolean }) {
+export function MapLegend({
+  copy,
+  collapsed = false,
+}: {
+  copy: MapCopy;
+  collapsed?: boolean;
+}) {
   const items = ["prohibited", "conditional", "unknown", "conflict", "allowed"];
   if (collapsed) {
     return (
       <p className="text-xs text-muted-foreground">
-        {copy.legendOutcomes}: {items.map((item) => copy.outcomes[item]).join(" · ")}
+        {copy.legendOutcomes}:{" "}
+        {items.map((item) => copy.outcomes[item]).join(" · ")}
       </p>
     );
   }
   return (
     <section aria-label={copy.legend} className="space-y-2 text-sm">
       <h2 className="text-sm font-semibold">{copy.legend}</h2>
-      <h3 className="text-xs font-semibold tracking-wide text-muted-foreground">{copy.legendCategories}</h3>
+      <h3 className="text-xs font-semibold tracking-wide text-muted-foreground">
+        {copy.legendCategories}
+      </h3>
       <ul className="space-y-1">
         {PROTECTED_CATEGORY_ORDER.map((zoneType) => (
           <li key={zoneType} className="flex items-center gap-2">
@@ -117,7 +149,9 @@ export function MapLegend({ copy, collapsed = false }: { copy: MapCopy; collapse
           </li>
         ))}
       </ul>
-      <h3 className="text-xs font-semibold tracking-wide text-muted-foreground">{copy.legendOutcomes}</h3>
+      <h3 className="text-xs font-semibold tracking-wide text-muted-foreground">
+        {copy.legendOutcomes}
+      </h3>
       <ul className="space-y-1">
         {items.map((item) => (
           <li key={item}>
@@ -159,7 +193,10 @@ export function LocationResult({
   };
   return (
     <article aria-live="polite" className="space-y-3">
-      <OutcomeMark outcome={outcome} label={copy.outcomes[outcome] ?? outcome} />
+      <OutcomeMark
+        outcome={outcome}
+        label={copy.outcomes[outcome] ?? outcome}
+      />
       <p className="text-sm">{copy.explain[outcome] ?? copy.notAllowed}</p>
       {evaluation.boundary_warning ? (
         <p className="text-sm font-medium">{copy.boundary}</p>
@@ -189,20 +226,29 @@ export function LocationResult({
                 .filter((condition) => condition.operator === "not_equals")
                 .map((condition) => condition.string_value)
                 .filter((value): value is string => Boolean(value));
-              const window = row.season_windows?.[0] ?? row.conditional_windows?.[0] ?? row.available_windows?.[0];
+              const window =
+                row.season_windows?.[0] ??
+                row.conditional_windows?.[0] ??
+                row.available_windows?.[0];
               const amount = row.limits?.[0]?.amount;
               const limit =
-                amount === null || amount === undefined || Number.isNaN(Number(amount))
+                amount === null ||
+                amount === undefined ||
+                Number.isNaN(Number(amount))
                   ? null
                   : String(Number(amount));
               return (
                 <li key={row.species?.slug ?? name}>
                   <p className="font-medium">
-                    {name} · {copy.outcomes[row.overall_state ?? ""] ?? row.overall_state}
+                    {name} ·{" "}
+                    {copy.outcomes[row.overall_state ?? ""] ??
+                      row.overall_state}
                   </p>
                   {row.species?.scientific_name &&
                   row.species.scientific_name !== name ? (
-                    <p className="text-muted-foreground">{row.species.scientific_name}</p>
+                    <p className="text-muted-foreground">
+                      {row.species.scientific_name}
+                    </p>
                   ) : null}
                   {window?.from && window.to ? (
                     <p>
@@ -235,7 +281,9 @@ export function LocationResult({
       </section>
       <h3 className="text-sm font-semibold">{copy.zonesAtPoint}</h3>
       <ul className="space-y-1 text-sm">
-        {evaluation.matching_zones.length === 0 ? <li>{copy.noZoneMatch}</li> : null}
+        {evaluation.matching_zones.length === 0 ? (
+          <li>{copy.noZoneMatch}</li>
+        ) : null}
         {evaluation.matching_zones.map((match) => (
           <li key={match.zone.id}>
             {match.zone.name} · {match.classification.relation}
@@ -244,7 +292,13 @@ export function LocationResult({
         ))}
       </ul>
       <ConditionList title={copy.conditions} rows={evaluation.conditions} />
-      <ConditionList title={copy.limits} rows={evaluation.limits.map((row) => ({ type: row.type, value: row.amount == null ? null : String(row.amount) }))} />
+      <ConditionList
+        title={copy.limits}
+        rows={evaluation.limits.map((row) => ({
+          type: row.type,
+          value: row.amount == null ? null : String(row.amount),
+        }))}
+      />
       <ConditionList title={copy.permits} rows={grouped.permit} />
       <ConditionList title={copy.licenses} rows={grouped.license} />
       <ConditionList title={copy.methods} rows={grouped.method} />
@@ -255,7 +309,11 @@ export function LocationResult({
           <li key={`${citation.reference_code ?? "cite"}-${index}`}>
             <span className="font-medium">{citation.source_name}</span>
             {citation.reference_code ? ` · ${citation.reference_code}` : ""}
-            {citation.excerpt ? <span className="mt-1 block text-muted-foreground">{citation.excerpt}</span> : null}
+            {citation.excerpt ? (
+              <span className="mt-1 block text-muted-foreground">
+                {citation.excerpt}
+              </span>
+            ) : null}
           </li>
         ))}
       </ul>
@@ -264,8 +322,15 @@ export function LocationResult({
           {copy.verified}: {evaluation.last_verified_at}
         </p>
       ) : null}
-      <p className="text-xs text-muted-foreground">{evaluation.disclaimer || copy.disclaimer}</p>
-      <button type="button" className="text-sm underline" aria-expanded={trace} onClick={() => setTrace((open) => !open)}>
+      <p className="text-xs text-muted-foreground">
+        {evaluation.disclaimer || copy.disclaimer}
+      </p>
+      <button
+        type="button"
+        className="text-sm underline"
+        aria-expanded={trace}
+        onClick={() => setTrace((open) => !open)}
+      >
         {copy.why}
       </button>
       {trace ? (
@@ -322,7 +387,9 @@ export function ZoneDetail({
 }) {
   if (!zone) return <p>{copy.removedZone}</p>;
   const source = formatAttribution(zone.attribution);
-  const href = isSafeHttpUrl(zone.attribution.official_url) ? zone.attribution.official_url : null;
+  const href = isSafeHttpUrl(zone.attribution.official_url)
+    ? zone.attribution.official_url
+    : null;
   return (
     <article className="space-y-2 text-sm" aria-labelledby="zone-detail-title">
       <h2 id="zone-detail-title" className="text-lg font-semibold">
@@ -331,7 +398,9 @@ export function ZoneDetail({
       <p>{zone.official_name}</p>
       <p>
         {zone.zone_type}
-        {zone.legal_state ? ` · ${copy.outcomes[zone.legal_state] ?? zone.legal_state}` : ""}
+        {zone.legal_state
+          ? ` · ${copy.outcomes[zone.legal_state] ?? zone.legal_state}`
+          : ""}
       </p>
       {zone.short_description ? <p>{zone.short_description}</p> : null}
       {zone.effective_from ? (
@@ -348,7 +417,9 @@ export function ZoneDetail({
           {copy.verified}: {zone.last_verified_at}
         </p>
       ) : null}
-      <p className="text-xs text-muted-foreground">{zone.disclaimer || copy.disclaimer}</p>
+      <p className="text-xs text-muted-foreground">
+        {zone.disclaimer || copy.disclaimer}
+      </p>
       <div className="flex flex-wrap gap-2">
         <Button type="button" size="sm" variant="outline" onClick={onZoom}>
           {copy.zoomTo}
@@ -357,14 +428,25 @@ export function ZoneDetail({
           {copy.share}
         </Button>
         {href ? (
-          <a href={href} target="_blank" rel="noopener noreferrer" className="inline-flex h-9 items-center rounded-full border px-3 text-xs font-semibold">
+          <a
+            href={href}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex h-9 items-center rounded-full border px-3 text-xs font-semibold"
+          >
             {copy.openSource}
           </a>
         ) : null}
-        <Link href="/species" className="inline-flex h-9 items-center rounded-full border px-3 text-xs font-semibold">
+        <Link
+          href="/species"
+          className="inline-flex h-9 items-center rounded-full border px-3 text-xs font-semibold"
+        >
           {copy.viewSpecies}
         </Link>
-        <Link href="/seasons" className="inline-flex h-9 items-center rounded-full border px-3 text-xs font-semibold">
+        <Link
+          href="/seasons"
+          className="inline-flex h-9 items-center rounded-full border px-3 text-xs font-semibold"
+        >
           {copy.viewSeason}
         </Link>
       </div>
@@ -396,7 +478,9 @@ export function ResultsList({
   return (
     <section aria-label={copy.results}>
       <h2 className="text-sm font-semibold">{copy.results}</h2>
-      {features.length === 0 ? <p className="text-sm">{copy.emptyList}</p> : null}
+      {features.length === 0 ? (
+        <p className="text-sm">{copy.emptyList}</p>
+      ) : null}
       <ul className="mt-2 space-y-2">
         {visible.map((feature) => {
           const id = String(feature.properties.id);
@@ -414,7 +498,9 @@ export function ResultsList({
                   {feature.properties.legal_state
                     ? ` · ${copy.outcomes[feature.properties.legal_state] ?? feature.properties.legal_state}`
                     : ""}
-                  {feature.properties.region_code ? ` · ${feature.properties.region_code}` : ""}
+                  {feature.properties.region_code
+                    ? ` · ${feature.properties.region_code}`
+                    : ""}
                 </span>
               </button>
             </li>
@@ -422,7 +508,13 @@ export function ResultsList({
         })}
       </ul>
       {visible.length < features.length ? (
-        <Button type="button" size="sm" variant="ghost" className="mt-2" onClick={() => setPage((value) => value + 1)}>
+        <Button
+          type="button"
+          size="sm"
+          variant="ghost"
+          className="mt-2"
+          onClick={() => setPage((value) => value + 1)}
+        >
           {copy.results}
         </Button>
       ) : null}
@@ -448,7 +540,12 @@ export function ShareDialog({
   const titleId = useId();
   if (!open) return null;
   return (
-    <div role="dialog" aria-modal="true" aria-labelledby={titleId} className="space-y-2 rounded-[var(--radius-lg)] border border-border bg-card p-3">
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby={titleId}
+      className="space-y-2 rounded-[var(--radius-lg)] border border-border bg-card p-3"
+    >
       <h2 id={titleId} className="text-sm font-semibold">
         {copy.sharePoint}
       </h2>

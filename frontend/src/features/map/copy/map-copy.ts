@@ -163,7 +163,8 @@ export const mapCopy: Record<Locale, MapCopy> = {
     disclaimer:
       "Informational only — not legal advice. Absence of a polygon does not mean an activity is allowed. Official sources prevail.",
     loading: "Loading the map…",
-    mapFailed: "The map could not be started. Use the list to read published zones.",
+    mapFailed:
+      "The map could not be started. Use the list to read published zones.",
     basemapMissing:
       "A production basemap style URL is not configured. Legal overlays stay available in the list.",
     overlayError:
@@ -175,7 +176,8 @@ export const mapCopy: Record<Locale, MapCopy> = {
       "No published zones were returned for this view. That is not a finding of no restrictions.",
     zoomCloser: "Zoom in to load legal overlays for this area.",
     retry: "Retry overlays",
-    stale: "Showing previously loaded geometry. It is not a current legal verification.",
+    stale:
+      "Showing previously loaded geometry. It is not a current legal verification.",
     offline: "Live legal verification is unavailable while offline.",
     activity: "Activity",
     hunting: "Hunting",
@@ -228,11 +230,16 @@ export const mapCopy: Record<Locale, MapCopy> = {
       protected_area: "Protected landscape",
     },
     explain: {
-      allowed: "Published rules support this activity for the selected evidence. Read the citations before acting.",
-      prohibited: "A published prohibition applies. The source is listed below.",
-      conditional: "Published rules allow this only when the conditions below are met.",
-      unknown: "Verified information is not sufficient. Unknown is not closed and it is not open.",
-      conflict: "Published sources or rules conflict. No definitive conclusion is shown.",
+      allowed:
+        "Published rules support this activity for the selected evidence. Read the citations before acting.",
+      prohibited:
+        "A published prohibition applies. The source is listed below.",
+      conditional:
+        "Published rules allow this only when the conditions below are met.",
+      unknown:
+        "Verified information is not sufficient. Unknown is not closed and it is not open.",
+      conflict:
+        "Published sources or rules conflict. No definitive conclusion is shown.",
     },
     viewSpecies: "View species",
     viewSeason: "View season",
@@ -286,7 +293,8 @@ export const mapCopy: Record<Locale, MapCopy> = {
     sharePointNotice: "The link will include the selected coordinates.",
     shareConfirm: "Copy point link",
     shareCancel: "Cancel",
-    shareFailed: "The link could not be copied. Select it and copy it manually.",
+    shareFailed:
+      "The link could not be copied. Select it and copy it manually.",
     list: "List",
     map: "Map",
     split: "Split",
@@ -299,7 +307,8 @@ export const mapCopy: Record<Locale, MapCopy> = {
     close: "Close",
     filters: "Filters",
     resetFilters: "Reset",
-    invalidLink: "Some link values were ignored because they are not supported.",
+    invalidLink:
+      "Some link values were ignored because they are not supported.",
     removedZone: "That zone is not in the current published data.",
     viewZone: "View zone",
     overlaysInView: "loaded in this view",
@@ -328,7 +337,8 @@ export const mapCopy: Record<Locale, MapCopy> = {
       "ამ ხედში გამოქვეყნებული ზონა არ დაბრუნდა. ეს შეზღუდვის არარსებობა არ არის.",
     zoomCloser: "სამართლებრივი შრეების სანახავად მიუახლოვდით.",
     retry: "შრეების თავიდან ცდა",
-    stale: "ნაჩვენებია ადრე ჩატვირთული გეომეტრია. ეს მიმდინარე სამართლებრივი შემოწმება არ არის.",
+    stale:
+      "ნაჩვენებია ადრე ჩატვირთული გეომეტრია. ეს მიმდინარე სამართლებრივი შემოწმება არ არის.",
     offline: "ქსელის გარეშე ცოცხალი სამართლებრივი შემოწმება მიუწვდომელია.",
     activity: "ქმედება",
     hunting: "ნადირობა",
@@ -381,11 +391,15 @@ export const mapCopy: Record<Locale, MapCopy> = {
       protected_area: "დაცული ლანდშაფტი",
     },
     explain: {
-      allowed: "გამოქვეყნებული წესები ამ მტკიცებულებით ქმედებას უჭერს მხარს. მოქმედებამდე წაიკითხეთ ციტატები.",
+      allowed:
+        "გამოქვეყნებული წესები ამ მტკიცებულებით ქმედებას უჭერს მხარს. მოქმედებამდე წაიკითხეთ ციტატები.",
       prohibited: "გამოქვეყნებული აკრძალვა მოქმედებს. წყარო ქვემოთაა.",
-      conditional: "გამოქვეყნებული წესები ამას მხოლოდ ქვემოთ ჩამოთვლილი პირობებით უშვებს.",
-      unknown: "დადასტურებული ინფორმაცია საკმარისი არ არის. უცნობი არც დახურვაა და არც გახსნა.",
-      conflict: "გამოქვეყნებული წყაროები ან წესები ეწინააღმდეგება ერთმანეთს. საბოლოო დასკვნა არ არის წარმოდგენილი.",
+      conditional:
+        "გამოქვეყნებული წესები ამას მხოლოდ ქვემოთ ჩამოთვლილი პირობებით უშვებს.",
+      unknown:
+        "დადასტურებული ინფორმაცია საკმარისი არ არის. უცნობი არც დახურვაა და არც გახსნა.",
+      conflict:
+        "გამოქვეყნებული წყაროები ან წესები ეწინააღმდეგება ერთმანეთს. საბოლოო დასკვნა არ არის წარმოდგენილი.",
     },
     viewSpecies: "სახეობის ნახვა",
     viewSeason: "სეზონის ნახვა",
@@ -446,13 +460,15 @@ export const mapCopy: Record<Locale, MapCopy> = {
     results: "ზონები ხედში",
     emptyList: "ამ ხედში გამოქვეყნებული ზონა არ არის ჩატვირთული.",
     search: "ზონის ან სახეობის ძიება",
-    searchHint: "ძიება იყენებს გამოქვეყნებულ ჩანაწერებს, არა ქუჩის მისამართებს.",
+    searchHint:
+      "ძიება იყენებს გამოქვეყნებულ ჩანაწერებს, არა ქუჩის მისამართებს.",
     noSearch: "შესაბამისი გამოქვეყნებული ჩანაწერი არ არის.",
     addressUnavailable: "მისამართის ძიება არ არის ხელმისაწვდომი.",
     close: "დახურვა",
     filters: "ფილტრები",
     resetFilters: "განულება",
-    invalidLink: "ბმულის ზოგიერთი მნიშვნელობა გამოტოვდა, რადგან მხარდაჭერილი არ არის.",
+    invalidLink:
+      "ბმულის ზოგიერთი მნიშვნელობა გამოტოვდა, რადგან მხარდაჭერილი არ არის.",
     removedZone: "ეს ზონა მიმდინარე გამოქვეყნებულ მონაცემებში არ არის.",
     viewZone: "ზონის ნახვა",
     overlaysInView: "ჩატვირთულია ამ ხედში",

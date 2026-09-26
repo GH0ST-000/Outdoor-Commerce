@@ -65,7 +65,10 @@ export function resolveMapConfig(nodeEnv = process.env.NODE_ENV): MapConfig {
   };
 }
 
-export function styleUrlWithToken(styleUrl: string, token: string | null): string {
+export function styleUrlWithToken(
+  styleUrl: string,
+  token: string | null,
+): string {
   if (!token) return styleUrl;
   return styleUrl.replaceAll("{token}", encodeURIComponent(token));
 }

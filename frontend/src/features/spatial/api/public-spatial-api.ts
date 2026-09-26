@@ -19,7 +19,10 @@ function localeHeaders(locale?: "ka" | "en"): Record<string, string> {
   return { "X-Locale": locale ?? "ka" };
 }
 
-export async function fetchViewportZones(params: string, call: SpatialCall = {}) {
+export async function fetchViewportZones(
+  params: string,
+  call: SpatialCall = {},
+) {
   return apiGet<Envelope<ViewportResponse>>(`/v1/spatial/zones${params}`, {
     signal: call.signal,
     headers: localeHeaders(call.locale),
@@ -49,7 +52,10 @@ export async function lookupCoordinate(params: string, call: SpatialCall = {}) {
   return response.data;
 }
 
-export async function evaluateCoordinate(params: string, call: SpatialCall = {}) {
+export async function evaluateCoordinate(
+  params: string,
+  call: SpatialCall = {},
+) {
   const response = await apiRequest<Envelope<SpatialEvaluation>>(
     `/v1/spatial/evaluate${params}`,
     { signal: call.signal, headers: localeHeaders(call.locale) },
@@ -57,7 +63,10 @@ export async function evaluateCoordinate(params: string, call: SpatialCall = {})
   return response.data;
 }
 
-export async function searchSpatialZones(params: string, call: SpatialCall = {}) {
+export async function searchSpatialZones(
+  params: string,
+  call: SpatialCall = {},
+) {
   const response = await apiRequest<Envelope<SpatialSearchResponse>>(
     `/v1/spatial/search${params}`,
     { signal: call.signal, headers: localeHeaders(call.locale) },

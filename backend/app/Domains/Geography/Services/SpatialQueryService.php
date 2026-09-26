@@ -16,8 +16,8 @@ use App\Domains\Geography\Queries\FindZonesContainingPointQuery;
 use App\Domains\Geography\Support\BoundingBox;
 use App\Domains\Geography\Support\SpatialDriver;
 use App\Domains\Geography\Support\SpatialLogger;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
 
 final class SpatialQueryService

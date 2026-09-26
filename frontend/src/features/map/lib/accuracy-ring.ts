@@ -11,7 +11,8 @@ export function accuracyRing(
     const bearing = (index / steps) * Math.PI * 2;
     const latitudeOffset = (radius / 111_320) * Math.cos(bearing);
     const longitudeScale = Math.max(Math.cos((latitude * Math.PI) / 180), 0.01);
-    const longitudeOffset = (radius / (111_320 * longitudeScale)) * Math.sin(bearing);
+    const longitudeOffset =
+      (radius / (111_320 * longitudeScale)) * Math.sin(bearing);
     coordinates.push([
       Number((longitude + longitudeOffset).toFixed(5)),
       Number((latitude + latitudeOffset).toFixed(5)),

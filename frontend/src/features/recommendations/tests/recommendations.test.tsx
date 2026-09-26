@@ -377,14 +377,12 @@ describe("recommendation section", () => {
   });
 
   it("shows empty and error states", async () => {
-    const load = vi
-      .fn()
-      .mockResolvedValue(
-        response({
-          recommendations: [],
-          context: { ...response().context, framing: "contextual" },
-        }),
-      );
+    const load = vi.fn().mockResolvedValue(
+      response({
+        recommendations: [],
+        context: { ...response().context, framing: "contextual" },
+      }),
+    );
     const { rerender } = render(
       <RecommendationSection
         request={{

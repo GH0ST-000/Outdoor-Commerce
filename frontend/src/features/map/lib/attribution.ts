@@ -13,7 +13,9 @@ export function formatAttribution(
   return [...new Set(parts)].join(" · ");
 }
 
-export function isSafeHttpUrl(value: string | null | undefined): value is string {
+export function isSafeHttpUrl(
+  value: string | null | undefined,
+): value is string {
   if (!value) return false;
   try {
     const url = new URL(value);

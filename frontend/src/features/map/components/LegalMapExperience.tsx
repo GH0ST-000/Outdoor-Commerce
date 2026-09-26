@@ -179,8 +179,8 @@ export function LegalMapExperience() {
   const [manualLat, setManualLat] = useState("");
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [overlaps, setOverlaps] = useState<string[]>([]);
-  const [snap, setSnap] = useState<"collapsed" | "medium" | "expanded">(
-    () => (initial.state.species ? "expanded" : "medium"),
+  const [snap, setSnap] = useState<"collapsed" | "medium" | "expanded">(() =>
+    initial.state.species ? "expanded" : "medium",
   );
   const mapRef = useRef<MapLibreMap | null>(null);
   const moveTimer = useRef<number | null>(null);

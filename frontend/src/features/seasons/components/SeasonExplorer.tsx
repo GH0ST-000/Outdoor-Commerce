@@ -74,7 +74,8 @@ export function SeasonExplorer() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [data, setData] = useState<AvailabilityResponse | null>(null);
-  const [activeGroup, setActiveGroup] = useState<(typeof GROUP_ORDER)[number]>("waterfowl");
+  const [activeGroup, setActiveGroup] =
+    useState<(typeof GROUP_ORDER)[number]>("waterfowl");
   const resultsId = `${formId}-results`;
   const errorFallback = t.calendar.errorTitle;
 
@@ -220,7 +221,9 @@ export function SeasonExplorer() {
                   }`}
                   onClick={() => setActivity(value)}
                 >
-                  {value === "hunting" ? t.calendar.hunting : t.calendar.fishing}
+                  {value === "hunting"
+                    ? t.calendar.hunting
+                    : t.calendar.fishing}
                 </button>
               ))}
             </div>
@@ -305,7 +308,9 @@ export function SeasonExplorer() {
             <TabsContent value="place" className="px-4 py-4 sm:px-6">
               <div className="grid gap-4 sm:grid-cols-2">
                 <div>
-                  <Label htmlFor={`${formId}-region`}>{t.calendar.region}</Label>
+                  <Label htmlFor={`${formId}-region`}>
+                    {t.calendar.region}
+                  </Label>
                   <Input
                     id={`${formId}-region`}
                     value={region}
@@ -314,7 +319,9 @@ export function SeasonExplorer() {
                   />
                 </div>
                 <div>
-                  <Label htmlFor={`${formId}-species`}>{t.calendar.species}</Label>
+                  <Label htmlFor={`${formId}-species`}>
+                    {t.calendar.species}
+                  </Label>
                   <Input
                     id={`${formId}-species`}
                     value={species}
@@ -363,7 +370,10 @@ export function SeasonExplorer() {
           </Tabs>
 
           <div className="flex flex-col gap-3 border-t border-border px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
-            <p id={`${formId}-mode-help`} className="text-sm text-muted-foreground">
+            <p
+              id={`${formId}-mode-help`}
+              className="text-sm text-muted-foreground"
+            >
               {from} – {to}
               {" · "}
               {mode === "any_date"
@@ -418,7 +428,11 @@ export function SeasonExplorer() {
         ) : null}
 
         {grouped.length > 0 ? (
-          <div role="tablist" aria-label={t.calendar.species} className="flex flex-wrap gap-2">
+          <div
+            role="tablist"
+            aria-label={t.calendar.species}
+            className="flex flex-wrap gap-2"
+          >
             {grouped.map((group) => (
               <button
                 key={group.key}
@@ -433,173 +447,182 @@ export function SeasonExplorer() {
                 onClick={() => setActiveGroup(group.key)}
               >
                 {t.calendar.groups[group.key]}
-                <span className="ml-2 tabular-nums opacity-80">{group.rows.length}</span>
+                <span className="ml-2 tabular-nums opacity-80">
+                  {group.rows.length}
+                </span>
               </button>
             ))}
           </div>
         ) : null}
 
         {visibleGroup ? (
-          <section className="space-y-4" aria-label={t.calendar.groups[visibleGroup.key]}>
-        <ul className="grid gap-4 sm:grid-cols-2">
-          {visibleGroup.rows.map((row) => {
-            const title =
-              row.species.common_name ?? row.species.scientific_name;
-            const showScientific =
-              row.species.common_name !== null &&
-              row.species.common_name !== row.species.scientific_name;
-            const included = row.conditions
-              .filter((condition) => condition.operator !== "not_equals")
-              .map((condition) => condition.string_value)
-              .filter((value): value is string => Boolean(value));
-            const excluded = row.conditions
-              .filter((condition) => condition.operator === "not_equals")
-              .map((condition) => condition.string_value)
-              .filter((value): value is string => Boolean(value));
-            const limit = row.limits[0];
-            const limitAmount =
-              limit?.amount === null || limit?.amount === undefined
-                ? null
-                : String(Number(limit.amount));
+          <section
+            className="space-y-4"
+            aria-label={t.calendar.groups[visibleGroup.key]}
+          >
+            <ul className="grid gap-4 sm:grid-cols-2">
+              {visibleGroup.rows.map((row) => {
+                const title =
+                  row.species.common_name ?? row.species.scientific_name;
+                const showScientific =
+                  row.species.common_name !== null &&
+                  row.species.common_name !== row.species.scientific_name;
+                const included = row.conditions
+                  .filter((condition) => condition.operator !== "not_equals")
+                  .map((condition) => condition.string_value)
+                  .filter((value): value is string => Boolean(value));
+                const excluded = row.conditions
+                  .filter((condition) => condition.operator === "not_equals")
+                  .map((condition) => condition.string_value)
+                  .filter((value): value is string => Boolean(value));
+                const limit = row.limits[0];
+                const limitAmount =
+                  limit?.amount === null || limit?.amount === undefined
+                    ? null
+                    : String(Number(limit.amount));
 
-            return (
-            <li key={row.species.id}>
-              <article className="overflow-hidden rounded-[var(--radius-xl)] border border-border bg-card">
-                {row.species.media?.url ? (
-                  <div className="relative aspect-[16/10] bg-muted">
-                    <Image
-                      src={row.species.media.url}
-                      alt=""
-                      fill
-                      sizes="(max-width:1024px) 100vw, 50vw"
-                      className="object-cover"
-                    />
-                    <div className="absolute top-3 right-3">
-                      <SeasonStatusBadge
-                        status={row.overall_state as SeasonStatus}
-                      />
-                    </div>
-                  </div>
-                ) : null}
-                <div className="space-y-3 p-4">
-                  <div className="flex items-start justify-between gap-3">
-                    <h3 className="text-lg font-semibold">{title}</h3>
-                    {row.species.media?.url ? null : (
-                      <SeasonStatusBadge
-                        status={row.overall_state as SeasonStatus}
-                      />
-                    )}
-                  </div>
-                  <p className="text-sm text-muted-foreground">
-                    {showScientific ? `${row.species.scientific_name} · ` : null}
-                    {activity === "hunting"
-                      ? t.calendar.hunting
-                      : t.calendar.fishing}
-                  </p>
-                  {row.period_statements?.map((statement) => (
-                    <p key={statement.source} className="text-sm">
-                      {(statement.source === "order_95" ||
-                      statement.source === "mepa_2026"
-                        ? t.calendar.periodSources[statement.source]
-                        : statement.source)}
-                      : {statement.text}
-                    </p>
-                  ))}
-                  {row.period_statements && row.period_statements.length > 0 ? (
-                    <p className="text-sm text-muted-foreground">
-                      {t.calendar.conflictNote}
-                    </p>
-                  ) : null}
-                  {row.overall_state === "partially_open" ? (
-                    <p className="text-sm">{t.calendar.partiallyOpen}</p>
-                  ) : null}
-                  {row.available_windows[0] ? (
-                    <p className="text-sm">
-                      {t.calendar.openWindow}: {row.available_windows[0].from} –{" "}
-                      {row.available_windows[0].to}
-                    </p>
-                  ) : null}
-                  {row.conditional_windows[0] ? (
-                    <p className="text-sm">
-                      {t.calendar.conditionalWindow}:{" "}
-                      {row.conditional_windows[0].from} –{" "}
-                      {row.conditional_windows[0].to}
-                    </p>
-                  ) : null}
-                  {included.length > 0 ? (
-                    <p className="text-sm">
-                      {t.calendar.onlyIn}: {included.join(", ")}
-                    </p>
-                  ) : null}
-                  {excluded.length > 0 ? (
-                    <p className="text-sm">
-                      {t.calendar.excluding}: {excluded.join(", ")}
-                    </p>
-                  ) : null}
-                  {limitAmount !== null && limitAmount !== "NaN" ? (
-                    <p className="text-sm text-muted-foreground">
-                      {t.calendar.dailyLimit}: {limitAmount} {limit?.unit}
-                    </p>
-                  ) : null}
-                  {row.next_opening ? (
-                    <p className="text-sm">
-                      {t.calendar.nextOpen}: {row.next_opening.local_date}
-                    </p>
-                  ) : null}
-                  {row.next_closing ? (
-                    <p className="text-sm">
-                      {t.calendar.nextClose}:{" "}
-                      {row.next_closing.local_end_date_inclusive}
-                    </p>
-                  ) : null}
-                  {row.last_verified_at ? (
-                    <p className="text-xs text-muted-foreground">
-                      {t.calendar.lastVerified}:{" "}
-                      {row.last_verified_at.slice(0, 10)}
-                    </p>
-                  ) : null}
-                  {row.citations[0]?.official_url ? (
-                    <a
-                      href={row.citations[0].official_url}
-                      rel="noopener noreferrer"
-                      target="_blank"
-                      className="text-sm underline"
-                    >
-                      {t.calendar.officialSource}
-                    </a>
-                  ) : null}
-                  {mode === "timeline" && row.timeline.length > 0 ? (
-                    <ol
-                      aria-label={t.calendar.timelineLabel}
-                      className="flex gap-1 overflow-x-auto pb-1"
-                    >
-                      {row.timeline.map((window) => (
-                        <li
-                          key={`${window.from}-${window.state}`}
-                          className="min-w-[4.5rem] rounded border border-border px-2 py-1 text-xs"
+                return (
+                  <li key={row.species.id}>
+                    <article className="overflow-hidden rounded-[var(--radius-xl)] border border-border bg-card">
+                      {row.species.media?.url ? (
+                        <div className="relative aspect-[16/10] bg-muted">
+                          <Image
+                            src={row.species.media.url}
+                            alt=""
+                            fill
+                            sizes="(max-width:1024px) 100vw, 50vw"
+                            className="object-cover"
+                          />
+                          <div className="absolute top-3 right-3">
+                            <SeasonStatusBadge
+                              status={row.overall_state as SeasonStatus}
+                            />
+                          </div>
+                        </div>
+                      ) : null}
+                      <div className="space-y-3 p-4">
+                        <div className="flex items-start justify-between gap-3">
+                          <h3 className="text-lg font-semibold">{title}</h3>
+                          {row.species.media?.url ? null : (
+                            <SeasonStatusBadge
+                              status={row.overall_state as SeasonStatus}
+                            />
+                          )}
+                        </div>
+                        <p className="text-sm text-muted-foreground">
+                          {showScientific
+                            ? `${row.species.scientific_name} · `
+                            : null}
+                          {activity === "hunting"
+                            ? t.calendar.hunting
+                            : t.calendar.fishing}
+                        </p>
+                        {row.period_statements?.map((statement) => (
+                          <p key={statement.source} className="text-sm">
+                            {statement.source === "order_95" ||
+                            statement.source === "mepa_2026"
+                              ? t.calendar.periodSources[statement.source]
+                              : statement.source}
+                            : {statement.text}
+                          </p>
+                        ))}
+                        {row.period_statements &&
+                        row.period_statements.length > 0 ? (
+                          <p className="text-sm text-muted-foreground">
+                            {t.calendar.conflictNote}
+                          </p>
+                        ) : null}
+                        {row.overall_state === "partially_open" ? (
+                          <p className="text-sm">{t.calendar.partiallyOpen}</p>
+                        ) : null}
+                        {row.available_windows[0] ? (
+                          <p className="text-sm">
+                            {t.calendar.openWindow}:{" "}
+                            {row.available_windows[0].from} –{" "}
+                            {row.available_windows[0].to}
+                          </p>
+                        ) : null}
+                        {row.conditional_windows[0] ? (
+                          <p className="text-sm">
+                            {t.calendar.conditionalWindow}:{" "}
+                            {row.conditional_windows[0].from} –{" "}
+                            {row.conditional_windows[0].to}
+                          </p>
+                        ) : null}
+                        {included.length > 0 ? (
+                          <p className="text-sm">
+                            {t.calendar.onlyIn}: {included.join(", ")}
+                          </p>
+                        ) : null}
+                        {excluded.length > 0 ? (
+                          <p className="text-sm">
+                            {t.calendar.excluding}: {excluded.join(", ")}
+                          </p>
+                        ) : null}
+                        {limitAmount !== null && limitAmount !== "NaN" ? (
+                          <p className="text-sm text-muted-foreground">
+                            {t.calendar.dailyLimit}: {limitAmount} {limit?.unit}
+                          </p>
+                        ) : null}
+                        {row.next_opening ? (
+                          <p className="text-sm">
+                            {t.calendar.nextOpen}: {row.next_opening.local_date}
+                          </p>
+                        ) : null}
+                        {row.next_closing ? (
+                          <p className="text-sm">
+                            {t.calendar.nextClose}:{" "}
+                            {row.next_closing.local_end_date_inclusive}
+                          </p>
+                        ) : null}
+                        {row.last_verified_at ? (
+                          <p className="text-xs text-muted-foreground">
+                            {t.calendar.lastVerified}:{" "}
+                            {row.last_verified_at.slice(0, 10)}
+                          </p>
+                        ) : null}
+                        {row.citations[0]?.official_url ? (
+                          <a
+                            href={row.citations[0].official_url}
+                            rel="noopener noreferrer"
+                            target="_blank"
+                            className="text-sm underline"
+                          >
+                            {t.calendar.officialSource}
+                          </a>
+                        ) : null}
+                        {mode === "timeline" && row.timeline.length > 0 ? (
+                          <ol
+                            aria-label={t.calendar.timelineLabel}
+                            className="flex gap-1 overflow-x-auto pb-1"
+                          >
+                            {row.timeline.map((window) => (
+                              <li
+                                key={`${window.from}-${window.state}`}
+                                className="min-w-[4.5rem] rounded border border-border px-2 py-1 text-xs"
+                              >
+                                <span className="block font-medium">
+                                  {window.state}
+                                </span>
+                                <span className="text-muted-foreground">
+                                  {window.from}
+                                </span>
+                              </li>
+                            ))}
+                          </ol>
+                        ) : null}
+                        <Link
+                          href={`/species/${row.species.slug}`}
+                          className="inline-flex text-sm font-medium underline"
                         >
-                          <span className="block font-medium">
-                            {window.state}
-                          </span>
-                          <span className="text-muted-foreground">
-                            {window.from}
-                          </span>
-                        </li>
-                      ))}
-                    </ol>
-                  ) : null}
-                  <Link
-                    href={`/species/${row.species.slug}`}
-                    className="inline-flex text-sm font-medium underline"
-                  >
-                    {t.calendar.viewDetails}
-                  </Link>
-                </div>
-              </article>
-            </li>
-            );
-          })}
-        </ul>
+                          {t.calendar.viewDetails}
+                        </Link>
+                      </div>
+                    </article>
+                  </li>
+                );
+              })}
+            </ul>
           </section>
         ) : null}
         {data && !error ? (

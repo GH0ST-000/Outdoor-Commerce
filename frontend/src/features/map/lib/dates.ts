@@ -28,7 +28,10 @@ export function monthRange(isoDate: string): { from: string; to: string } {
   const [year, month] = isoDate.split("-").map(Number);
   const from = `${isoDate.slice(0, 7)}-01`;
   const last = new Date(Date.UTC(year, month, 0)).getUTCDate();
-  return { from, to: `${isoDate.slice(0, 7)}-${String(last).padStart(2, "0")}` };
+  return {
+    from,
+    to: `${isoDate.slice(0, 7)}-${String(last).padStart(2, "0")}`,
+  };
 }
 
 export function tbilisiNoon(isoDate: string): string {

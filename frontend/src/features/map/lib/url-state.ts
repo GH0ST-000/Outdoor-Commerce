@@ -7,7 +7,12 @@ export type MapAvailabilityMode = "date" | "range" | "any" | "timeline";
 export type MapViewMode = "map" | "list" | "split";
 
 const ACTIVITIES = new Set<MapActivity>(["hunting", "fishing"]);
-const MODES = new Set<MapAvailabilityMode>(["date", "range", "any", "timeline"]);
+const MODES = new Set<MapAvailabilityMode>([
+  "date",
+  "range",
+  "any",
+  "timeline",
+]);
 const VIEWS = new Set<MapViewMode>(["map", "list", "split"]);
 const STATES = new Set<SpatialLegalOutcome>([
   "allowed",
@@ -17,8 +22,7 @@ const STATES = new Set<SpatialLegalOutcome>([
   "conflict",
 ]);
 const DATE = /^\d{4}-\d{2}-\d{2}$/;
-const UUID =
-  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 export type ShareableMapState = {
   activity: MapActivity;
@@ -160,7 +164,10 @@ export function serializeMapState(
   params.set("z", state.z.toFixed(1));
   if (state.zone) params.set("zone", state.zone);
   if (options.includePin && state.pin) {
-    params.set("pin", `${state.pin.lng.toFixed(4)},${state.pin.lat.toFixed(4)}`);
+    params.set(
+      "pin",
+      `${state.pin.lng.toFixed(4)},${state.pin.lat.toFixed(4)}`,
+    );
   }
   if (state.view !== "map") params.set("view", state.view);
   return params.toString();

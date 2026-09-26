@@ -10,7 +10,10 @@ export function detailLevelForZoom(zoom: number): MapDetailLevel {
   return "region";
 }
 
-export function viewportExceedsDetail(detail: MapDetailLevel, bbox: BBox): boolean {
+export function viewportExceedsDetail(
+  detail: MapDetailLevel,
+  bbox: BBox,
+): boolean {
   const span = spanDegrees(bbox);
   if (detail === "full") return span > 2;
   return span > 60;

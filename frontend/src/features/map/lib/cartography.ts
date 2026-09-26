@@ -67,15 +67,35 @@ export function displayLegalState(
 export function paintForLegalState(state: string): LegalPaint {
   switch (state as SpatialLegalOutcome) {
     case "prohibited":
-      return { ...mapPalette.prohibited, opacity: 0.42, dash: [1, 0], mark: "■" };
+      return {
+        ...mapPalette.prohibited,
+        opacity: 0.42,
+        dash: [1, 0],
+        mark: "■",
+      };
     case "conditional":
-      return { ...mapPalette.conditional, opacity: 0.38, dash: [2, 2], mark: "▲" };
+      return {
+        ...mapPalette.conditional,
+        opacity: 0.38,
+        dash: [2, 2],
+        mark: "▲",
+      };
     case "allowed":
       return { ...mapPalette.allowed, opacity: 0.28, dash: [1, 0], mark: "●" };
     case "conflict":
-      return { ...mapPalette.conflict, opacity: 0.4, dash: [1, 1.5], mark: "✕" };
+      return {
+        ...mapPalette.conflict,
+        opacity: 0.4,
+        dash: [1, 1.5],
+        mark: "✕",
+      };
     default:
-      return { ...mapPalette.unknown, opacity: 0.22, dash: [0.5, 1.5], mark: "◌" };
+      return {
+        ...mapPalette.unknown,
+        opacity: 0.22,
+        dash: [0.5, 1.5],
+        mark: "◌",
+      };
   }
 }
 
