@@ -46,26 +46,41 @@ class ContextTaxonomyTerm extends Model
         ];
     }
 
+    /**
+     * @return BelongsTo<self, $this>
+     */
     public function parent(): BelongsTo
     {
         return $this->belongsTo(self::class, 'parent_id');
     }
 
+    /**
+     * @return HasMany<ContextTaxonomyTermTranslation, $this>
+     */
     public function translations(): HasMany
     {
         return $this->hasMany(ContextTaxonomyTermTranslation::class);
     }
 
+    /**
+     * @return BelongsTo<Category, $this>
+     */
     public function catalogCategory(): BelongsTo
     {
         return $this->belongsTo(Category::class, 'catalog_category_id');
     }
 
+    /**
+     * @return BelongsTo<Attribute, $this>
+     */
     public function catalogAttribute(): BelongsTo
     {
         return $this->belongsTo(Attribute::class, 'catalog_attribute_id');
     }
 
+    /**
+     * @return BelongsTo<User, $this>
+     */
     public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');
@@ -76,6 +91,6 @@ class ContextTaxonomyTerm extends Model
         $translations = $this->relationLoaded('translations') ? $this->translations : $this->translations()->get();
         $match = $translations->firstWhere('locale', $locale) ?? $translations->firstWhere('locale', 'ka');
 
-        return $match->label ?? $this->default_label;
+        return $match instanceof ContextTaxonomyTermTranslation ? $match->label : $this->default_label;
     }
 }

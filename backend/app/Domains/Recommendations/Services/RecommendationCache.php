@@ -53,10 +53,8 @@ final class RecommendationCache
         }
 
         try {
-            if (Cache::has($key)) {
-                /** @var array<string, mixed> $cached */
-                $cached = Cache::get($key);
-
+            $cached = $this->stored($key);
+            if ($cached !== null) {
                 return ['hit' => true, 'value' => $cached];
             }
             $value = $callback();
@@ -66,6 +64,21 @@ final class RecommendationCache
         } finally {
             $lock->release();
         }
+    }
+
+    /**
+     * @return array<string, mixed>|null
+     */
+    private function stored(string $key): ?array
+    {
+        if (! Cache::has($key)) {
+            return null;
+        }
+
+        /** @var array<string, mixed> $cached */
+        $cached = Cache::get($key);
+
+        return $cached;
     }
 
     private function versionKey(): string

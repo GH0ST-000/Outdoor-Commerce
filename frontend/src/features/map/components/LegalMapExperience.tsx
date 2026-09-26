@@ -167,7 +167,10 @@ export function LegalMapExperience() {
   const [geoMessage, setGeoMessage] = useState<string | null>(null);
   const [geoAsked, setGeoAsked] = useState(false);
   const [speciesCatalog, setSpeciesCatalog] = useState<SpeciesCard[]>([]);
-  const [seasonHit, setSeasonHit] = useState<AvailabilityResult | null>(null);
+  const [seasonSnapshot, setSeasonSnapshot] = useState<{
+    key: string;
+    hit: AvailabilityResult | null;
+  } | null>(null);
   const [municipalities, setMunicipalities] = useState<MunicipalityFeature[]>(
     [],
   );
@@ -564,38 +567,20 @@ export function LegalMapExperience() {
     };
   }, [locale, state.activity]);
 
-  useEffect(() => {
-    if (!state.species || state.mode === "any") {
-      setSeasonHit(null);
-      return;
-    }
+  const seasonRequest = useMemo(() => {
+    if (!state.species || state.mode === "any") return null;
     const from = state.mode === "date" ? state.date : state.from;
     const to = state.mode === "date" ? state.date : state.to;
-    let cancelled = false;
-    void fetchAvailability(
-      {
-        activity: state.activity === "fishing" ? "fishing" : "hunting",
-        from,
-        to,
-        mode: "any_date",
-        species: state.species,
-      },
-      locale === "en" ? "en" : "ka",
-    )
-      .then((payload) => {
-        if (cancelled) return;
-        setSeasonHit(
-          payload.results.find((row) => row.species.slug === state.species) ??
-            payload.results[0] ??
-            null,
-        );
-      })
-      .catch(() => {
-        if (!cancelled) setSeasonHit(null);
-      });
-    return () => {
-      cancelled = true;
-    };
+    const language = locale === "en" ? "en" : "ka";
+    const activity = state.activity === "fishing" ? "fishing" : "hunting";
+    return {
+      key: `${language}|${activity}|${state.species}|${from}|${to}`,
+      activity,
+      from,
+      to,
+      species: state.species,
+      language,
+    } as const;
   }, [
     locale,
     state.activity,
@@ -605,6 +590,44 @@ export function LegalMapExperience() {
     state.from,
     state.to,
   ]);
+  const seasonHit =
+    seasonRequest && seasonSnapshot?.key === seasonRequest.key
+      ? seasonSnapshot.hit
+      : null;
+
+  useEffect(() => {
+    if (!seasonRequest) return;
+    const request = seasonRequest;
+    let cancelled = false;
+    void fetchAvailability(
+      {
+        activity: request.activity,
+        from: request.from,
+        to: request.to,
+        mode: "any_date",
+        species: request.species,
+      },
+      request.language,
+    )
+      .then((payload) => {
+        if (cancelled) return;
+        setSeasonSnapshot({
+          key: request.key,
+          hit:
+            payload.results.find(
+              (row) => row.species.slug === request.species,
+            ) ??
+            payload.results[0] ??
+            null,
+        });
+      })
+      .catch(() => {
+        if (!cancelled) setSeasonSnapshot({ key: request.key, hit: null });
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [seasonRequest]);
 
   useEffect(() => {
     const handle = window.setTimeout(() => {

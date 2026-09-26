@@ -34,6 +34,9 @@ class RecommendationException extends DomainException implements ProvidesErrorDe
         return $this->httpStatus;
     }
 
+    /**
+     * @param  array<string, mixed>  $details
+     */
     public static function invalid(string $message, array $details = []): self
     {
         return new self($message, 'RECOMMENDATION_INVALID', $details);

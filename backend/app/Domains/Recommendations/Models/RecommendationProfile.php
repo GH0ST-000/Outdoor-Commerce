@@ -52,11 +52,17 @@ class RecommendationProfile extends Model
         ];
     }
 
+    /**
+     * @return HasMany<RecommendationProfileWeight, $this>
+     */
     public function weights(): HasMany
     {
         return $this->hasMany(RecommendationProfileWeight::class);
     }
 
+    /**
+     * @return BelongsTo<User, $this>
+     */
     public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');

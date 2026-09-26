@@ -78,6 +78,7 @@ class MockMap {
 vi.mock("maplibre-gl", () => ({
   Map: MockMap,
   NavigationControl: class {},
+  setWorkerUrl: () => {},
 }));
 vi.mock("maplibre-gl/dist/maplibre-gl.css", () => ({}));
 

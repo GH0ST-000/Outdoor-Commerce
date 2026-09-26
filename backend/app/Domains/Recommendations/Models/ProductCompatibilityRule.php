@@ -17,6 +17,18 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 
+/**
+ * @property CompatibilityRuleType $rule_type
+ * @property ContextDimension $context_dimension
+ * @property CompatibilityOperator $operator
+ * @property string|null $string_value
+ * @property int|null $integer_value
+ * @property float|null $decimal_value
+ * @property bool|null $boolean_value
+ * @property int $weight
+ * @property int|null $product_id
+ * @property int|null $product_category_id
+ */
 class ProductCompatibilityRule extends Model
 {
     protected $fillable = [
@@ -46,21 +58,34 @@ class ProductCompatibilityRule extends Model
         ];
     }
 
+    /**
+     * @return BelongsTo<Product, $this>
+     */
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class);
     }
 
+    /**
+     * @return BelongsTo<ProductVariant, $this>
+     */
     public function variant(): BelongsTo
     {
         return $this->belongsTo(ProductVariant::class, 'product_variant_id');
     }
 
+    /**
+     * @return BelongsTo<Category, $this>
+     */
     public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class, 'product_category_id');
     }
 
+    /**
+     * @param  Builder<self>  $query
+     * @return Builder<self>
+     */
     public function scopeActiveNow(Builder $query, Carbon $at): Builder
     {
         return $query->where('status', AssignmentStatus::Active)

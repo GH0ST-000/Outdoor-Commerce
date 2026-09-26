@@ -47,10 +47,13 @@ final class RecommendationCacheKey
                 continue;
             }
             if (is_array($value)) {
+                if (array_is_list($value)) {
+                    $clean[(string) $key] = $value;
+
+                    continue;
+                }
                 /** @var array<string, mixed> $value */
-                $clean[(string) $key] = array_is_list($value)
-                    ? array_values($value)
-                    : $this->strip($value);
+                $clean[(string) $key] = $this->strip($value);
 
                 continue;
             }

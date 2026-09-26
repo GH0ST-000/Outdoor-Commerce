@@ -20,6 +20,9 @@ class ContextTaxonomyTermTranslation extends Model
         'description',
     ];
 
+    /**
+     * @return BelongsTo<ContextTaxonomyTerm, $this>
+     */
     public function term(): BelongsTo
     {
         return $this->belongsTo(ContextTaxonomyTerm::class, 'context_taxonomy_term_id');

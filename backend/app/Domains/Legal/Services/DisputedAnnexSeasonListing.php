@@ -59,9 +59,10 @@ final class DisputedAnnexSeasonListing
         }
 
         $ministry = LegalRule::query()->where('slug', self::MINISTRY_SLUG)->first();
+        $first = $rules->first();
         $statements = [
-            ['source' => 'order_95', 'text' => $this->excerpt((string) $rules->first()?->interpretation_summary)],
-            ['source' => 'mepa_2026', 'text' => $this->excerpt((string) ($ministry?->interpretation_summary ?? ''))],
+            ['source' => 'order_95', 'text' => $this->excerpt((string) $first->interpretation_summary)],
+            ['source' => 'mepa_2026', 'text' => $this->excerpt($ministry instanceof LegalRule ? (string) $ministry->interpretation_summary : '')],
         ];
         $statements = array_values(array_filter(
             $statements,

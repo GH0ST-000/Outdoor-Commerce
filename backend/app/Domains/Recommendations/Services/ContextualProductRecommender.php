@@ -7,12 +7,15 @@ namespace App\Domains\Recommendations\Services;
 use App\Domains\Catalog\Enums\ProductStatus;
 use App\Domains\Catalog\Enums\ProductVariantStatus;
 use App\Domains\Catalog\Models\Product;
+use App\Domains\Catalog\Models\ProductTranslation;
 use App\Domains\Catalog\Models\ProductVariant;
 use App\Domains\Catalog\Queries\PublicProductImageQuery;
 use App\Domains\Inventory\Contracts\PublicInventoryAvailability;
+use App\Domains\Inventory\DTOs\PublicAvailabilityData;
 use App\Domains\Legal\DTOs\DerivedLegalContextData;
 use App\Domains\Legal\Enums\LegalConclusion;
 use App\Domains\Pricing\Contracts\PublicCatalogPricing;
+use App\Domains\Pricing\DTOs\PublicPriceQuoteData;
 use App\Domains\Recommendations\Enums\AssignmentSourceType;
 use App\Domains\Recommendations\Enums\AssignmentType;
 use App\Domains\Recommendations\Enums\ExclusionCode;
@@ -255,7 +258,7 @@ final class ContextualProductRecommender
                     'signals' => $signals,
                     'quote' => $quote,
                     'in_stock' => $inStock,
-                    'low_stock' => $availability?->isLowStock ?? false,
+                    'low_stock' => $availability instanceof PublicAvailabilityData && $availability->isLowStock,
                 ];
             }
 
@@ -327,7 +330,8 @@ final class ContextualProductRecommender
     }
 
     /**
-     * @param  list<array<string, mixed>>  $variants
+     * @param  list<array{variant: ProductVariant, signals: array<string, float>, quote: PublicPriceQuoteData|null, in_stock: bool, low_stock: bool}>  $variants
+     * @param  array{variant: ProductVariant, signals: array<string, float>, quote: PublicPriceQuoteData|null, in_stock: bool, low_stock: bool}  $best
      */
     private function singleWinner(array $variants, array $best): ?ProductVariant
     {
@@ -648,7 +652,8 @@ final class ContextualProductRecommender
     }
 
     /**
-     * @param  list<array<string, mixed>>  $variants
+     * @param  list<array{variant: ProductVariant, quote: PublicPriceQuoteData|null, in_stock: bool, low_stock: bool}>  $variants
+     * @param  array{quote: PublicPriceQuoteData|null, in_stock: bool, low_stock: bool}  $best
      * @param  array{primary: string, supporting: list<string>, warnings: list<string>}  $explanation
      * @param  array{adjustment: int, final: int, pinned: bool, pin_priority: int, excluded: bool, promoted: bool, label: string|null}  $adjusted
      * @return array<string, mixed>
@@ -656,7 +661,9 @@ final class ContextualProductRecommender
     private function card(Product $product, string $locale, string $slug, array $variants, ?ProductVariant $recommended, array $best, RecommendationConfidence $confidence, array $explanation, array $adjusted, RecommendationGate $gate): array
     {
         $quote = $best['quote'];
-        $currency = $quote?->currencyCode ?? (string) config('catalog.public.currency', 'GEL');
+        $currency = $quote instanceof PublicPriceQuoteData
+            ? $quote->currencyCode
+            : (string) config('catalog.public.currency', 'GEL');
         $texts = [];
         foreach ([$explanation['primary'], ...$explanation['supporting']] as $code) {
             $texts[] = ['code' => $code, 'text' => $this->copy->line($locale, $code)];
@@ -681,9 +688,11 @@ final class ContextualProductRecommender
         }
         $purchasable = $recommended !== null && $best['in_stock'] && $quote !== null && $gate !== RecommendationGate::Blocked;
 
+        $productTranslation = $product->translation($locale);
+
         return [
             'slug' => $slug,
-            'name' => (string) ($product->translation($locale)?->name ?? ''),
+            'name' => $productTranslation instanceof ProductTranslation ? $productTranslation->name : '',
             'brand' => $product->brand?->translation($locale)?->name,
             'primary_image' => $this->images->url($product),
             'category' => $product->primaryCategory?->translation($locale)?->name,

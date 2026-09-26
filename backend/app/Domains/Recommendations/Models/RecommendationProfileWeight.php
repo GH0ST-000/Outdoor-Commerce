@@ -20,6 +20,9 @@ class RecommendationProfileWeight extends Model
         return ['weight' => 'integer'];
     }
 
+    /**
+     * @return BelongsTo<RecommendationProfile, $this>
+     */
     public function profile(): BelongsTo
     {
         return $this->belongsTo(RecommendationProfile::class, 'recommendation_profile_id');

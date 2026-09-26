@@ -104,6 +104,8 @@ export function MapCanvas(props: Props) {
     void import("maplibre-gl")
       .then((maplibre) => {
         if (disposed || !containerRef.current) return;
+        // Next does not emit the worker's sibling module, so both files are served from public/.
+        maplibre.setWorkerUrl("/maplibre/maplibre-gl-worker.mjs");
         const reduced =
           typeof window.matchMedia === "function" &&
           window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -142,9 +144,13 @@ export function MapCanvas(props: Props) {
         map.on("error", (event) => {
           const message =
             event.error instanceof Error ? event.error.message : "";
+          const details = event as typeof event & {
+            sourceId?: unknown;
+            tile?: unknown;
+          };
           if (
-            event.sourceId ||
-            event.tile ||
+            details.sourceId ||
+            details.tile ||
             /tile|ajax|failed to fetch|network/i.test(message)
           )
             return;
@@ -213,19 +219,41 @@ export function MapCanvas(props: Props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.config.styleUrl]);
 
+  const data = props.data;
+  const seasonScope = props.seasonScope;
+  const point = props.point;
+  const user = props.user;
+  const boundary = props.boundary;
+  const hoverId = props.hoverId;
+  const selectedId = props.selectedId;
+  const hiddenLayers = props.hiddenLayers;
+
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !map.isStyleLoaded()) return;
-    sync(map, props, fittedScope);
+    sync(
+      map,
+      {
+        data,
+        seasonScope,
+        point,
+        user,
+        boundary,
+        hoverId,
+        selectedId,
+        hiddenLayers,
+      },
+      fittedScope,
+    );
   }, [
-    props.seasonScope,
-    props.data,
-    props.point,
-    props.user,
-    props.boundary,
-    props.hoverId,
-    props.selectedId,
-    props.hiddenLayers,
+    data,
+    seasonScope,
+    point,
+    user,
+    boundary,
+    hoverId,
+    selectedId,
+    hiddenLayers,
   ]);
 
   return (
@@ -453,7 +481,17 @@ function fitSeasonScope(
 
 function sync(
   map: MapLibreMap,
-  props: Props,
+  props: Pick<
+    Props,
+    | "data"
+    | "seasonScope"
+    | "point"
+    | "user"
+    | "boundary"
+    | "hoverId"
+    | "selectedId"
+    | "hiddenLayers"
+  >,
   fittedScope?: { current: string },
 ) {
   if (!map.getSource(LEGAL_SOURCE_ID)) return;

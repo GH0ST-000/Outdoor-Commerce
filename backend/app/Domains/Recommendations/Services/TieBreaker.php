@@ -28,8 +28,10 @@ namespace App\Domains\Recommendations\Services;
 final class TieBreaker
 {
     /**
-     * @param  list<Ranked>  $rows
-     * @return list<Ranked>
+     * @template T of Ranked
+     *
+     * @param  list<T>  $rows
+     * @return list<T>
      */
     public function sort(array $rows): array
     {

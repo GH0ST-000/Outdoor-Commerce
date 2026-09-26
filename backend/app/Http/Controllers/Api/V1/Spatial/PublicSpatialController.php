@@ -173,7 +173,7 @@ final class PublicSpatialController
         }
         $start = Carbon::createFromFormat('Y-m-d', $from);
         $end = Carbon::createFromFormat('Y-m-d', $to);
-        if ($start === false || $end === false || $end->lt($start)) {
+        if (! $start instanceof Carbon || ! $end instanceof Carbon || $end->lt($start)) {
             throw SpatialException::invalidQuery('The date period is invalid.');
         }
         $max = (int) config('spatial.query.max_period_days', 366);

@@ -62,26 +62,42 @@ class ProductContextAssignment extends Model
         ];
     }
 
+    /**
+     * @return BelongsTo<Product, $this>
+     */
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class);
     }
 
+    /**
+     * @return BelongsTo<ProductVariant, $this>
+     */
     public function variant(): BelongsTo
     {
         return $this->belongsTo(ProductVariant::class, 'product_variant_id');
     }
 
+    /**
+     * @return BelongsTo<ContextTaxonomyTerm, $this>
+     */
     public function term(): BelongsTo
     {
         return $this->belongsTo(ContextTaxonomyTerm::class, 'context_taxonomy_term_id');
     }
 
+    /**
+     * @return BelongsTo<User, $this>
+     */
     public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');
     }
 
+    /**
+     * @param  Builder<self>  $query
+     * @return Builder<self>
+     */
     public function scopeActiveNow(Builder $query, Carbon $at): Builder
     {
         return $query->where('status', AssignmentStatus::Active)

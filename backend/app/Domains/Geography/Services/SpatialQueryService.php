@@ -86,7 +86,7 @@ final class SpatialQueryService
                 ->intersectingBbox($bbox)
                 ->whereHas('zone', function ($builder) use ($types): void {
                     $builder->where('status', SpatialZoneStatus::Active);
-                    if ($types !== null && $types !== []) {
+                    if ($types !== null) {
                         $builder->whereIn('zone_type', $types);
                     }
                 })

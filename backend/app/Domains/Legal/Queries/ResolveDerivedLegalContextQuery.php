@@ -153,7 +153,7 @@ final class ResolveDerivedLegalContextQuery
             spatiallyVerified: false,
             activity: $activity,
             speciesId: $species?->id,
-            speciesSlug: $species?->canonical_slug ?? $speciesSlug,
+            speciesSlug: $species instanceof Species ? $species->canonical_slug : $speciesSlug,
             speciesCategoryCode: $speciesCategoryCode,
             zonePublicIds: $zones->pluck('public_id')->map(static fn ($id): string => (string) $id)->all(),
             zoneTypes: array_values(array_unique($zoneTypes)),

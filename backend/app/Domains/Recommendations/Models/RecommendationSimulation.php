@@ -27,6 +27,9 @@ class RecommendationSimulation extends Model
         ];
     }
 
+    /**
+     * @return BelongsTo<RecommendationProfile, $this>
+     */
     public function profile(): BelongsTo
     {
         return $this->belongsTo(RecommendationProfile::class, 'recommendation_profile_id');

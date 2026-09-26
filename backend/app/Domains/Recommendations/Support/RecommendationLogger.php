@@ -26,6 +26,9 @@ final class RecommendationLogger
         }
     }
 
+    /**
+     * @param  array<string, mixed>  $context
+     */
     public function warning(string $code, array $context = []): void
     {
         unset($context['latitude'], $context['longitude'], $context['lat'], $context['lng']);
